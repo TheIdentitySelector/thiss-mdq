@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "start": "node index.js"
   },
   "author": "Leif Johansson <leifj@sunet.se>",
   "license": "BSD-2-Clause",
