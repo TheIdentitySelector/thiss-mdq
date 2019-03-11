@@ -3,12 +3,14 @@ const express = require('express');
 const SelfReloadJSON = require('self-reload-json');
 const hex_sha1 = require('./sha1.js');
 const elasticlunr = require('elasticlunr');
+const fs = require('fs');
+const https = require('https');
+const http = require('http');
 
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = process.env.PORT || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
-
 
 function _sha1_id(s) {
     return "{sha1}"+hex_sha1(s);
@@ -62,7 +64,6 @@ _update(metadata);
 metadata.on("updated",_update);
 
 const app = express();
-const port = 3000;
 
 function search(q) {
     if (q) {
@@ -77,6 +78,11 @@ function search(q) {
 function lookup(id) {
     return db[id];
 }
+
+app.get('/', (req, res) => {
+    const meta = require('./package.json');
+    return res.json({'version': meta.version, 'size': Object.values(db).length});
+});
 
 app.get('/entities/?', function(req, res) {
    let q = req.query.query || req.query.q;
@@ -94,16 +100,28 @@ app.get('/entities/:path', function(req, res) {
 });
 
 app.get('/.well-known/webfinger', function(req, res) {
+    let links = Object.values(db).map(function (e) {
+        return {"rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}`}
+    });
+    links.unshift({"rel": "disco-json", "href": `${BASE_URL}/entities/`});
     let wf = {
         "expires": new Date().getTime() + 3600,
         "subject": BASE_URL,
-        "links": Object.values(db).map(function (e) {
-            return {"rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}`}
-        })
+        "links": links
     };
     return res.json(wf);
 });
 
-console.log(`listening on ${HOST}:${PORT}`);
-
-app.listen(PORT,HOST);
+if (process.env.SSL_KEY && process.env.SSL_CERT) {
+    let options = {
+        'key': fs.readFileSync(process.env.SSL_KEY),
+        'cert': fs.readFileSync(process.env.SSL_CERT)
+    };
+    http.createServer(options, app).listen(PORT, function () {
+        console.log(`HTTPS listening on ${HOST}:${PORT}`);
+    });
+} else {
+    http.createServer(app).listen(PORT, function () {
+        console.log(`HTTP listening on ${HOST}:${PORT}`);
+    })
+}
