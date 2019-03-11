@@ -1,6 +1,5 @@
 
 const express = require('express');
-const SelfReloadJSON = require('self-reload-json');
 const hex_sha1 = require('./sha1.js');
 const elasticlunr = require('elasticlunr');
 const fs = require('fs');
@@ -18,6 +17,7 @@ function _sha1_id(s) {
 
 let index = null;
 let db = null;
+let count = 0;
 
 function _update(entities) {
     let index_load = elasticlunr(function() {
@@ -27,7 +27,7 @@ function _update(entities) {
        this.setRef('id');
        this.saveDocument(false);
     });
-    let count = 0;
+    let count_load = 0;
     let db_load = {};
     for (let i = 0; i < entities.length; i++) {
        e = entities[i];
@@ -48,20 +48,17 @@ function _update(entities) {
            index_load.addDoc(doc);
        }
        db_load[e.id] = e;
-       count++;
+       count_load++;
     }
+    console.log(`loaded ${count_load} objects`);
     db = db_load;
     index = index_load;
-    let old_count = 0;
-    if (db) {
-       old_count = Object.values(db).length;
-    }
-    console.log(`loaded ${count} objects (previous ${old_count})`)
+    count = count_load;
 }
 
-const metadata = new SelfReloadJSON(METADATA);
+
+const metadata = JSON.parse(fs.readFileSync(METADATA));
 _update(metadata);
-metadata.on("updated",_update);
 
 const app = express();
 
@@ -81,7 +78,7 @@ function lookup(id) {
 
 app.get('/', (req, res) => {
     const meta = require('./package.json');
-    return res.json({'version': meta.version, 'size': Object.values(db).length});
+    return res.json({'version': meta.version, 'size': count});
 });
 
 app.get('/entities/?', function(req, res) {
@@ -96,6 +93,14 @@ app.get('/entities/:path', function(req, res) {
       return res.json(entity);
    } else {
       return res.status(404).send("Not found");
+   }
+});
+
+app.head('/status', (req, res) => {
+   if (count > 0) {
+       return res.status(200).send("OK");
+   } else {
+       return res.status(500).send("Not enough");
    }
 });
 
