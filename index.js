@@ -7,6 +7,7 @@ const elasticlunr = require('elasticlunr');
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = process.env.PORT || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
+const BASE_URL = process.env.BASE_URL || "";
 
 
 function _sha1_id(s) {
@@ -90,6 +91,17 @@ app.get('/entities/:path', function(req, res) {
    } else {
       return res.status(404).send("Not found");
    }
+});
+
+app.get('/.well-known/webfinger', function(req, res) {
+    let wf = {
+        "expires": new Date().getTime() + 3600,
+        "subject": BASE_URL,
+        "links": Object.values(db).map(function (e) {
+            return {"rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}`}
+        })
+    };
+    return res.json(wf);
 });
 
 console.log(`listening on ${HOST}:${PORT}`);
