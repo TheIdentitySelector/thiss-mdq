@@ -100,7 +100,15 @@ app.head('/status', (req, res) => {
    if (count > 0) {
        return res.status(200).send("OK");
    } else {
-       return res.status(500).send("Not enough");
+       return res.status(500).send("Not enough data");
+   }
+});
+
+app.get('/status', (req, res) => {
+   if (count > 0) {
+       return res.status(200).send("OK");
+   } else {
+       return res.status(500).send("Not enough data");
    }
 });
 
