@@ -18,6 +18,7 @@ function _sha1_id(s) {
 let index = null;
 let db = null;
 let count = 0;
+let last_updated = new Date();
 
 function _update(entities) {
     let index_load = elasticlunr(function() {
@@ -78,7 +79,7 @@ function lookup(id) {
 
 app.get('/', (req, res) => {
     const meta = require('./package.json');
-    return res.json({'version': meta.version, 'size': count});
+    return res.json({ 'version': meta.version, 'size': count, 'last_updated': last_updated });
 });
 
 app.get('/entities/?', function(req, res) {
