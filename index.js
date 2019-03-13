@@ -5,6 +5,7 @@ const elasticlunr = require('elasticlunr');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
+const cors = require('cors');
 
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = process.env.PORT || 3000;
@@ -63,13 +64,15 @@ _update(metadata);
 
 const app = express();
 
-function search(q) {
+function search(q, res) {
     if (q) {
-       return index.search(q,{}).map(function(m) {
-           return lookup(m.ref);
-       })
+        res.append("Surrogate-Key",`q q-${q}`);
+        return index.search(q,{}).map(function(m) {
+            return lookup(m.ref);
+        })
     } else {
-       return Object.values(db);
+        res.append("Surrogate-Key","entities");
+        return Object.values(db);
     }
 }
 
@@ -79,26 +82,29 @@ function lookup(id) {
 
 app.get('/', (req, res) => {
     const meta = require('./package.json');
+    res.append("Surrogate-Key","meta");
     return res.json({ 'version': meta.version, 'size': count, 'last_updated': last_updated });
 });
 
-app.get('/entities/?', function(req, res) {
+app.get('/entities/?', cors(), function(req, res) {
    let q = req.query.query || req.query.q;
-   return res.json(search(q));
+   return res.json(search(q, res));
 });
 
-app.get('/entities/:path', function(req, res) {
+app.get('/entities/:path', cors(), function(req, res) {
    let id = req.params.path.split('.');
    let entity = lookup(id[0]);
    if (entity) {
-      return res.json(entity);
+       res.append("Surrogate-Key",entity.entiyt_id);
+       return res.json(entity);
    } else {
-      return res.status(404).send("Not found");
+       return res.status(404).send("Not found");
    }
 });
 
 app.head('/status', (req, res) => {
    if (count > 0) {
+       res.append("Surrogate-Key","meta");
        return res.status(200).send("OK");
    } else {
        return res.status(500).send("Not enough data");
@@ -107,6 +113,7 @@ app.head('/status', (req, res) => {
 
 app.get('/status', (req, res) => {
    if (count > 0) {
+       res.append("Surrogate-Key","meta");
        return res.status(200).send("OK");
    } else {
        return res.status(500).send("Not enough data");
@@ -123,6 +130,7 @@ app.get('/.well-known/webfinger', function(req, res) {
         "subject": BASE_URL,
         "links": links
     };
+    res.append("Surrogate-Key","meta");
     return res.json(wf);
 });
 

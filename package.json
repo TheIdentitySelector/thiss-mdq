@@ -17,8 +17,8 @@
     "snyk": "^1.136.1"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "elasticlunr": "^0.9.5",
-    "express": "^4.16.4",
-    "self-reload-json": "^0.4.0"
+    "express": "^4.16.4"
   }
 }
