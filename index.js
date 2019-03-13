@@ -26,6 +26,7 @@ function _update(entities) {
        this.addField('title');
        this.addField('descr');
        this.addField('tags');
+       this.addField('scopes');
        this.setRef('id');
        this.saveDocument(false);
     });
@@ -46,6 +47,7 @@ function _update(entities) {
                    let parts = scope.split('.');
                    return parts.slice(0,-1);
                }).join(' ');
+               doc.scopes = e.scope.split(",");
            }
            index_load.addDoc(doc);
        }
