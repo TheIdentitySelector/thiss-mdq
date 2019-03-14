@@ -69,7 +69,7 @@ const app = express();
 function search(q, res) {
     if (q) {
         res.append("Surrogate-Key",`q q-${q}`);
-        return index.search(q,{}).map(function(m) {
+        return index.search(q,{bool: 'AND'}).map(function(m) {
             return lookup(m.ref);
         })
     } else {
