@@ -22,8 +22,11 @@ export class ArrayFormatter extends Stream {
     end() {
         if (this.done) return;
         this.done = true;
+        if (!this.writable) {
+            this.emit('data', '['); // empty result
+        }
         this.emit('data', ']');
-        this.emit('end')
+        this.emit('end');
     }
 
 }

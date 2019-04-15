@@ -97,19 +97,17 @@ app.get('/entities/?', cors(), function (req, res) {
    res.contentType('json');
    let format = new ArrayFormatter();
    stream(search(q,res)).pipe(format).pipe(res);
-
-   //return res.json(search(q, res));
 });
 
 app.get('/entities/:path', cors(), function(req, res) {
-   let id = req.params.path.split('.');
-   let entity = lookup(id[0]);
-   if (entity) {
+    let id = req.params.path.split('.');
+    let entity = lookup(id[0]);
+    if (entity) {
        res.append("Surrogate-Key",entity.entity_id);
        return res.json(entity);
-   } else {
+    } else {
        return res.status(404).send("Not found");
-   }
+    }
 });
 
 app.head('/status', (req, res) => {
