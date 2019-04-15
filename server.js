@@ -1,4 +1,3 @@
-
 const express = require('express');
 const hex_sha1 = require('./sha1.js');
 const lunr = require('lunr');
@@ -6,6 +5,7 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 import {ArrayFormatter} from "./utils";
+
 const Stream = require('stream');
 
 const cors = require('cors');
@@ -16,7 +16,7 @@ const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
 
 function _sha1_id(s) {
-    return "{sha1}"+hex_sha1(s);
+    return "{sha1}" + hex_sha1(s);
 }
 
 let db = {};
@@ -24,31 +24,34 @@ let count = 0;
 let last_updated = new Date();
 const metadata = JSON.parse(fs.readFileSync(METADATA));
 
-let index = lunr(function() {
-   this.field('title');
-   this.field('tags');
-   this.field('scopes');
+let locales = ["sv-SE", "en-US"];
 
-   for (let i = 0; i < metadata.length; i++) {
-       let e = metadata[i];
-       e.entity_id = e.entityID;
-       e.id = _sha1_id(e.entityID);
-       if (e.type == 'idp') {
-           let doc = {
-               "id": e.id,
-               "title": e.title.toLowerCase(),
-           };
-           if (e.scope) {
-               doc.tags = e.scope.split(",").map(function(scope) {
-                   let parts = scope.split('.');
-                   return parts.slice(0,-1);
-               }).join(' ');
-               doc.scopes = e.scope.split(",");
-           }
-           this.add(doc);
-       }
-       db[e.id] = e;
-       count++;
+let index = lunr(function () {
+    this.pipeline.remove(lunr.trimmer);
+    this.field('title');
+    this.field('tags');
+    this.field('scopes');
+
+    for (let i = 0; i < metadata.length; i++) {
+        let e = metadata[i];
+        e.entity_id = e.entityID;
+        e.id = _sha1_id(e.entityID);
+        if (e.type == 'idp') {
+            let doc = {
+                "id": e.id,
+                "title": e.title.toLocaleLowerCase(locales),
+            };
+            if (e.scope) {
+                doc.tags = e.scope.split(",").map(function (scope) {
+                    let parts = scope.split('.');
+                    return parts.slice(0, -1);
+                }).join(' ');
+                doc.scopes = e.scope.split(",");
+            }
+            this.add(doc);
+        }
+        db[e.id] = e;
+        count++;
     }
     console.log(`loaded ${count} objects`);
 });
@@ -57,20 +60,28 @@ const app = express();
 
 function search(q, res) {
     if (q) {
-        res.append("Surrogate-Key",`q q-${q}`);
-        let matches = [q.split(/\s+/).map(x => "+"+x).join(' '), q.split(/\s+/).map(x => "+"+x.toLowerCase()+"*").join(' ')];
+        res.append("Surrogate-Key", `q q-${q}`);
+        q = q.toLocaleLowerCase(locales);
+        let ati = q.indexOf('@');
+        if (ati > -1) {
+            q = q.substring(ati + 1);
+        }
+        let matches = [q.split(/\s+/).map(x => "+" + x).join(' '), q.split(/\s+/).map(x => "+" + x + "*").join(' ')];
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
-            let res = index.search(match).map(function(m) {
+            //console.log(match);
+            let res = index.search(match).map(function (m) {
+                console.log(m);
                 return lookup(m.ref);
             });
             if (res && res.length > 0) {
                 return res;
             }
-        };
+        }
+        ;
         return [];
     } else {
-        res.append("Surrogate-Key","entities");
+        res.append("Surrogate-Key", "entities");
         return Object.values(db);
     }
 }
@@ -88,47 +99,47 @@ function stream(a) {
 
 app.get('/', (req, res) => {
     const meta = require('./package.json');
-    res.append("Surrogate-Key","meta");
-    return res.json({ 'version': meta.version, 'size': count, 'last_updated': last_updated });
+    res.append("Surrogate-Key", "meta");
+    return res.json({'version': meta.version, 'size': count, 'last_updated': last_updated});
 });
 
 app.get('/entities/?', cors(), function (req, res) {
-   let q = req.query.query || req.query.q;
-   res.contentType('json');
-   let format = new ArrayFormatter();
-   stream(search(q,res)).pipe(format).pipe(res);
+    let q = req.query.query || req.query.q;
+    res.contentType('json');
+    let format = new ArrayFormatter();
+    stream(search(q, res)).pipe(format).pipe(res);
 });
 
-app.get('/entities/:path', cors(), function(req, res) {
+app.get('/entities/:path', cors(), function (req, res) {
     let id = req.params.path.split('.');
     let entity = lookup(id[0]);
     if (entity) {
-       res.append("Surrogate-Key",entity.entity_id);
-       return res.json(entity);
+        res.append("Surrogate-Key", entity.entity_id);
+        return res.json(entity);
     } else {
-       return res.status(404).send("Not found");
+        return res.status(404).send("Not found");
     }
 });
 
 app.head('/status', (req, res) => {
-   if (count > 0) {
-       res.append("Surrogate-Key","meta");
-       return res.status(200).send("OK");
-   } else {
-       return res.status(500).send("Not enough data");
-   }
+    if (count > 0) {
+        res.append("Surrogate-Key", "meta");
+        return res.status(200).send("OK");
+    } else {
+        return res.status(500).send("Not enough data");
+    }
 });
 
 app.get('/status', (req, res) => {
-   if (count > 0) {
-       res.append("Surrogate-Key","meta");
-       return res.status(200).send("OK");
-   } else {
-       return res.status(500).send("Not enough data");
-   }
+    if (count > 0) {
+        res.append("Surrogate-Key", "meta");
+        return res.status(200).send("OK");
+    } else {
+        return res.status(500).send("Not enough data");
+    }
 });
 
-app.get('/.well-known/webfinger', function(req, res) {
+app.get('/.well-known/webfinger', function (req, res) {
     let links = Object.values(db).map(function (e) {
         return {"rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}`}
     });
@@ -138,7 +149,7 @@ app.get('/.well-known/webfinger', function(req, res) {
         "subject": BASE_URL,
         "links": links
     };
-    res.append("Surrogate-Key","meta");
+    res.append("Surrogate-Key", "meta");
     return res.json(wf);
 });
 
