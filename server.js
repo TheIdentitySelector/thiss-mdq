@@ -1,7 +1,7 @@
 
 const express = require('express');
 const hex_sha1 = require('./sha1.js');
-const elasticlunr = require('elasticlunr');
+const lunr = require('lunr');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
@@ -19,31 +19,24 @@ function _sha1_id(s) {
     return "{sha1}"+hex_sha1(s);
 }
 
-let index = null;
-let db = null;
+let db = {};
 let count = 0;
 let last_updated = new Date();
+const metadata = JSON.parse(fs.readFileSync(METADATA));
 
-function _update(entities) {
-    let index_load = elasticlunr(function() {
-       this.addField('title');
-       this.addField('descr');
-       this.addField('tags');
-       this.addField('scopes');
-       this.setRef('id');
-       this.saveDocument(false);
-    });
-    let count_load = 0;
-    let db_load = {};
-    for (let i = 0; i < entities.length; i++) {
-       let e = entities[i];
+let index = lunr(function() {
+   this.field('title');
+   this.field('tags');
+   this.field('scopes');
+
+   for (let i = 0; i < metadata.length; i++) {
+       let e = metadata[i];
        e.entity_id = e.entityID;
        e.id = _sha1_id(e.entityID);
        if (e.type == 'idp') {
            let doc = {
                "id": e.id,
                "title": e.title.toLowerCase(),
-               "descr": e.descr.toLowerCase()
            };
            if (e.scope) {
                doc.tags = e.scope.split(",").map(function(scope) {
@@ -52,29 +45,30 @@ function _update(entities) {
                }).join(' ');
                doc.scopes = e.scope.split(",");
            }
-           index_load.addDoc(doc);
+           this.add(doc);
        }
-       db_load[e.id] = e;
-       count_load++;
+       db[e.id] = e;
+       count++;
     }
-    console.log(`loaded ${count_load} objects`);
-    db = db_load;
-    index = index_load;
-    count = count_load;
-}
-
-
-const metadata = JSON.parse(fs.readFileSync(METADATA));
-_update(metadata);
+    console.log(`loaded ${count} objects`);
+});
 
 const app = express();
 
 function search(q, res) {
     if (q) {
         res.append("Surrogate-Key",`q q-${q}`);
-        return index.search(q,{bool: 'AND'}).map(function(m) {
-            return lookup(m.ref);
-        })
+        let matches = [q.split(/\s+/).map(x => "+"+x).join(' '), q.split(/\s+/).map(x => "+"+x.toLowerCase()+"*").join(' ')];
+        for (let i = 0; i < matches.length; i++) {
+            let match = matches[i];
+            let res = index.search(match).map(function(m) {
+                return lookup(m.ref);
+            });
+            if (res && res.length > 0) {
+                return res;
+            }
+        };
+        return [];
     } else {
         res.append("Surrogate-Key","entities");
         return Object.values(db);
@@ -84,7 +78,6 @@ function search(q, res) {
 function lookup(id) {
     return db[id];
 }
-
 
 function stream(a) {
     const readable = new Stream.Readable();
