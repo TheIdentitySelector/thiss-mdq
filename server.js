@@ -36,7 +36,7 @@ let index = lunr(function () {
         let e = metadata[i];
         e.entity_id = e.entityID;
         e.id = _sha1_id(e.entityID);
-        if (e.type == 'idp') {
+        if (e.type == 'idp' && !(e.id in db)) {
             let doc = {
                 "id": e.id,
                 "title": e.title.toLocaleLowerCase(locales),
@@ -57,6 +57,7 @@ let index = lunr(function () {
 });
 
 const app = express();
+const drop = ['a','the','of','in','i','av','af','den','le','la','les','si','de','des','los'];
 
 function search(q, res) {
     if (q) {
@@ -66,7 +67,9 @@ function search(q, res) {
         if (ati > -1) {
             q = q.substring(ati + 1);
         }
-        let matches = [q.split(/\s+/).map(x => "+" + x).join(' '), q.split(/\s+/).map(x => "+" + x + "*").join(' ')];
+        let str = q.split(/\s+/).filter(x => !drop.includes(x));
+        console.log(str);
+        let matches = [str.map(x => "+" + x).join(' '), str.map(x => "+" + x + "*").join(' ')];
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
             //console.log(match);
@@ -78,7 +81,6 @@ function search(q, res) {
                 return res;
             }
         }
-        ;
         return [];
     } else {
         res.append("Surrogate-Key", "entities");
