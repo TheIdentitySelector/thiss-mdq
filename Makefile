@@ -1,4 +1,4 @@
-VERSION:=latest
+VERSION:=1.1.0
 NAME:=thiss-mdq
 
 all: build push

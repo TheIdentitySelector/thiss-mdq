@@ -1,0 +1,6 @@
+docker_name: thiss-mdq
+builders:
+   - docker
+managed_scripts:
+   - docker_build_prep.sh
+   - docker_tag.sh
