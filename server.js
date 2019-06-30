@@ -19,41 +19,51 @@ function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
 }
 
-let db = {};
-let count = 0;
-let last_updated = new Date();
-const metadata = JSON.parse(fs.readFileSync(METADATA));
-
 let locales = ["sv-SE", "en-US"];
 
-let index = lunr(function () {
-    this.pipeline.remove(lunr.trimmer);
-    this.field('title');
-    this.field('tags');
-    this.field('scopes');
+class Metadata {
+    constructor(file) {
+        let self = this;
+        this.db = {};
+        this.last_updated = new Date();
+        let metadata = JSON.parse(fs.readFileSync(file));
+        this.count = 0;
+        this.index = lunr(function () {
+            this.pipeline.remove(lunr.trimmer);
+            this.field('title');
+            this.field('tags');
+            this.field('scopes');
 
-    for (let i = 0; i < metadata.length; i++) {
-        let e = metadata[i];
-        e.entity_id = e.entityID;
-        e.id = _sha1_id(e.entityID);
-        if (e.type == 'idp' && !(e.id in db)) {
-            let doc = {
-                "id": e.id,
-                "title": e.title.toLocaleLowerCase(locales),
-            };
-            if (e.scope) {
-                doc.tags = e.scope.split(",").map(function (scope) {
-                    let parts = scope.split('.');
-                    return parts.slice(0, -1);
-                }).join(' ');
-                doc.scopes = e.scope.split(",");
+            for (let i = 0; i < metadata.length; i++) {
+                let e = metadata[i];
+                e.entity_id = e.entityID;
+                e.id = _sha1_id(e.entityID);
+                if (e.type == 'idp' && !(e.id in self.db)) {
+                    let doc = {
+                        "id": e.id,
+                        "title": e.title.toLocaleLowerCase(locales),
+                    };
+                    if (e.scope) {
+                        doc.tags = e.scope.split(",").map(function (scope) {
+                            let parts = scope.split('.');
+                            return parts.slice(0, -1);
+                        }).join(' ');
+                        doc.scopes = e.scope.split(",");
+                    }
+                    this.add(doc);
+                }
+                self.db[e.id] = e;
+                self.count++;
             }
-            this.add(doc);
-        }
-        db[e.id] = e;
-        count++;
+            console.log(`loaded ${self.count} objects`);
+        });
     }
-    console.log(`loaded ${count} objects`);
+}
+
+let md = new Metadata(METADATA);
+fs.watch(METADATA, (eventType, filename) => {
+    let md_new = new Metadata(METADATA);
+    md = md_new;
 });
 
 const app = express();
@@ -73,7 +83,7 @@ function search(q, res) {
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
             //console.log(match);
-            let res = index.search(match).map(function (m) {
+            let res = md.index.search(match).map(function (m) {
                 console.log(m);
                 return lookup(m.ref);
             });
@@ -84,12 +94,12 @@ function search(q, res) {
         return [];
     } else {
         res.append("Surrogate-Key", "entities");
-        return Object.values(db);
+        return Object.values(md.db);
     }
 }
 
 function lookup(id) {
-    return db[id];
+    return md.db[id];
 }
 
 function stream(a) {
@@ -102,7 +112,7 @@ function stream(a) {
 app.get('/', (req, res) => {
     const meta = require('./package.json');
     res.append("Surrogate-Key", "meta");
-    return res.json({'version': meta.version, 'size': count, 'last_updated': last_updated});
+    return res.json({'version': meta.version, 'size': md.count, 'last_updated': md.last_updated});
 });
 
 app.get('/entities/?', cors(), function (req, res) {
@@ -124,7 +134,7 @@ app.get('/entities/:path', cors(), function (req, res) {
 });
 
 app.head('/status', (req, res) => {
-    if (count > 0) {
+    if (md.count > 0) {
         res.append("Surrogate-Key", "meta");
         return res.status(200).send("OK");
     } else {
@@ -133,7 +143,7 @@ app.head('/status', (req, res) => {
 });
 
 app.get('/status', (req, res) => {
-    if (count > 0) {
+    if (md.count > 0) {
         res.append("Surrogate-Key", "meta");
         return res.status(200).send("OK");
     } else {
@@ -142,7 +152,7 @@ app.get('/status', (req, res) => {
 });
 
 app.get('/.well-known/webfinger', function (req, res) {
-    let links = Object.values(db).map(function (e) {
+    let links = Object.values(md.db).map(function (e) {
         return {"rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}`}
     });
     links.unshift({"rel": "disco-json", "href": `${BASE_URL}/entities/`});
@@ -160,7 +170,7 @@ if (process.env.SSL_KEY && process.env.SSL_CERT) {
         'key': fs.readFileSync(process.env.SSL_KEY),
         'cert': fs.readFileSync(process.env.SSL_CERT)
     };
-    http.createServer(options, app).listen(PORT, function () {
+    https.createServer(options, app).listen(PORT, function () {
         console.log(`HTTPS listening on ${HOST}:${PORT}`);
     });
 } else {

@@ -1,6 +1,6 @@
 {
   "name": "thiss-mdq",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A minimal JSON-only MDQ",
   "main": "index.js",
   "scripts": {
