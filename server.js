@@ -5,7 +5,7 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 import {ArrayFormatter} from "./utils";
-
+const chokidar = require('chokidar');
 const Stream = require('stream');
 
 const cors = require('cors');
@@ -61,7 +61,7 @@ class Metadata {
 }
 
 let md = new Metadata(METADATA);
-fs.watch(METADATA, (eventType, filename) => {
+chokidar.watch(METADATA,{awaitWriteFinish: true}).on('change', (path, stats) => {
     let md_new = new Metadata(METADATA);
     md = md_new;
 });
