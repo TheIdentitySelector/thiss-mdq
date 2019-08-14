@@ -7,6 +7,10 @@ const http = require('http');
 import {ArrayFormatter} from "./utils";
 const chokidar = require('chokidar');
 const Stream = require('stream');
+const Chain = require('stream-chain');
+const parser = require('stream-json');
+const StreamArray = require('stream-json/streamers/StreamArray');
+
 
 const cors = require('cors');
 
@@ -22,48 +26,52 @@ function _sha1_id(s) {
 let locales = ["sv-SE", "en-US"];
 
 class Metadata {
-    constructor(file) {
+    constructor(file, cb) {
         let self = this;
+        this.cb = cb;  
         this.db = {};
         this.last_updated = new Date();
-        let metadata = JSON.parse(fs.readFileSync(file));
         this.count = 0;
-        this.index = lunr(function () {
-            this.pipeline.remove(lunr.trimmer);
-            this.field('title');
-            this.field('tags');
-            this.field('scopes');
+        this.builder = new lunr.Builder();
+        this.builder.pipeline.remove(lunr.trimmer);
+        this.builder.field('title');
+        this.builder.field('tags');
+        this.builder.field('scopes');
 
-            for (let i = 0; i < metadata.length; i++) {
-                let e = metadata[i];
-                e.entity_id = e.entityID;
-                e.id = _sha1_id(e.entityID);
-                if (e.type == 'idp' && !(e.id in self.db)) {
-                    let doc = {
-                        "id": e.id,
-                        "title": e.title.toLocaleLowerCase(locales),
-                    };
-                    if (e.scope) {
-                        doc.tags = e.scope.split(",").map(function (scope) {
-                            let parts = scope.split('.');
-                            return parts.slice(0, -1);
-                        }).join(' ');
-                        doc.scopes = e.scope.split(",");
-                    }
-                    this.add(doc);
+        self._p = new Chain([fs.createReadStream(file),parser(),new StreamArray(),data => {
+            let e = data.value;
+            e.entity_id = e.entityID;
+            e.id = _sha1_id(e.entityID);
+            if (e.type == 'idp' && !(e.id in self.db)) {
+                let doc = {
+                    "id": e.id,
+                    "title": e.title.toLocaleLowerCase(locales),
+                };
+                if (e.scope) {
+                    doc.tags = e.scope.split(",").map(function (scope) {
+                        let parts = scope.split('.');
+                        return parts.slice(0, -1);
+                    }).join(' ');
+                    doc.scopes = e.scope.split(",");
                 }
-                self.db[e.id] = e;
-                self.count++;
+                self.builder.add(doc);
             }
-            console.log(`loaded ${self.count} objects`);
+            self.db[e.id] = e;
+            ++self.count;
+        }]);
+        self._p.on('data', () => {});
+        self._p.on('end', () => {
+             self.index = self.builder.build();
+             console.log(`loaded ${self.count} objects`);
+             if (self.cb) { self.cb() }
         });
     }
 }
 
 let md = new Metadata(METADATA);
 chokidar.watch(METADATA,{awaitWriteFinish: true}).on('change', (path, stats) => {
-    let md_new = new Metadata(METADATA);
-    md = md_new;
+    console.log(`${METADATA} change detected ... reloading`);
+    let md_new = new Metadata(METADATA, () => { md = md_new });
 });
 
 const app = express();
@@ -78,13 +86,11 @@ function search(q, res) {
             q = q.substring(ati + 1);
         }
         let str = q.split(/\s+/).filter(x => !drop.includes(x));
-        console.log(str);
         let matches = [str.map(x => "+" + x).join(' '), str.map(x => "+" + x + "*").join(' ')];
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
-            //console.log(match);
             let res = md.index.search(match).map(function (m) {
-                console.log(m);
+                console.log(`${match} -> ${m.ref}`);
                 return lookup(m.ref);
             });
             if (res && res.length > 0) {
