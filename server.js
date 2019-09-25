@@ -87,17 +87,18 @@ function search(q, res) {
         }
         let str = q.split(/\s+/).filter(x => !drop.includes(x));
         let matches = [str.map(x => "+" + x).join(' '), str.map(x => "+" + x + "*").join(' ')];
+        console.log(matches)
+        let results = {} 
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
-            let res = md.index.search(match).map(function (m) {
+            md.index.search(match).forEach(function (m) {
                 console.log(`${match} -> ${m.ref}`);
-                return lookup(m.ref);
+                if (!results[m.ref]) {
+                   results[m.ref] = lookup(m.ref);
+                }
             });
-            if (res && res.length > 0) {
-                return res;
-            }
         }
-        return [];
+        return Object.values(results);
     } else {
         res.append("Surrogate-Key", "entities");
         return Object.values(md.db);
