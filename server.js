@@ -88,7 +88,7 @@ function search(q, res) {
         let str = q.split(/\s+/).filter(x => !drop.includes(x));
         let matches = [str.map(x => "+" + x).join(' '), str.map(x => "+" + x + "*").join(' ')];
         console.log(matches)
-        let results = {} 
+        let results = {};
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
             md.index.search(match).forEach(function (m) {
