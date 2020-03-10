@@ -1,4 +1,4 @@
-VERSION:=1.1.3
+VERSION:=$(shell jq -r .version package.json)
 NAME:=thiss-mdq
 
 all: build push
