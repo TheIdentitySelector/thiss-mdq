@@ -14,6 +14,7 @@ thiss-mdq is a minimal implementation of the metadata query protocol (MDQ) that 
    
    install
    api
+   releasenotes
 
 
 Indices and tables
