@@ -1,5 +1,6 @@
 
 import {Stream} from "stream";
+import {utimes, close, open} from "fs"
 
 export class ArrayFormatter extends Stream {
 
@@ -29,4 +30,23 @@ export class ArrayFormatter extends Stream {
         this.emit('end');
     }
 
+}
+
+function esc_query(q) {
+    return q.replace(new RegExp('-|\\+','g'), m => "\\" + m)
+}
+
+export function touchp(path) {
+    return new Promise((resolve, reject) => {
+        const time = new Date();
+        utimes(path, time, time, err => {
+            if (err) {
+                return open(path, 'w', (err, fd) => {
+                    if (err) return reject(err);
+                    close(fd, err => (err ? reject(err) : resolve(fd)));
+                });
+            }
+            resolve();
+        });
+    });
 }

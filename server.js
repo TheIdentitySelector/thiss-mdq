@@ -4,7 +4,7 @@ const lunr = require('lunr');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
-import {ArrayFormatter} from "./utils";
+import {ArrayFormatter, touchp} from "./utils";
 const chokidar = require('chokidar');
 const Stream = require('stream');
 const Chain = require('stream-chain');
@@ -15,9 +15,10 @@ const StreamArray = require('stream-json/streamers/StreamArray');
 const cors = require('cors');
 
 const HOST = process.env.HOST || "0.0.0.0";
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT) || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
+const RELOAD_INTERVAL = parseInt(process.env.RELOAD_INTERVAL) || 0;
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
@@ -73,6 +74,10 @@ chokidar.watch(METADATA,{awaitWriteFinish: true}).on('change', (path, stats) => 
     console.log(`${METADATA} change detected ... reloading`);
     let md_new = new Metadata(METADATA, () => { md = md_new });
 });
+
+function triggerReload() {
+    touchp(METADATA).then(function() { setTimeout(triggerReload, RELOAD_INTERVAL*1000)})
+}
 
 const app = express();
 const drop = ['a','the','of','in','i','av','af','den','le','la','les','si','de','des','los'];
@@ -171,6 +176,10 @@ app.get('/.well-known/webfinger', function (req, res) {
     res.append("Surrogate-Key", "meta");
     return res.json(wf);
 });
+
+if (RELOAD_INTERVAL > 0) {
+    setTimeout(triggerReload, RELOAD_INTERVAL*1000)
+}
 
 if (process.env.SSL_KEY && process.env.SSL_CERT) {
     let options = {
