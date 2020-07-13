@@ -4,7 +4,7 @@ const lunr = require('lunr');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
-import {ArrayFormatter, touchp} from "./utils";
+import {ArrayFormatter, touchp, esc_query} from "./utils";
 const chokidar = require('chokidar');
 const Stream = require('stream');
 const Chain = require('stream-chain');
@@ -90,6 +90,7 @@ function search(q, res) {
         if (ati > -1) {
             q = q.substring(ati + 1);
         }
+        q = esc_query(q)
         let str = q.split(/\s+/).filter(x => !drop.includes(x));
         let matches = [str.map(x => "+" + x).join(' '), str.map(x => "+" + x + "*").join(' ')];
         console.log(matches);

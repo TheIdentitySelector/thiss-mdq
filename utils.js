@@ -32,7 +32,7 @@ export class ArrayFormatter extends Stream {
 
 }
 
-function esc_query(q) {
+export function esc_query(q) {
     return q.replace(new RegExp('-|\\+','g'), m => "\\" + m)
 }
 
