@@ -1,6 +1,5 @@
 const express = require('express');
 const hex_sha1 = require('./sha1.js');
-const lunr = require('lunr');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
@@ -11,6 +10,8 @@ const Chain = require('stream-chain');
 const parser = require('stream-json');
 const StreamArray = require('stream-json/streamers/StreamArray');
 
+const { lunrIndexer, redisIndexer } = require('./search-index');
+const program = require('commander');
 
 const cors = require('cors');
 
@@ -19,6 +20,10 @@ const PORT = parseInt(process.env.PORT) || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
 const RELOAD_INTERVAL = parseInt(process.env.RELOAD_INTERVAL) || 0;
+
+program
+    .option('-r, --redis', 'Select redis to index the metadata');
+    const args = program.parse(process.argv);
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
@@ -33,11 +38,13 @@ class Metadata {
         this.db = {};
         this.last_updated = new Date();
         this.count = 0;
-        this.builder = new lunr.Builder();
-        this.builder.pipeline.remove(lunr.trimmer);
-        this.builder.field('title');
-        this.builder.field('tags');
-        this.builder.field('scopes');
+
+        if (args.redis) {
+            this.redis_idx = new redisIndexer();
+            this.redis_idx.create();
+        } else {
+            this.lunr_idx = new lunrIndexer;
+        };
 
         self._p = new Chain([fs.createReadStream(file),parser(),new StreamArray(),data => {
             let e = data.value;
@@ -55,14 +62,20 @@ class Metadata {
                     }).join(' ');
                     doc.scopes = e.scope.split(",");
                 }
-                self.builder.add(doc);
+                if (args.redis) {
+                    this.redis_idx.add(doc);
+                } else {
+                    this.lunr_idx.add(doc);
+                };
             }
             self.db[e.id] = e;
             ++self.count;
         }]);
         self._p.on('data', () => {});
         self._p.on('end', () => {
-             self.index = self.builder.build();
+            if (!args.redis) {
+                this.lunr_idx.build();
+            };
              console.log(`loaded ${self.count} objects`);
              if (self.cb) { self.cb() }
         });
