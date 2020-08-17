@@ -43,7 +43,7 @@ class Metadata {
             this.idx = new redisIndexer();
             this.idx.create();
         } else {
-            this.idx = new lunrIndexer;
+            this.idx = new lunrIndexer();
         };
 
         self._p = new Chain([fs.createReadStream(file), parser(), new StreamArray(), data => {
