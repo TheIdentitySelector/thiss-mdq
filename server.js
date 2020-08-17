@@ -40,10 +40,10 @@ class Metadata {
         this.count = 0;
 
         if (args.redis) {
-            this.redis_idx = new redisIndexer();
-            this.redis_idx.create();
+            this.idx = new redisIndexer();
+            this.idx.create();
         } else {
-            this.lunr_idx = new lunrIndexer;
+            this.idx = new lunrIndexer;
         };
 
         self._p = new Chain([fs.createReadStream(file), parser(), new StreamArray(), data => {
@@ -62,11 +62,7 @@ class Metadata {
                     }).join(' ');
                     doc.scopes = e.scope.split(",");
                 }
-                if (args.redis) {
-                    this.redis_idx.add(doc);
-                } else {
-                    this.lunr_idx.add(doc);
-                };
+                this.idx.add(doc);
             }
             self.db[e.id] = e;
             ++self.count;
@@ -74,7 +70,7 @@ class Metadata {
         self._p.on('data', () => {});
         self._p.on('end', () => {
             if (!args.redis) {
-                this.lunr_idx.build();
+                this.idx.build();
             };
             console.log(`loaded ${self.count} objects`);
             if (self.cb) { self.cb() }
