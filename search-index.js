@@ -43,32 +43,28 @@ export class redisIndexer {
         this.ft_drop = promisify(client.ft_drop).bind(client);
         this.ft_info = promisify(client.ft_info).bind(client);
 
-        if (!this.ft_create) {
-            throw new Error('Enable Redisearch on Redis client.');
-        };
-    };
-
-    async create() {
-        let existing_index = false;
-        while (existing_index == false) {
-            try {
-                await this.ft_create(
-                    this.md_index,
-                    'SCHEMA',
-                    'title', 'TEXT',
-                    'tags', 'TEXT',
-                    'scopes', 'TEXT'
-                );
-                existing_index = true;
-            } catch (err) {
-                if (String(err).includes('Index already exists')) {
-                    this.ft_drop(this.md_index);
-                    existing_index = false;
-                } else {
-                    throw err;
-                };
-            };
-        };
+        this.create = async() => {
+            let existing_index = false;
+            while (existing_index == false) {
+                try {
+                    await this.ft_create(
+                        this.md_index,
+                        'SCHEMA',
+                        'title', 'TEXT',
+                        'tags', 'TEXT',
+                        'scopes', 'TEXT'
+                    );
+                    existing_index = true;
+                } catch (err) {
+                    if (String(err).includes('Index already exists')) {
+                        this.ft_drop(this.md_index);
+                        existing_index = false;
+                    } else {
+                        throw err;
+                    };
+                }
+            }
+        }
     };
 
     async add(doc) {
@@ -82,7 +78,6 @@ export class redisIndexer {
         } else {
             doc.scopes = doc.scopes.toString();
         };
-
         try {
             await this.ft_add(
                 this.md_index,
@@ -97,10 +92,14 @@ export class redisIndexer {
         } catch (err) {
             throw err;
         };
-
-        /*
-        search(){
-        }
-        */
     };
+
+    build() {
+        () => {};
+    };
+
+    /*
+    search(){
+    }
+    */
 };

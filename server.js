@@ -10,8 +10,7 @@ const Chain = require('stream-chain');
 const parser = require('stream-json');
 const StreamArray = require('stream-json/streamers/StreamArray');
 
-const { lunrIndexer, redisIndexer } = require('./search-index');
-const program = require('commander');
+import { lunrIndexer, redisIndexer } from "./search-index";
 
 const cors = require('cors');
 
@@ -21,9 +20,7 @@ const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
 const RELOAD_INTERVAL = parseInt(process.env.RELOAD_INTERVAL) || 0;
 
-program
-    .option('-r, --redis', 'Select redis to index the metadata');
-const args = program.parse(process.argv);
+const INDEXER = process.env.INDEXER;
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
@@ -39,9 +36,8 @@ class Metadata {
         this.last_updated = new Date();
         this.count = 0;
 
-        if (args.redis) {
+        if (INDEXER === "redis") {
             this.idx = new redisIndexer();
-            this.idx.create();
         } else {
             this.idx = new lunrIndexer();
         };
@@ -69,9 +65,7 @@ class Metadata {
         }]);
         self._p.on('data', () => {});
         self._p.on('end', () => {
-            if (!args.redis) {
-                this.idx.build();
-            };
+            this.idx.build();
             console.log(`loaded ${self.count} objects`);
             if (self.cb) { self.cb() }
         });
