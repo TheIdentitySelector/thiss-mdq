@@ -5,3 +5,8 @@ Version 1.1.4
 -------------
 
 * escape special characters in plain text queries
+
+Version 1.2.0
+-------------
+
+* pluggable indexing and redis-support from Hannah Sebuliba
