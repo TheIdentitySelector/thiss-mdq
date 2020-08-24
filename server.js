@@ -1,16 +1,16 @@
 const express = require('express');
 const hex_sha1 = require('./sha1.js');
-const lunr = require('lunr');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
-import {ArrayFormatter, touchp, esc_query} from "./utils";
+import { ArrayFormatter, touchp, esc_query } from "./utils";
 const chokidar = require('chokidar');
 const Stream = require('stream');
 const Chain = require('stream-chain');
 const parser = require('stream-json');
 const StreamArray = require('stream-json/streamers/StreamArray');
 
+import { lunrIndexer, redisIndexer } from "./search-index";
 
 const cors = require('cors');
 
@@ -19,6 +19,8 @@ const PORT = parseInt(process.env.PORT) || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
 const RELOAD_INTERVAL = parseInt(process.env.RELOAD_INTERVAL) || 0;
+
+const INDEXER = process.env.INDEXER;
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
@@ -29,17 +31,18 @@ let locales = ["sv-SE", "en-US"];
 class Metadata {
     constructor(file, cb) {
         let self = this;
-        this.cb = cb;  
+        this.cb = cb;
         this.db = {};
         this.last_updated = new Date();
         this.count = 0;
-        this.builder = new lunr.Builder();
-        this.builder.pipeline.remove(lunr.trimmer);
-        this.builder.field('title');
-        this.builder.field('tags');
-        this.builder.field('scopes');
 
-        self._p = new Chain([fs.createReadStream(file),parser(),new StreamArray(),data => {
+        if (INDEXER === "redis") {
+            this.idx = new redisIndexer();
+        } else {
+            this.idx = new lunrIndexer();
+        };
+
+        self._p = new Chain([fs.createReadStream(file), parser(), new StreamArray(), data => {
             let e = data.value;
             e.entity_id = e.entityID;
             e.id = _sha1_id(e.entityID);
@@ -49,38 +52,38 @@ class Metadata {
                     "title": e.title.toLocaleLowerCase(locales),
                 };
                 if (e.scope) {
-                    doc.tags = e.scope.split(",").map(function (scope) {
+                    doc.tags = e.scope.split(",").map(function(scope) {
                         let parts = scope.split('.');
                         return parts.slice(0, -1);
                     }).join(' ');
                     doc.scopes = e.scope.split(",");
                 }
-                self.builder.add(doc);
+                this.idx.add(doc);
             }
             self.db[e.id] = e;
             ++self.count;
         }]);
         self._p.on('data', () => {});
         self._p.on('end', () => {
-             self.index = self.builder.build();
-             console.log(`loaded ${self.count} objects`);
-             if (self.cb) { self.cb() }
+            this.idx.build();
+            console.log(`loaded ${self.count} objects`);
+            if (self.cb) { self.cb() }
         });
     }
 }
 
 let md = new Metadata(METADATA);
-chokidar.watch(METADATA,{awaitWriteFinish: true}).on('change', (path, stats) => {
+chokidar.watch(METADATA, { awaitWriteFinish: true }).on('change', (path, stats) => {
     console.log(`${METADATA} change detected ... reloading`);
     let md_new = new Metadata(METADATA, () => { md = md_new });
 });
 
 function triggerReload() {
-    touchp(METADATA).then(function() { setTimeout(triggerReload, RELOAD_INTERVAL*1000)})
+    touchp(METADATA).then(function() { setTimeout(triggerReload, RELOAD_INTERVAL * 1000) })
 }
 
 const app = express();
-const drop = ['a','the','of','in','i','av','af','den','le','la','les','si','de','des','los'];
+const drop = ['a', 'the', 'of', 'in', 'i', 'av', 'af', 'den', 'le', 'la', 'les', 'si', 'de', 'des', 'los'];
 
 function search(q, res) {
     if (q) {
@@ -97,10 +100,10 @@ function search(q, res) {
         let results = {};
         for (let i = 0; i < matches.length; i++) {
             let match = matches[i];
-            md.index.search(match).forEach(function (m) {
+            md.index.search(match).forEach(function(m) {
                 console.log(`${match} -> ${m.ref}`);
                 if (!results[m.ref]) {
-                   results[m.ref] = lookup(m.ref);
+                    results[m.ref] = lookup(m.ref);
                 }
             });
         }
@@ -125,17 +128,17 @@ function stream(a) {
 app.get('/', (req, res) => {
     const meta = require('./package.json');
     res.append("Surrogate-Key", "meta");
-    return res.json({'version': meta.version, 'size': md.count, 'last_updated': md.last_updated});
+    return res.json({ 'version': meta.version, 'size': md.count, 'last_updated': md.last_updated });
 });
 
-app.get('/entities/?', cors(), function (req, res) {
+app.get('/entities/?', cors(), function(req, res) {
     let q = req.query.query || req.query.q;
     res.contentType('json');
     let format = new ArrayFormatter();
     stream(search(q, res)).pipe(format).pipe(res);
 });
 
-app.get('/entities/:path', cors(), function (req, res) {
+app.get('/entities/:path', cors(), function(req, res) {
     let id = req.params.path.split('.');
     let entity = lookup(id[0]);
     if (entity) {
@@ -164,11 +167,11 @@ app.get('/status', (req, res) => {
     }
 });
 
-app.get('/.well-known/webfinger', function (req, res) {
-    let links = Object.values(md.db).map(function (e) {
-        return {"rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}`}
+app.get('/.well-known/webfinger', function(req, res) {
+    let links = Object.values(md.db).map(function(e) {
+        return { "rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}` }
     });
-    links.unshift({"rel": "disco-json", "href": `${BASE_URL}/entities/`});
+    links.unshift({ "rel": "disco-json", "href": `${BASE_URL}/entities/` });
     let wf = {
         "expires": new Date().getTime() + 3600,
         "subject": BASE_URL,
@@ -179,7 +182,7 @@ app.get('/.well-known/webfinger', function (req, res) {
 });
 
 if (RELOAD_INTERVAL > 0) {
-    setTimeout(triggerReload, RELOAD_INTERVAL*1000)
+    setTimeout(triggerReload, RELOAD_INTERVAL * 1000)
 }
 
 if (process.env.SSL_KEY && process.env.SSL_CERT) {
@@ -187,11 +190,11 @@ if (process.env.SSL_KEY && process.env.SSL_CERT) {
         'key': fs.readFileSync(process.env.SSL_KEY),
         'cert': fs.readFileSync(process.env.SSL_CERT)
     };
-    https.createServer(options, app).listen(PORT, function () {
+    https.createServer(options, app).listen(PORT, function() {
         console.log(`HTTPS listening on ${HOST}:${PORT}`);
     });
 } else {
-    http.createServer(app).listen(PORT, function () {
+    http.createServer(app).listen(PORT, function() {
         console.log(`HTTP listening on ${HOST}:${PORT}`);
     })
 }
