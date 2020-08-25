@@ -25,18 +25,18 @@
     "snyk": "^1.136.1"
   },
   "dependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.4.0",
-    "@babel/polyfill": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
-    "@babel/register": "^7.4.0",
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.0",
+    "@babel/polyfill": "^7.10.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/register": "^7.10.5",
     "core-js": "^2.6.5",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "lunr": "^2.3.6",
     "redis": "^3.0.2",
     "stream": "0.0.2",
-    "stream-chain": "^2.1.0",
+    "stream-chain": "^2.2.3",
     "stream-json": "^1.7.0"
   }
 }
