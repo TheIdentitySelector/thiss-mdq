@@ -4,3 +4,4 @@ dist
 coverage
 .nyc*
 metadata.json
+dump.rdb
