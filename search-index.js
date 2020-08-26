@@ -43,11 +43,22 @@ export class redisIndexer {
         this.ft_drop = promisify(client.ft_drop).bind(client);
         this.ft_info = promisify(client.ft_info).bind(client);
 
-        this.create = async() => {
+        this.client_check = (async() => {
+            try {
+                await this.ft_info(this.md_index);
+            } catch (err) {
+                if (String(err).includes('ERR unknown command `ft.info`')) {
+                    console.error('Enable RediSearch on Redis client.');
+                    process.exitCode = 9;
+                };
+            };
+        })();
+
+        this.create = (async() => {
             let existing_index = false;
             while (existing_index == false) {
                 try {
-                    await this.ft_create(
+                    this.ft_create(
                         this.md_index,
                         'SCHEMA',
                         'title', 'TEXT',
@@ -57,14 +68,20 @@ export class redisIndexer {
                     existing_index = true;
                 } catch (err) {
                     if (String(err).includes('Index already exists')) {
-                        this.ft_drop(this.md_index);
-                        existing_index = false;
+                        try {
+                            await this.ft_drop(this.md_index);
+                            existing_index = false;
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    } else if (String(err).includes('ERR unknown command `ft.create`')) {
+                        process.exitCode = 9;
                     } else {
-                        throw err;
+                        console.error(err);
                     };
-                }
-            }
-        }
+                };
+            };
+        })();
     };
 
     async add(doc) {
@@ -90,7 +107,11 @@ export class redisIndexer {
                 'scopes', doc.scopes
             );
         } catch (err) {
-            throw err;
+            if (String(err).includes('ERR unknown command `ft.add`')) {
+                process.exitCode = 9;
+            } else {
+                throw new Error(err);
+            };
         };
     };
 
