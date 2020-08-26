@@ -13,3 +13,9 @@ update:
 	docker tag $(NAME) docker.sunet.se/$(NAME):$(VERSION)
 push:
 	docker push docker.sunet.se/$(NAME):$(VERSION)
+
+test: tests
+
+tests:
+	@npm run test
+

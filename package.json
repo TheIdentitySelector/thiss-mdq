@@ -14,25 +14,30 @@
   "scripts": {
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "./node_modules/.bin/nyc --reporter=lcov -- ./node_modules/mocha/bin/_mocha --require @babel/register"
   },
   "author": "Leif Johansson <leifj@sunet.se>",
   "license": "BSD-2-Clause",
   "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/register": "^7.10.5",
+    "chai-http": "^4.3.0",
     "chokidar": "^2.1.6",
     "grunt": "^1.0.4",
     "grunt-cli": "^1.3.2",
+    "mocha": "^8.1.1",
+    "nyc": "^15.1.0",
+    "regenerator-runtime": "^0.13.7",
     "snyk": "^1.136.1"
   },
   "dependencies": {
     "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.4.0",
     "@babel/polyfill": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
-    "@babel/register": "^7.4.0",
     "core-js": "^2.6.5",
     "cors": "^2.8.5",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
     "lunr": "^2.3.6",
     "redis": "^3.0.2",
     "stream": "0.0.2",
