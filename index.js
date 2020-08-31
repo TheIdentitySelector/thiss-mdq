@@ -14,7 +14,7 @@ const PORT = parseInt(process.env.PORT) || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
 const RELOAD_INTERVAL = parseInt(process.env.RELOAD_INTERVAL) || 0;
-const RELOAD_ON_CHANGE = JSON.parse(process.env.RELOAD_ON_CHANGE) || true;
+const RELOAD_ON_CHANGE = JSON.parse(process.env.RELOAD_ON_CHANGE || "true") || true;
 
 load_metadata(METADATA, RELOAD_ON_CHANGE).then((md) => {
     app.locals.md = md;
