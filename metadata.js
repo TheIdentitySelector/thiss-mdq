@@ -6,6 +6,7 @@ const Chain = require('stream-chain');
 const parser = require('stream-json');
 const StreamArray = require('stream-json/streamers/StreamArray');
 const hex_sha1 = require('./sha1.js');
+const util = require('util');
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
@@ -20,47 +21,54 @@ class Metadata {
 
     constructor(file, cb) {
         let self = this;
-        this.file = file;
-        this.cb = cb;
-        this.db = {};
-        this.last_updated = new Date();
-        this.count = 0;
+        try {
+            this.file = file;
+            this.cb = cb;
+            this.db = {};
+            this.last_updated = new Date();
+            this.count = 0;
 
-        if (INDEXER === "redis") {
-            this.idx = new redisIndexer();
-        } else if (INDEXER == "lunr") {
-            this.idx = new lunrIndexer();
-        } else {
-            throw `Unknown indexer "${INDEXER}"`;
-        }
-
-        self._p = new Chain([fs.createReadStream(file), parser(), new StreamArray(), data => {
-            let e = data.value;
-            e.entity_id = e.entityID;
-            e.id = _sha1_id(e.entityID);
-            if (e.type == 'idp' && !(e.id in self.db)) {
-                let doc = {
-                    "id": e.id,
-                    "title": e.title.toLocaleLowerCase(locales),
-                };
-                if (e.scope) {
-                    doc.tags = e.scope.split(",").map(function(scope) {
-                        let parts = scope.split('.');
-                        return parts.slice(0, -1);
-                    }).join(' ');
-                    doc.scopes = e.scope.split(",");
-                }
-                this.idx.add(doc);
+            if (INDEXER === "redis") {
+                this.idx = new redisIndexer();
+            } else if (INDEXER == "lunr") {
+                this.idx = new lunrIndexer();
+            } else {
+                throw `Unknown indexer "${INDEXER}"`;
             }
-            self.db[e.id] = e;
-            ++self.count;
-        }]);
-        self._p.on('data', () => {});
-        self._p.on('end', () => {
-            this.idx.build();
-            console.log(`loaded ${self.count} objects`);
-            if (self.cb) { self.cb(self) }
-        });
+
+            self._p = new Chain([fs.createReadStream(file), parser(), new StreamArray(), data => {
+                let e = data.value;
+                e.entity_id = e.entityID;
+                e.id = _sha1_id(e.entityID);
+                if (e.type == 'idp' && !(e.id in self.db)) {
+                    let doc = {
+                        "id": e.id,
+                        "title": e.title.toLocaleLowerCase(locales),
+                    };
+                    if (e.scope) {
+                        doc.tags = e.scope.split(",").map(function (scope) {
+                            let parts = scope.split('.');
+                            return parts.slice(0, -1);
+                        }).join(' ');
+                        doc.scopes = e.scope.split(",");
+                    }
+                    this.idx.add(doc);
+                }
+                self.db[e.id] = e;
+                ++self.count;
+            }]);
+            self._p.on('data', () => {
+            });
+            self._p.on('end', () => {
+                this.idx.build();
+                console.log(`loaded ${self.count} objects`);
+                if (self.cb) {
+                    self.cb(undefined, self)
+                }
+            });
+        } catch (e) {
+            self.cb(e, self)
+        }
     }
 
     lookup(id) {
@@ -107,9 +115,9 @@ class Metadata {
     }
 }
 
-function load_metadata(metadata_file, cb) {
-    let md = new Metadata(metadata_file);
-    if (cb) {
+function load_metadata(metadata_file, reload_on_change, cb) {
+    let md = new Metadata(metadata_file, cb);
+    if (reload_on_change) {
         chokidar.watch(metadata_file, {awaitWriteFinish: true}).on('change', (path, stats) => {
             console.log(`${metadata_file} change detected ... reloading`);
             let md_new = new Metadata(metadata_file, cb);
@@ -118,4 +126,4 @@ function load_metadata(metadata_file, cb) {
     return md;
 }
 
-module.exports = load_metadata;
+module.exports = util.promisify(load_metadata);
