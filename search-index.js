@@ -22,8 +22,12 @@ export class lunrIndexer {
     };
 
     build() {
-        this.builder.build();
+        this.idx = this.builder.build();
     };
+
+    search(q) {
+        return this.idx.search(q);
+    }
 };
 
 

@@ -43,15 +43,24 @@ class Metadata {
                 if (e.type == 'idp' && !(e.id in self.db)) {
                     let doc = {
                         "id": e.id,
-                        "title": e.title.toLocaleLowerCase(locales),
+                        "title": [e.title.toLocaleLowerCase(locales)],
                     };
+                    if (e.title_langs) {
+                        doc.title.push(...Object.entries(e.title_langs).map((kv,i) => {
+                            return kv[1].toLocaleLowerCase(locales).trim();
+                        }))
+                    }
                     if (e.scope) {
                         doc.tags = e.scope.split(",").map(function (scope) {
                             let parts = scope.split('.');
                             return parts.slice(0, -1);
-                        }).join(' ');
+                        }).join(',');
                         doc.scopes = e.scope.split(",");
                     }
+                    doc.title = [...new Set(doc.title)].sort()
+                    doc.scopes = [...new Set(doc.scopes)].sort()
+
+                    console.log(doc);
                     this.idx.add(doc);
                 }
                 self.db[e.id] = e;
@@ -95,12 +104,16 @@ class Metadata {
             }
             q = esc_query(q)
             let str = q.split(/\s+/).filter(x => !drop.includes(x));
-            let matches = [str.map(x => "+" + x).join(' '), str.map(x => "+" + x + "*").join(' ')];
+            let matches = [
+                str.map(x => "+" + x).join(' '),
+                str.map(x => "+" + x + "*").join(' '),
+                str.map(x => "*" + x + "*").join(' ')
+            ];
             console.log(matches);
             let results = {};
             for (let i = 0; i < matches.length; i++) {
                 let match = matches[i];
-                self.index.search(match).forEach(function(m) {
+                self.idx.search(match).forEach(function(m) {
                     console.log(`${match} -> ${m.ref}`);
                     if (!results[m.ref]) {
                         results[m.ref] = self.lookup(m.ref);
