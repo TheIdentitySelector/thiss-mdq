@@ -13,7 +13,8 @@ function _sha1_id(s) {
 }
 
 let locales = ["sv-SE", "en-US"];
-const drop = ['a', 'the', 'of', 'in', 'i', 'av', 'af', 'den', 'le', 'la', 'les', 'si', 'de', 'des', 'los'];
+const drop = ['a', 'the', 'of', 'in', 'i', 'av', 'af', 'den', 'le', 'la', 'les', 'si', 'de', 'des', 'los',
+    'university','school','institute','college'];
 
 const INDEXER = process.env.INDEXER || 'lunr';
 
@@ -60,7 +61,7 @@ class Metadata {
                     doc.title = [...new Set(doc.title)].sort()
                     doc.scopes = [...new Set(doc.scopes)].sort()
 
-                    console.log(doc);
+                    //console.log(doc);
                     this.idx.add(doc);
                 }
                 self.db[e.id] = e;
@@ -105,6 +106,7 @@ class Metadata {
             q = esc_query(q)
             let str = q.split(/\s+/).filter(x => !drop.includes(x));
             let matches = [
+                "+" + q,
                 str.map(x => "+" + x).join(' '),
                 str.map(x => "+" + x + "*").join(' '),
                 str.map(x => "*" + x + "*").join(' ')
@@ -113,12 +115,19 @@ class Metadata {
             let results = {};
             for (let i = 0; i < matches.length; i++) {
                 let match = matches[i];
+                let count = 0;
                 self.idx.search(match).forEach(function(m) {
                     console.log(`${match} -> ${m.ref}`);
                     if (!results[m.ref]) {
                         results[m.ref] = self.lookup(m.ref);
+                        count++
                     }
                 });
+                if (count > 0) {
+                    console.log(matches[i])
+                    console.log(count);
+                    return Object.values(results);
+                }
             }
             return Object.values(results);
         } else {
