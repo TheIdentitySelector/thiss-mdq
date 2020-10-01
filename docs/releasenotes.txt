@@ -10,3 +10,13 @@ Version 1.2.0
 -------------
 
 * pluggable indexing and redis-support from Hannah Sebuliba
+
+Version 1.2.1
+-------------
+
+* bugfixes
+
+Version 1.2.2
+-------------
+
+* updates to the search algorithm to favor more exact searches over less
