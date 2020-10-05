@@ -108,7 +108,7 @@ class Metadata {
             let matches = [
                 str.map(x => "+" + x).join(' '),
                 str.map(x => "+" + x + "*").join(' '),
-                str.map(x => "*" + x + "*").join(' ')
+                str.map(x => "+*" + x + "*").join(' ')
             ];
             let results = {};
             for (let i = 0; i < matches.length; i++) {
