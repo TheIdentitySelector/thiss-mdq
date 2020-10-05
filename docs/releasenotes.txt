@@ -25,3 +25,8 @@ Version 1.2.3
 -------------
 
 * Integrate stopwords module instead of locally maintained stopwords
+
+Version 1.2.4
+-------------
+
+* Enforce AND-logic for combining multiple search terms
