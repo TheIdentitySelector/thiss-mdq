@@ -104,7 +104,9 @@ class Metadata {
                 q = q.substring(ati + 1);
             }
             q = esc_query(q)
-            let str = sw.removeStopwords(q.split(/\s+/), all_stopwords)
+            let tokens = q.split(/\s+/);
+            let str = [tokens[0]]
+            str.push(...sw.removeStopwords(tokens.slice(1), all_stopwords))
             let matches = [
                 str.map(x => "+" + x).join(' '),
                 str.map(x => "+" + x + "*").join(' '),
