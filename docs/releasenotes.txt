@@ -30,3 +30,8 @@ Version 1.2.4
 -------------
 
 * Enforce AND-logic for combining multiple search terms
+
+Version 1.2.5
+-------------
+
+* Never treat the first token as a stopword
