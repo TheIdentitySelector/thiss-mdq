@@ -116,7 +116,7 @@ class Metadata {
             for (let i = 0; i < matches.length; i++) {
                 let match = matches[i];
                 self.idx.search(match).forEach(function(m) {
-                    console.log(`${match} -> ${m.ref}`);
+                    //console.log(`${match} -> ${m.ref}`);
                     if (!results[m.ref]) {
                         results[m.ref] = self.lookup(m.ref);
                     }
