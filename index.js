@@ -16,13 +16,10 @@ const BASE_URL = process.env.BASE_URL || "";
 const RELOAD_INTERVAL = parseInt(process.env.RELOAD_INTERVAL) || 0;
 const RELOAD_ON_CHANGE = JSON.parse(process.env.RELOAD_ON_CHANGE || "true") || true;
 
-load_metadata(METADATA, RELOAD_ON_CHANGE).then((md) => {
-    app.locals.md = md;
+const cluster = require('cluster');
+const os = require('os');
 
-    if (RELOAD_INTERVAL > 0) {
-        app.locals.md.triggerReload(RELOAD_INTERVAL * 1000);
-    }
-
+function runServer(app) {
     if (process.env.SSL_KEY && process.env.SSL_CERT) {
         let options = {
             'key': fs.readFileSync(process.env.SSL_KEY),
@@ -35,6 +32,29 @@ load_metadata(METADATA, RELOAD_ON_CHANGE).then((md) => {
         http.createServer(app).listen(PORT, function() {
             console.log(`HTTP listening on ${HOST}:${PORT}`);
         })
+    }
+}
+
+cluster.on('exit', function (worker) {
+  console.log(`Worker ${worker.id} died'`);
+  console.log(`Staring a new one...`);
+  cluster.fork();
+});
+
+load_metadata(METADATA, RELOAD_ON_CHANGE).then((md) => {
+    app.locals.md = md;
+
+    if (RELOAD_INTERVAL > 0) {
+        app.locals.md.triggerReload(RELOAD_INTERVAL * 1000);
+    }
+
+    if (cluster.isMaster) {
+        const cpuCount = os.cpus().length;
+        for (let j = 0; j < cpuCount; j++) {
+            cluster.fork();
+        }
+    } else {
+        runServer(app);
     }
 
 });

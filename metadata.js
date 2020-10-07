@@ -61,7 +61,7 @@ class Metadata {
                     }
                     doc.title = [...new Set(doc.title)].sort()
                     doc.scopes = [...new Set(doc.scopes)].sort()
-
+                    //console.log(doc)
                     this.idx.add(doc);
                 }
                 self.db[e.id] = e;
@@ -110,7 +110,6 @@ class Metadata {
             let matches = [
                 str.map(x => "+" + x).join(' '),
                 str.map(x => "+" + x + "*").join(' '),
-                str.map(x => "+*" + x + "*").join(' ')
             ];
             let results = {};
             for (let i = 0; i < matches.length; i++) {

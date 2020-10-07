@@ -35,3 +35,9 @@ Version 1.2.5
 -------------
 
 * Never treat the first token as a stopword
+
+Version 1.2.6
+-------------
+
+* Reduce index memory footprint
+* Use cluster controller for expressjs
