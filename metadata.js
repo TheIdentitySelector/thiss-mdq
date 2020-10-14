@@ -47,6 +47,9 @@ class Metadata {
                         "id": e.id,
                         "title": [e.title.toLocaleLowerCase(locales)],
                     };
+                    if (e.keywords) {
+                        doc.keywords = e.keywords.toLocaleLowerCase(locales).split(",").map(e=>e.trim())
+                    }
                     if (e.title_langs) {
                         doc.title.push(...Object.entries(e.title_langs).map((kv,i) => {
                             return kv[1].toLocaleLowerCase(locales).trim();
@@ -135,6 +138,7 @@ function load_metadata(metadata_file, reload_on_change, cb) {
         chokidar.watch(metadata_file, {awaitWriteFinish: true}).on('change', (path, stats) => {
             console.log(`${metadata_file} change detected ... reloading`);
             let md_new = new Metadata(metadata_file, cb);
+            md = md_new;
         });
     }
     return md;

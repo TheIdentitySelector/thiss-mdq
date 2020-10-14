@@ -2,14 +2,16 @@ const express = require('express');
 import { ArrayFormatter } from "./utils";
 const Stream = require('stream');
 const cors = require('cors');
+var compression = require('compression')
 
 const CACHE_TIME = parseInt(process.env.CACHE_TIME) || 3600;
 const S_MAXAGE = parseInt(process.env.S_MAXAGE) || CACHE_TIME;
 const MAXAGE = parseInt(process.env.MAXAGE) || CACHE_TIME;
-const CONTENT_CACHE_HEADER = process.env.CONTENT_CACHE_HEADER || `s-maxage=${S_MAXAGE}, maxage=${MAXAGE}`;
+const CONTENT_CACHE_HEADER = process.env.CONTENT_CACHE_HEADER || `s-maxage=${S_MAXAGE}, max-age=${MAXAGE}`;
 const META_CACHE_HEADER = process.env.META_CACHE_HEADER || "private, no-store";
 
 const app = express();
+app.use(compression());
 
 function stream(a) {
     const readable = new Stream.Readable();
