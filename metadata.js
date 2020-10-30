@@ -88,14 +88,6 @@ class Metadata {
         return this.db[id];
     }
 
-    triggerReload(interval) {
-        setTimeout(() => {
-            touchp(self.file).then(() => {
-                self.triggerReload(interval);
-            });
-        }, interval);
-    }
-
     search(q, res) {
         let self = this;
 
@@ -132,16 +124,8 @@ class Metadata {
     }
 }
 
-function load_metadata(metadata_file, reload_on_change, cb) {
-    let md = new Metadata(metadata_file, cb);
-    if (reload_on_change) {
-        chokidar.watch(metadata_file, {awaitWriteFinish: true}).on('change', (path, stats) => {
-            console.log(`${metadata_file} change detected ... reloading`);
-            let md_new = new Metadata(metadata_file, cb);
-            md = md_new;
-        });
-    }
-    return md;
+function load_metadata(metadata_file, cb) {
+    return new Metadata(metadata_file, cb);
 }
 
 module.exports = util.promisify(load_metadata);

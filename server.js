@@ -2,7 +2,7 @@ const express = require('express');
 import { ArrayFormatter } from "./utils";
 const Stream = require('stream');
 const cors = require('cors');
-var compression = require('compression')
+let compression = require('compression')
 
 const CACHE_TIME = parseInt(process.env.CACHE_TIME) || 3600;
 const S_MAXAGE = parseInt(process.env.S_MAXAGE) || CACHE_TIME;

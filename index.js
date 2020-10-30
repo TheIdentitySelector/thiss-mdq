@@ -13,7 +13,6 @@ const HOST = process.env.HOST || "0.0.0.0";
 const PORT = parseInt(process.env.PORT) || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
 const BASE_URL = process.env.BASE_URL || "";
-const RELOAD_INTERVAL = parseInt(process.env.RELOAD_INTERVAL) || 0;
 const RELOAD_ON_CHANGE = JSON.parse(process.env.RELOAD_ON_CHANGE || "true") || true;
 
 const cluster = require('cluster');
@@ -41,20 +40,13 @@ cluster.on('exit', function (worker) {
   cluster.fork();
 });
 
-load_metadata(METADATA, RELOAD_ON_CHANGE).then((md) => {
-    app.locals.md = md;
-
-    if (RELOAD_INTERVAL > 0) {
-        app.locals.md.triggerReload(RELOAD_INTERVAL * 1000);
+if (cluster.isMaster) {
+    const cpuCount = os.cpus().length;
+    for (let j = 0; j < cpuCount; j++) {
+        cluster.fork();
     }
-
-    if (cluster.isMaster) {
-        const cpuCount = os.cpus().length;
-        for (let j = 0; j < cpuCount; j++) {
-            cluster.fork();
-        }
-    } else {
-        runServer(app);
-    }
-
-});
+} else {
+    load_metadata(METADATA).then((md) => {
+        app.locals.md = md
+    }).then(() => runServer(app));
+}
