@@ -8,8 +8,9 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 COPY start.sh ./
+RUN chmod a+rx start.sh
 RUN npm install
-RUN npm npm -g nodemon
+RUN npm install -g nodemon
 # If you are building your code for production
 # RUN npm ci --only=production
 
@@ -17,4 +18,4 @@ RUN npm npm -g nodemon
 COPY . .
 
 EXPOSE 3000
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["./start.sh"]
