@@ -19,6 +19,6 @@ Verify that the container has started by cURL:ing:
 
   # curl -s http://localhost:3000/ 
 
-The result should include information about the version of thiss-mdq and the number of entities in the metadata set. By default thiss-mdq uses inotify to monitor /etc/metadata.json for changes and will reload and reindex when a change is detected.
+The result should include information about the version of thiss-mdq and the number of entities in the metadata set. 
 
 There are two backend options: the default lunr-based backend and the redis backend. Setting the environment varialble INDEXER to 'redis' turns on the latter.
