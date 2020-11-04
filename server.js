@@ -24,7 +24,12 @@ app.get('/', (req, res) => {
     const meta = require('./package.json');
     res.append("Surrogate-Key", "meta");
     res.append("Cache-Control", META_CACHE_HEADER)
-    return res.json({ 'version': meta.version, 'size': app.locals.md.count, 'last_updated': app.locals.md.last_updated });
+    return res.json({
+        'version': meta.version,
+        'size': app.locals.md.count,
+        'last_updated': app.locals.md.last_updated,
+        'last_modified': app.locals.md.last_modified
+    });
 });
 
 app.get('/entities/?', cors(), function(req, res) {

@@ -30,6 +30,10 @@ class Metadata {
             this.last_updated = new Date();
             this.count = 0;
 
+            fs.stat(file, (err, stats) => {
+                this.last_modified = stats.mtime;
+            });
+
             if (INDEXER === "redis") {
                 this.idx = new redisIndexer();
             } else if (INDEXER == "lunr") {
