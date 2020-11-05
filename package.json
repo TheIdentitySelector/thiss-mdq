@@ -20,9 +20,9 @@
   "author": "Leif Johansson <leifj@sunet.se>",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "@babel/core": "^7.11.4",
-    "@babel/preset-env": "^7.11.0",
-    "@babel/register": "^7.10.5",
+    "@babel/core": "^7.12.0",
+    "@babel/preset-env": "^7.12.0",
+    "@babel/register": "^7.12.0",
     "chai-http": "^4.3.0",
     "chokidar": "^2.1.6",
     "grunt": "^1.0.4",
@@ -33,11 +33,11 @@
     "snyk": "^1.136.1"
   },
   "dependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.0",
+    "@babel/cli": "^7.12.0",
+    "@babel/core": "^7.12.0",
     "@babel/polyfill": "^7.10.4",
-    "@babel/preset-env": "^7.11.0",
-    "@babel/register": "^7.10.5",
+    "@babel/preset-env": "^7.12.0",
+    "@babel/register": "^7.12.0",
     "compression": "^1.7.4",
     "core-js": "^2.6.5",
     "cors": "^2.8.5",
