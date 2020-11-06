@@ -35,7 +35,7 @@
   "dependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.0",
-    "@babel/polyfill": "^7.10.4",
+    "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.11.0",
     "@babel/register": "^7.10.5",
     "compression": "^1.7.4",
