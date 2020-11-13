@@ -49,3 +49,8 @@ Version 1.3.0
 * Change tokenizer to split tokens on whitespace only
 * Improved i18n-support
 * Provide information about metadata mtime in monitor json
+
+Version 1.3.1
+-------------
+
+* Updated and extended status json information: mtime and ctime for the metadata file is reported separately
