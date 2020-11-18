@@ -91,7 +91,7 @@ class Metadata {
         let self = this;
 
         if (q) {
-            res.append("Surrogate-Key", `q q-${q}`);
+            res.append("Surrogate-Key", `query`);
             q = q.toLocaleLowerCase(locales);
             let ati = q.indexOf('@');
             if (ati > -1) {
