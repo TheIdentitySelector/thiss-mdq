@@ -54,3 +54,8 @@ Version 1.3.1
 -------------
 
 * Updated and extended status json information: mtime and ctime for the metadata file is reported separately
+
+Version 1.3.2
+-------------
+
+* Avoid including user-supplied data in header values
