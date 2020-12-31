@@ -22,7 +22,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0",
-    "@babel/register": "^7.10.5",
+    "@babel/register": "^7.12.10",
     "chai-http": "^4.3.0",
     "chokidar": "^2.1.6",
     "grunt": "^1.0.4",
@@ -37,7 +37,7 @@
     "@babel/core": "^7.11.0",
     "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
-    "@babel/register": "^7.10.5",
+    "@babel/register": "^7.12.10",
     "compression": "^1.7.4",
     "core-js": "^2.6.5",
     "cors": "^2.8.5",
