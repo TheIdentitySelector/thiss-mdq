@@ -46,7 +46,7 @@
     "redis": "^3.0.2",
     "stopword": "^1.0.3",
     "stream": "0.0.2",
-    "stream-chain": "^2.2.3",
+    "stream-chain": "^2.2.4",
     "stream-json": "^1.7.0"
   }
 }
