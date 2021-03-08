@@ -33,7 +33,7 @@
     "snyk": "^1.136.1"
   },
   "dependencies": {
-    "@babel/cli": "^7.10.5",
+    "@babel/cli": "^7.12.0",
     "@babel/core": "^7.11.0",
     "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
