@@ -1,4 +1,22 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.3
+version: v1.22.1
 ignore: {}
-patch: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@babel/register > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
+    - '@babel/core > @babel/helper-module-transforms > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
+    - '@babel/preset-env > @babel/plugin-transform-classes > @babel/helper-define-map > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
+    - '@babel/preset-env > @babel/plugin-transform-unicode-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
+    - '@babel/preset-env > @babel/preset-modules > @babel/plugin-transform-dotall-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
+    - '@babel/preset-env > @babel/preset-modules > @babel/plugin-transform-dotall-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-annotate-as-pure > @babel/types > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
+    - '@babel/preset-env > @babel/plugin-transform-async-to-generator > @babel/helper-remap-async-to-generator > @babel/helper-wrap-function > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
+    - '@babel/preset-env > @babel/plugin-transform-async-to-generator > @babel/helper-remap-async-to-generator > @babel/helper-wrap-function > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash':
+        patched: '2022-03-26T16:42:39.407Z'
