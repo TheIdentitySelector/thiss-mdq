@@ -30,7 +30,7 @@
     "mocha": "^8.1.1",
     "nyc": "^15.1.0",
     "regenerator-runtime": "^0.13.7",
-    "snyk": "^1.136.1"
+    "snyk": "^1.1024.0"
   },
   "dependencies": {
     "@babel/cli": "^7.10.5",
