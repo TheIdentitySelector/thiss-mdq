@@ -17,6 +17,8 @@ export class lunrIndexer {
         this.builder.field('tags');
         this.builder.field('scopes');
         this.builder.field('keywords');
+        this.builder.field('entityID');
+        this.builder.field('registrationAuthority');
 
         lunr.tokenizer.separator = /\s+/;
     };
@@ -30,7 +32,28 @@ export class lunrIndexer {
     };
 
     search(q) {
-        return this.idx.search(q);
+        const queryBuilder = (query) => {
+            q.forEach((clause) => {
+                query.clause(clause);
+            });
+        };
+        return this.idx.query(queryBuilder);
+    }
+
+    newQuery() {
+        return [];
+    }
+
+    addTermToQuery(query, term, fields, include) {
+        let presence = lunr.Query.presence.PROHIBITED;
+        if (include) {
+            presence = lunr.Query.presence.REQUIRED;
+        }
+        query.push({
+            term: term,
+            fields: fields,
+            presence: presence,
+        });
     }
 };
 

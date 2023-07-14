@@ -21,13 +21,16 @@ const INDEXER = process.env.INDEXER || 'lunr';
 
 class Metadata {
 
-    constructor(file, cb) {
+    constructor(mdFile, tiFile, cb) {
         let self = this;
         try {
-            this.file = file;
+            this.mdFile = mdFile;
+            this.tiFile = tiFile;
             this.cb = cb;
-            this.db = {};
-            this.count = 0;
+            this.mdDb = {};
+            this.tiDb = {};
+            this.mdCount = 0;
+            this.tiCount = 0;
 
             if (INDEXER === "redis") {
                 this.idx = new redisIndexer();
@@ -37,14 +40,28 @@ class Metadata {
                 throw `Unknown indexer "${INDEXER}"`;
             }
 
-            self._p = new Chain([fs.createReadStream(file), parser(), new StreamArray(), data => {
+            self._t = new Chain([fs.createReadStream(tiFile), parser(), new StreamArray(), data => {
+                const e = data.value;
+                e.entity_id = e.entityID;
+                self.tiDb[e.entity_id] = e;
+                ++self.tiCount;
+            }]);
+            self._t.on('data', () => {
+            });
+            self._t.on('end', () => {
+                console.log(`loaded ${self.tiCount} trust information objects`);
+            });
+
+            self._p = new Chain([fs.createReadStream(mdFile), parser(), new StreamArray(), data => {
                 let e = data.value;
                 e.entity_id = e.entityID;
                 e.id = _sha1_id(e.entityID);
-                if (e.type == 'idp' && !(e.id in self.db)) {
+                if (e.type == 'idp' && !(e.id in self.mdDb)) {
                     let doc = {
                         "id": e.id,
+                        "entityID": e.entityID,
                         "title": [e.title.toLocaleLowerCase(locales)],
+                        "registrationAuthority": e.registrationAuthority,
                     };
                     if (e.keywords) {
                         doc.keywords = e.keywords.toLocaleLowerCase(locales).split(",").map(e=>e.trim())
@@ -66,32 +83,62 @@ class Metadata {
                     //console.log(doc)
                     this.idx.add(doc);
                 }
-                self.db[e.id] = e;
-                ++self.count;
+                self.mdDb[e.id] = e;
+                ++self.mdCount;
             }]);
             self._p.on('data', () => {
             });
             self._p.on('end', () => {
                 this.idx.build();
-                console.log(`loaded ${self.count} objects`);
+                console.log(`loaded ${self.mdCount} objects`);
                 if (self.cb) {
                     self.cb(undefined, self)
                 }
             });
         } catch (e) {
+            console.log(`Error loading metadata: ${e}`);
             self.cb(e, self)
         }
     }
 
     lookup(id) {
-        return this.db[id];
+        return this.mdDb[id];
     }
 
-    search(q, res) {
+    search(q, entityID, trustProfileName,  res) {
         let self = this;
 
+        const query = self.idx.newQuery();
+        let emptyQuery = true;
+        const extraIdPs = [];
+
+        if (entityID && trustProfileName) {
+            if (entityID in self.tiDb && trustProfileName in self.tiDb[entityID]['profiles']) {
+                // console.log(`Found profile ${trustProfileName}`);
+
+                const trustProfile = self.tiDb[entityID]['profiles'][trustProfileName];
+                const extraMetadata = self.tiDb[entityID]['extra_md'];
+
+                trustProfile.entity.forEach((e) => {
+                    let isExtra = false;
+                    if (extraMetadata && e.entity_id in extraMetadata) {
+                        isExtra = true;
+                        extraIdPs.push(extraMetadata[e.entity_id]);
+                    }
+                    if (!isExtra) {
+                        // console.log(`Adding entity term to query ${e.entity_id}, ${e.include}`);
+                        self.idx.addTermToQuery(query, e.entity_id, ['entityID'], e.include);
+                        emptyQuery = false;
+                    }
+                });
+                trustProfile.entities.forEach((e) => {
+                    // console.log(`Adding entities term to query ${e.select}, ${e.match}, ${e.include}`);
+                    self.idx.addTermToQuery(query, e.select, [e.match], e.include);
+                    emptyQuery = false;
+                });
+            }
+        }
         if (q) {
-            res.append("Surrogate-Key", `query`);
             q = q.toLocaleLowerCase(locales);
             let ati = q.indexOf('@');
             if (ati > -1) {
@@ -101,30 +148,34 @@ class Metadata {
             let tokens = q.split(/\s+/);
             let str = [tokens[0]]
             str.push(...sw.removeStopwords(tokens.slice(1), all_stopwords))
-            let matches = [
-                str.map(x => "+" + x).join(' '),
-                str.map(x => "+" + x + "*").join(' '),
-            ];
-            let results = {};
-            for (let i = 0; i < matches.length; i++) {
-                let match = matches[i];
-                self.idx.search(match).forEach(function(m) {
-                    //console.log(`${match} -> ${m.ref}`);
-                    if (!results[m.ref]) {
-                        results[m.ref] = self.lookup(m.ref);
-                    }
-                });
-            }
-            return Object.values(results);
-        } else {
-            res.append("Surrogate-Key", "entities");
-            return Object.values(self.db);
+
+            str.forEach((term) => {
+                self.idx.addTermToQuery(query, term, ['title', 'tags', 'scope', 'keywords'], true);
+            });
+            emptyQuery = false;
         }
+        let results = [];
+
+        if (!emptyQuery) {
+            res.append("Surrogate-Key", `query`);
+            // console.log(`Query to execute: ${JSON.stringify(query)}`);
+            self.idx.search(query).forEach(function(m) {
+                // console.log(`found ${m.ref}`);
+                results.push(self.lookup(m.ref));
+            });
+        }
+        else {
+            res.append("Surrogate-Key", "entities");
+            results = Object.values(self.mdDb);
+        }
+        results.push(...extraIdPs);
+
+        return results;
     }
 }
 
-function load_metadata(metadata_file, cb) {
-    return new Metadata(metadata_file, cb);
+function load_metadata(metadata_file, trustinfo_file, cb) {
+    return new Metadata(metadata_file, trustinfo_file, cb);
 }
 
 module.exports = util.promisify(load_metadata);
