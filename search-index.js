@@ -19,6 +19,8 @@ export class lunrIndexer {
         this.builder.field('keywords');
         this.builder.field('entityID');
         this.builder.field('registrationAuthority');
+        this.builder.field('entity_categories');
+        this.builder.field('md_sources');
 
         lunr.tokenizer.separator = /\s+/;
     };
