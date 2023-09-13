@@ -111,13 +111,16 @@ class Metadata {
         const query = self.idx.newQuery();
         let emptyQuery = true;
         const extraIdPs = [];
+        let trustProfile;
+        let strictProfile;
 
         if (entityID && trustProfileName) {
             if (entityID in self.tiDb && trustProfileName in self.tiDb[entityID]['profiles']) {
                 // console.log(`Found profile ${trustProfileName}`);
 
-                const trustProfile = self.tiDb[entityID]['profiles'][trustProfileName];
+                trustProfile = self.tiDb[entityID]['profiles'][trustProfileName];
                 const extraMetadata = self.tiDb[entityID]['extra_md'];
+                strictProfile = trustProfile.strict;
 
                 trustProfile.entity.forEach((e) => {
                     if (extraMetadata && e.entity_id in extraMetadata) {
@@ -155,15 +158,30 @@ class Metadata {
 
         if (!emptyQuery) {
             res.append("Surrogate-Key", `query`);
-            // console.log(`Query to execute: ${JSON.stringify(query)}`);
-            self.idx.search(query).forEach(function(m) {
-                // console.log(`found ${m.ref}`);
-                results.push(self.lookup(m.ref));
-            });
+            if (strictProfile === undefined || strictProfile) {
+                // console.log(`Query to execute: ${JSON.stringify(query)}`);
+                self.idx.search(query).forEach(function(m) {
+                    // console.log(`found ${m.ref}`);
+                    results.push(self.lookup(m.ref));
+                });
+            } else {
+                const preResults = self.idx.search(query);
+                Object.values(self.mdDb).forEach(function(m) {
+                    if (preResults.includes(m.entityID)) {
+                        m.trusted = trustProfile.display_name;
+                    }
+                    results.push(m);
+                });
+            }
         }
         else {
             res.append("Surrogate-Key", "entities");
             results = Object.values(self.mdDb);
+        }
+        if (strictProfile === false) {
+            extraIdPs.forEach(function(m) {
+                m.trusted = trustProfile.display_name;
+            });
         }
         results.push(...extraIdPs);
 
