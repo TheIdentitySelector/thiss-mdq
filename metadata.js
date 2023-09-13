@@ -120,12 +120,9 @@ class Metadata {
                 const extraMetadata = self.tiDb[entityID]['extra_md'];
 
                 trustProfile.entity.forEach((e) => {
-                    let isExtra = false;
                     if (extraMetadata && e.entity_id in extraMetadata) {
-                        isExtra = true;
                         extraIdPs.push(extraMetadata[e.entity_id]);
-                    }
-                    if (!isExtra) {
+                    } else {
                         // console.log(`Adding entity term to query ${e.entity_id}, ${e.include}`);
                         self.idx.addTermToQuery(query, e.entity_id, ['entityID'], e.include);
                         emptyQuery = false;
