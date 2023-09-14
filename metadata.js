@@ -61,7 +61,6 @@ class Metadata {
                         "id": e.id,
                         "entityID": e.entityID,
                         "title": [e.title.toLocaleLowerCase(locales)],
-                        "registrationAuthority": e.registrationAuthority,
                     };
                     if (e.keywords) {
                         doc.keywords = e.keywords.toLocaleLowerCase(locales).split(",").map(e=>e.trim())
@@ -80,6 +79,15 @@ class Metadata {
                     }
                     doc.title = [...new Set(doc.title)].sort()
                     doc.scopes = [...new Set(doc.scopes)].sort()
+                    if (e.registrationAuthority) {
+                        doc.registrationAuthority = e.registrationAuthority;
+                    }
+                    if (e.entity_categories) {
+                        doc.entity_categories = e.entity_categories;
+                    }
+                    if (e.md_sources) {
+                        doc.md_sources = e.md_sources;
+                    }
                     //console.log(doc)
                     this.idx.add(doc);
                 }
