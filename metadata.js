@@ -121,26 +121,31 @@ class Metadata {
         const extraIdPs = [];
         let trustProfile;
         let strictProfile;
+        let extraMetadata;
 
+        console.log(`Using profile ${trustProfileName} for ${entityID}`);
         if (entityID && trustProfileName) {
             if (entityID in self.tiDb && trustProfileName in self.tiDb[entityID]['profiles']) {
-                // console.log(`Found profile ${trustProfileName}`);
+                console.log(`Found profile ${trustProfileName}`);
 
                 trustProfile = self.tiDb[entityID]['profiles'][trustProfileName];
-                const extraMetadata = self.tiDb[entityID]['extra_md'];
+                extraMetadata = self.tiDb[entityID]['extra_md'];
                 strictProfile = trustProfile.strict;
+                console.log(`Found profile ${trustProfileName}, strict: ${strictProfile}`);
 
                 trustProfile.entity.forEach((e) => {
                     if (extraMetadata && e.entity_id in extraMetadata) {
                         extraIdPs.push(extraMetadata[e.entity_id]);
                     } else {
-                        // console.log(`Adding entity term to query ${e.entity_id}, ${e.include}`);
-                        self.idx.addTermToQuery(query, e.entity_id, ['entityID'], e.include);
                         emptyQuery = false;
+                        if (!e.include) {
+                            console.log(`Adding entity term to query ${e.entity_id}, ${e.include}`);
+                            self.idx.addTermToQuery(query, e.entity_id, ['entityID'], e.include);
+                        }
                     }
                 });
                 trustProfile.entities.forEach((e) => {
-                    // console.log(`Adding entities term to query ${e.select}, ${e.match}, ${e.include}`);
+                    console.log(`Adding entities term to query ${e.select}, ${e.match}, ${e.include}`);
                     self.idx.addTermToQuery(query, e.select, [e.match], e.include);
                     emptyQuery = false;
                 });
@@ -166,16 +171,34 @@ class Metadata {
 
         if (!emptyQuery) {
             res.append("Surrogate-Key", `query`);
+            
+            let indexResults = [];
+            let queryUsed = false;
+            trustProfile.entity.forEach(function(e) {
+                if (e.include && (!extraMetadata || !(e.entityID in extraMetadata))) {
+                    queryUsed = true;
+                    const newQuery = [...query];
+                    self.idx.addTermToQuery(newQuery, e.entity_id, ['entityID'], e.include);
+                    indexResults.push(...self.idx.search(newQuery));
+                }
+            });
+            if (!queryUsed) {
+                indexResults = self.idx.search(query);
+            }
+            console.log(`Index results: ${JSON.stringify(indexResults)}`);
+            
             if (strictProfile === undefined || strictProfile) {
-                // console.log(`Query to execute: ${JSON.stringify(query)}`);
-                self.idx.search(query).forEach(function(m) {
+                console.log(`Query to execute: ${JSON.stringify(query)}`);
+                indexResults.forEach(function(m) {
                     // console.log(`found ${m.ref}`);
                     results.push(self.lookup(m.ref));
                 });
             } else {
-                const preResults = self.idx.search(query);
+                const preResults = indexResults.map(m => (m.ref));
+                console.log(`Preresults ${preResults}`);
                 Object.values(self.mdDb).forEach(function(m) {
-                    if (preResults.includes(m.entityID)) {
+                    if (preResults.includes(_sha1_id(m.entityID))) {
+                        // console.log(`found ${m.entityID}`);
                         m.trusted = trustProfile.display_name;
                     }
                     results.push(m);
