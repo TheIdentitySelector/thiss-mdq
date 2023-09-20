@@ -82,11 +82,17 @@ class Metadata {
                     if (e.registrationAuthority) {
                         doc.registrationAuthority = e.registrationAuthority;
                     }
-                    if (e.entity_categories) {
-                        doc.entity_categories = e.entity_categories;
+                    if (e.entity_category) {
+                        doc.entity_category = e.entity_category;
                     }
-                    if (e.md_sources) {
-                        doc.md_sources = e.md_sources;
+                    if (e.entity_category_support) {
+                        doc.entity_category_support = e.entity_category_support;
+                    }
+                    if (e.assurance_certification) {
+                        doc.assurance_certification = e.assurance_certification;
+                    }
+                    if (e.md_source) {
+                        doc.md_source = e.md_source;
                     }
                     //console.log(doc)
                     this.idx.add(doc);

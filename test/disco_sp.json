@@ -1,37 +1,6 @@
 [
   {
     "entityID": "https://cpauth.icos-cp.eu/saml/cpauth",
-    "extra_md": {
-      "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php": {
-        "title": "Universidad Laica Eloy Alfaro de Manabí - uleam",
-        "descr": "uleam - Federated access by CEDIA",
-        "title_langs": {
-          "en": "Universidad Laica Eloy Alfaro de Manabí - uleam",
-          "es": "Universidad Laica Eloy Alfaro de Manabí - uleam"
-        },
-        "descr_langs": {
-          "en": "uleam - Federated access by CEDIA",
-          "es": "uleam - Acceso federado ofrecido por CEDIA"
-        },
-        "auth": "saml",
-        "entity_id": "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php",
-        "entityID": "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php",
-        "registrationAuthority": "https://minga.cedia.org.ec",
-        "md_sources": [
-          "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php"
-        ],
-        "type": "idp",
-        "hidden": "false",
-        "scope": "uleam.edu.ec",
-        "domain": "uleam.edu.ec",
-        "name_tag": "ULEAM",
-        "entity_icon_url": {
-          "url": "https://static.cedia.edu.ec/logos/uleam-250x50.png",
-          "width": "200",
-          "height": "160"
-        }
-      }
-    },
     "profiles": {
       "customer": {
         "strict": true,
@@ -95,24 +64,6 @@
         "fallback_handler": {
           "profile": "href",
           "handler": "https://www.example.org/other"
-        }
-      },
-      "other2": {
-        "strict": true,
-        "entity": [
-          {
-            "entity_id": "https://login.idp.eduid.se/idp.xml",
-            "include": true
-          }
-        ],
-        "entities": [],
-        "display_name": {
-          "en": "Other2 Access",
-          "sv": "Other2 Access sv"
-        },
-        "fallback_handler": {
-          "profile": "href",
-          "handler": "https://www.example.org/other2"
         }
       },
       "another": {
@@ -339,12 +290,12 @@
         "entities": [
           {
             "select": "http://refeds.org/category/research-and-scholarship",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": true
           },
           {
             "select": "http://www.geant.net/uri/dataprotection-code-of-conduct/v1",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": true
           }
         ],
@@ -363,12 +314,12 @@
         "entities": [
           {
             "select": "http://refeds.org/category/research-and-scholarship",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": true
           },
           {
             "select": "http://www.geant.net/uri/dataprotection-code-of-conduct/v1",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": true
           }
         ],
@@ -387,7 +338,7 @@
         "entities": [
           {
             "select": "http://refeds.org/category/research-and-scholarship",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": false
           }
         ],
@@ -406,7 +357,7 @@
         "entities": [
           {
             "select": "http://refeds.org/category/research-and-scholarship",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": false
           }
         ],
@@ -483,7 +434,7 @@
         "entities": [
           {
             "select": "http://www.geant.net/uri/dataprotection-code-of-conduct/v1",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": true
           }
         ],
@@ -507,13 +458,51 @@
         "entities": [
           {
             "select": "http://www.geant.net/uri/dataprotection-code-of-conduct/v1",
-            "match": "entity_categories",
+            "match": "entity_category",
             "include": true
           }
         ],
         "display_name": {
           "en": "Customer 4 Access",
           "sv": "Kundinloggning 4"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      },
+      "customer5": {
+        "strict": true,
+        "entity": [],
+        "entities": [
+          {
+            "select": "http://www.geant.net/uri/dataprotection-code-of-conduct/v1",
+            "match": "entity_category_support",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Customer 5 Access",
+          "sv": "Kundinloggning 5"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      },
+      "customer6": {
+        "strict": true,
+        "entity": [],
+        "entities": [
+          {
+            "select": "https://refeds.org/sirtfi",
+            "match": "assurance_certification",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Customer 6 Access",
+          "sv": "Kundinloggning 6"
         },
         "fallback_handler": {
           "profile": "href",

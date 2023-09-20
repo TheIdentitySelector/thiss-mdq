@@ -14,8 +14,11 @@
     "entity_id": "https://login.idp.eduid.se/idp.xml",
     "entityID": "https://login.idp.eduid.se/idp.xml",
     "registrationAuthority": "http://www.swamid.se/",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
     ],
     "type": "idp",
     "hidden": "false",
@@ -45,7 +48,7 @@
     "entity_id": "https://idp.u-picardie.fr/idp/shibboleth",
     "entityID": "https://idp.u-picardie.fr/idp/shibboleth",
     "registrationAuthority": "https://federation.renater.fr/",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -74,7 +77,7 @@
     "entity_id": "https://cafe.usf.edu.br/idp/shibboleth",
     "entityID": "https://cafe.usf.edu.br/idp/shibboleth",
     "registrationAuthority": "http://cafe.rnp.br",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -98,7 +101,7 @@
     "entity_id": "https://kimlik.29mayis.edu.tr/simplesaml/saml2/idp/metadata.php",
     "entityID": "https://kimlik.29mayis.edu.tr/simplesaml/saml2/idp/metadata.php",
     "registrationAuthority": "https://yetkim.org.tr/",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -129,8 +132,11 @@
     "entity_id": "https://a-star.singaren.net.sg/simplesaml/saml2/idp/metadata.php",
     "entityID": "https://a-star.singaren.net.sg/simplesaml/saml2/idp/metadata.php",
     "registrationAuthority": "https://www.singaren.net.sg",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+    ],
+    "entity_category_support": [
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
     ],
     "type": "idp",
     "hidden": "false",
@@ -149,10 +155,10 @@
     "entity_id": "https://my.atsu.edu/swPublicSSO/SAML/incommon",
     "entityID": "https://my.atsu.edu/swPublicSSO/SAML/incommon",
     "registrationAuthority": "https://incommon.org",
-    "entity_categories": [
+    "entity_category": [
       "http://id.incommon.org/category/registered-by-incommon"
     ],
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -180,11 +186,11 @@
     "entity_id": "https://vho.aaf.edu.au/idp/shibboleth",
     "entityID": "https://vho.aaf.edu.au/idp/shibboleth",
     "registrationAuthority": "https://aaf.edu.au",
-    "entity_categories": [
+    "entity_category": [
       "http://refeds.org/category/research-and-scholarship",
       "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
     ],
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -207,8 +213,11 @@
     "entity_id": "https://idp.sdju.edu.cn/idp/shibboleth",
     "entityID": "https://idp.sdju.edu.cn/idp/shibboleth",
     "registrationAuthority": "https://www.carsi.edu.cn",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
     ],
     "type": "idp",
     "hidden": "false",
@@ -234,7 +243,7 @@
     "entity_id": "https://aai-login.swissuniversities.ch/idp/shibboleth",
     "entityID": "https://aai-login.swissuniversities.ch/idp/shibboleth",
     "registrationAuthority": "http://rr.aai.switch.ch/",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -261,7 +270,7 @@
     "entity_id": "http://adfs.ftik.edu.om/adfs/services/trust",
     "entityID": "http://adfs.ftik.edu.om/adfs/services/trust",
     "registrationAuthority": "http://www.omren.om",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -291,7 +300,7 @@
     "entity_id": "https://idp.antagning.se/aws-idp",
     "entityID": "https://idp.antagning.se/aws-idp",
     "registrationAuthority": "http://www.swamid.se/",
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -320,11 +329,17 @@
     "entity_id": "https://logindev.rowan.edu",
     "entityID": "https://logindev.rowan.edu",
     "registrationAuthority": "https://incommon.org",
-    "entity_categories": [
+    "entity_category": [
       "http://id.incommon.org/category/registered-by-incommon"
     ],
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
+    ],
+    "entity_category_support": [
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
     ],
     "type": "idp",
     "hidden": "false",
@@ -351,10 +366,10 @@
     "entity_id": "https://fed-uat.it.northwestern.edu/idp/shibboleth",
     "entityID": "https://fed-uat.it.northwestern.edu/idp/shibboleth",
     "registrationAuthority": "https://incommon.org",
-    "entity_categories": [
+    "entity_category": [
       "http://id.incommon.org/category/registered-by-incommon"
     ],
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -382,11 +397,11 @@
     "entity_id": "https://passport-dev.pitt.edu/idp/shibboleth",
     "entityID": "https://passport-dev.pitt.edu/idp/shibboleth",
     "registrationAuthority": "https://incommon.org",
-    "entity_categories": [
+    "entity_category": [
       "http://refeds.org/category/hide-from-discovery",
       "http://id.incommon.org/category/registered-by-incommon"
     ],
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -414,11 +429,11 @@
     "entity_id": "urn:mace:incommon:iu.edu",
     "entityID": "urn:mace:incommon:iu.edu",
     "registrationAuthority": "https://incommon.org",
-    "entity_categories": [
+    "entity_category": [
       "http://refeds.org/category/hide-from-discovery",
       "http://id.incommon.org/category/registered-by-incommon"
     ],
-    "md_sources": [
+    "md_source": [
       "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
