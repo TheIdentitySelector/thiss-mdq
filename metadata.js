@@ -203,7 +203,7 @@ class Metadata {
                 const preResults = indexResults.map(m => (m.ref));
                 console.log(`Preresults ${preResults}`);
                 Object.values(self.mdDb).forEach(function(m) {
-                    if (m.trusted !== undefined && preResults.includes(_sha1_id(m.entityID))) {
+                    if (m.trusted === undefined && preResults.includes(_sha1_id(m.entityID))) {
                         // console.log(`found ${m.entityID}`);
                         m.trusted = trustProfile.display_name;
                     }
