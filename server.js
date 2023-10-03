@@ -28,11 +28,12 @@ app.get('/', async (req, res) => {
     res.append("Surrogate-Key", "meta");
     res.append("Cache-Control", META_CACHE_HEADER)
 
-    fsp.stat(app.locals.md.file).then((stats) => {
+    fsp.stat(app.locals.md.mdFile).then((stats) => {
         return {
             'last_modified': stats.mtime,
             'last_created': stats.ctime,
-            'size': app.locals.md.count,
+            'size': app.locals.md.mdCount,
+            'ti_size': app.locals.md.tiCount,
         }
     }).then(r => {
         res.json({
@@ -45,10 +46,12 @@ app.get('/', async (req, res) => {
 
 app.get('/entities/?', cors(), function(req, res) {
     let q = req.query.query || req.query.q;
+    const entityID = req.query.entityid ||  req.query.entityID;
+    const trustProfile = req.query.trustprofile ||  req.query.trustProfile;
     res.contentType('json');
     res.append("Cache-Control", CONTENT_CACHE_HEADER)
     let format = new ArrayFormatter();
-    stream(app.locals.md.search(q, res)).pipe(format).pipe(res);
+    stream(app.locals.md.search(q, entityID, trustProfile, res)).pipe(format).pipe(res);
 });
 
 app.get('/entities/:path', cors(), function(req, res) {
@@ -65,7 +68,7 @@ app.get('/entities/:path', cors(), function(req, res) {
 });
 
 app.head('/status', (req, res) => {
-    if (app.locals.md.count > 0) {
+    if (app.locals.md.mdCount > 0) {
         res.append("Surrogate-Key", "meta");
         res.append("Cache-Control", META_CACHE_HEADER)
         return res.status(200).send("OK");
@@ -75,7 +78,7 @@ app.head('/status', (req, res) => {
 });
 
 app.get('/status', (req, res) => {
-    if (app.locals.md.count > 0) {
+    if (app.locals.md.mdCount > 0) {
         res.append("Surrogate-Key", "meta");
         res.append("Cache-Control", META_CACHE_HEADER);
         return res.status(200).send("OK");
@@ -85,7 +88,7 @@ app.get('/status', (req, res) => {
 });
 
 app.get('/.well-known/webfinger', function(req, res) {
-    let links = Object.values(app.locals.md.db).map(function(e) {
+    let links = Object.values(app.locals.md.mdDb).map(function(e) {
         return { "rel": "disco-json", "href": `${BASE_URL}/entities/${e.id}` }
     });
     links.unshift({ "rel": "disco-json", "href": `${BASE_URL}/entities/` });
