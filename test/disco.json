@@ -15,7 +15,7 @@
     "entityID": "https://login.idp.eduid.se/idp.xml",
     "registrationAuthority": "http://www.swamid.se/",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "assurance_certification": [
       "https://refeds.org/sirtfi"
@@ -49,7 +49,7 @@
     "entityID": "https://idp.u-picardie.fr/idp/shibboleth",
     "registrationAuthority": "https://federation.renater.fr/",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -78,7 +78,7 @@
     "entityID": "https://cafe.usf.edu.br/idp/shibboleth",
     "registrationAuthority": "http://cafe.rnp.br",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -102,7 +102,7 @@
     "entityID": "https://kimlik.29mayis.edu.tr/simplesaml/saml2/idp/metadata.php",
     "registrationAuthority": "https://yetkim.org.tr/",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -133,7 +133,7 @@
     "entityID": "https://a-star.singaren.net.sg/simplesaml/saml2/idp/metadata.php",
     "registrationAuthority": "https://www.singaren.net.sg",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "entity_category_support": [
       "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
@@ -159,7 +159,7 @@
       "http://id.incommon.org/category/registered-by-incommon"
     ],
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -191,7 +191,7 @@
       "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
     ],
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -214,7 +214,7 @@
     "entityID": "https://idp.sdju.edu.cn/idp/shibboleth",
     "registrationAuthority": "https://www.carsi.edu.cn",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "assurance_certification": [
       "https://refeds.org/sirtfi"
@@ -244,7 +244,7 @@
     "entityID": "https://aai-login.swissuniversities.ch/idp/shibboleth",
     "registrationAuthority": "http://rr.aai.switch.ch/",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -271,7 +271,7 @@
     "entityID": "http://adfs.ftik.edu.om/adfs/services/trust",
     "registrationAuthority": "http://www.omren.om",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -301,7 +301,7 @@
     "entityID": "https://idp.antagning.se/aws-idp",
     "registrationAuthority": "http://www.swamid.se/",
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -333,7 +333,7 @@
       "http://id.incommon.org/category/registered-by-incommon"
     ],
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "assurance_certification": [
       "https://refeds.org/sirtfi"
@@ -370,7 +370,7 @@
       "http://id.incommon.org/category/registered-by-incommon"
     ],
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "false",
@@ -402,7 +402,7 @@
       "http://id.incommon.org/category/registered-by-incommon"
     ],
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "true",
@@ -434,7 +434,7 @@
       "http://id.incommon.org/category/registered-by-incommon"
     ],
     "md_source": [
-      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+      "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
     "hidden": "true",
