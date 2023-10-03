@@ -41,7 +41,7 @@
     "compression": "^1.7.4",
     "core-js": "^2.6.5",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "lunr": "^2.3.6",
     "redis": "^3.0.2",
     "stopword": "^1.0.3",
