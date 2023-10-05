@@ -59,6 +59,19 @@ export class lunrIndexer {
             presence: presence,
         });
     }
+
+    addFTTermToQuery(query, term, fields, include) {
+        let presence = lunr.Query.presence.PROHIBITED;
+        if (include) {
+            presence = lunr.Query.presence.REQUIRED;
+        }
+        query.push({
+            term: term,
+            fields: fields,
+            presence: presence,
+            wildcard: lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING,
+        });
+    }
 };
 
 
