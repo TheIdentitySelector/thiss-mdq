@@ -122,17 +122,17 @@ class Metadata {
     search(q, entityID, trustProfileName,  res) {
         let self = this;
 
-        const query = self.idx.newQuery();
-        let emptyQuery = true;
+        const tQuery = self.idx.newQuery();
+        const qQuery = self.idx.newQuery();
+        let emptyTQuery = true;
+        let emptyQQuery = true;
         const extraIdPs = [];
         let trustProfile;
         let strictProfile;
         let extraMetadata;
 
-        console.log(`Using profile ${trustProfileName} for ${entityID}`);
         if (entityID && trustProfileName) {
             if (entityID in self.tiDb && trustProfileName in self.tiDb[entityID]['profiles']) {
-                console.log(`Found profile ${trustProfileName}`);
 
                 trustProfile = self.tiDb[entityID]['profiles'][trustProfileName];
                 extraMetadata = self.tiDb[entityID]['extra_md'];
@@ -143,17 +143,15 @@ class Metadata {
                     if (extraMetadata && e.entity_id in extraMetadata) {
                         extraIdPs.push(extraMetadata[e.entity_id]);
                     } else {
-                        emptyQuery = false;
+                        emptyTQuery = false;
                         if (!e.include) {
-                            console.log(`Adding entity term to query ${e.entity_id}, ${e.include}`);
-                            self.idx.addTermToQuery(query, e.entity_id, ['entityID'], e.include);
+                            self.idx.addTermToQuery(tQuery, e.entity_id, ['entityID'], e.include);
                         }
                     }
                 });
                 trustProfile.entities.forEach((e) => {
-                    console.log(`Adding entities term to query ${e.select}, ${e.match}, ${e.include}`);
-                    self.idx.addTermToQuery(query, e.select, [e.match], e.include);
-                    emptyQuery = false;
+                    self.idx.addTermToQuery(tQuery, e.select, [e.match], e.include);
+                    emptyTQuery = false;
                 });
             }
         }
@@ -169,56 +167,73 @@ class Metadata {
             str.push(...sw.removeStopwords(tokens.slice(1), all_stopwords))
 
             str.forEach((term) => {
-                self.idx.addTermToQuery(query, term, ['title', 'tags', 'scope', 'keywords'], true);
+                self.idx.addFTTermToQuery(qQuery, term, ['title', 'tags', 'scopes', 'keywords'], true);
             });
-            emptyQuery = false;
+            emptyQQuery = false;
         }
         let results = [];
 
-        if (!emptyQuery) {
+        if (!emptyTQuery) {
             res.append("Surrogate-Key", `query`);
-            
+
+            if (!emptyQQuery && (strictProfile === undefined || strictProfile)) {
+                qQuery.forEach(term => {
+                    tQuery.push(term);
+                });
+            }
             let indexResults = [];
             let queryUsed = false;
             trustProfile.entity.forEach(function(e) {
-                if (e.include && (!extraMetadata || !(e.entityID in extraMetadata))) {
+                if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
                     queryUsed = true;
-                    const newQuery = [...query];
+                    const newQuery = [...tQuery];
                     self.idx.addTermToQuery(newQuery, e.entity_id, ['entityID'], e.include);
-                    indexResults.push(...self.idx.search(newQuery));
+                    const moreResults = self.idx.search(newQuery);
+                    if (moreResults) {
+                        indexResults.push(...moreResults);
+                    }
                 }
             });
             if (!queryUsed) {
-                indexResults = self.idx.search(query);
+                indexResults = self.idx.search(tQuery);
             }
-            console.log(`Index results: ${JSON.stringify(indexResults)}`);
             
             if (strictProfile === undefined || strictProfile) {
-                console.log(`Query to execute: ${JSON.stringify(query)}`);
                 indexResults.forEach(function(m) {
-                    // console.log(`found ${m.ref}`);
                     results.push(self.lookup(m.ref));
                 });
             } else {
-                const preResults = indexResults.map(m => (m.ref));
-                console.log(`Preresults ${preResults}`);
-                Object.values(self.mdDb).forEach(function(m) {
-                    if (m.trusted === undefined && preResults.includes(_sha1_id(m.entityID))) {
-                        // console.log(`found ${m.entityID}`);
-                        m.trusted = trustProfile.display_name;
+                const indexResultsIDs = indexResults.map(m => self.lookup(m.ref).entityID);
+                let qResults;
+                if (!emptyQQuery) {
+                    qResults = self.idx.search(qQuery);
+                    qResults = qResults.map(m => self.lookup(m.ref));
+                } else {
+                    qResults = Object.values(self.mdDb);
+                }
+                qResults.forEach(idp => {
+                    let newIdp;
+                    if (idp.trusted === undefined && indexResultsIDs.includes(idp.entityID)) {
+                        newIdp = {...idp};
+                        newIdp.trusted = trustProfile.display_name;
+                    } else {
+                        newIdp = idp;
                     }
-                    results.push(m);
+                    results.push(newIdp);
                 });
             }
         }
         else {
-            res.append("Surrogate-Key", "entities");
-            results = Object.values(self.mdDb);
-        }
-        if (strictProfile === false) {
-            extraIdPs.forEach(function(m) {
-                m.trusted = trustProfile.display_name;
-            });
+            if (!emptyQQuery) {
+                res.append("Surrogate-Key", `query`);
+                const qResults = self.idx.search(qQuery);
+                qResults.forEach(function(m) {
+                    results.push(self.lookup(m.ref));
+                });
+            } else {
+                res.append("Surrogate-Key", "entities");
+                results = Object.values(self.mdDb);
+            }
         }
         results.push(...extraIdPs);
 
