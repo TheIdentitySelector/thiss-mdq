@@ -12,7 +12,8 @@
     "url": "https://github.com/TheIdentitySelector/thiss-mdq/issues"
   },
   "scripts": {
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
+    "snyk-test": "snyk test",
     "prepare": "npm run snyk-protect",
     "start": "node index.js",
     "test": "./node_modules/.bin/nyc --reporter=lcov -- ./node_modules/mocha/bin/_mocha --require @babel/register"
@@ -23,6 +24,8 @@
     "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0",
     "@babel/register": "^7.10.5",
+    "@snyk/protect": "^1.1229.0",
+    "chai": "^4.3.10",
     "chai-http": "^4.3.0",
     "chokidar": "^2.1.6",
     "grunt": "^1.0.4",
@@ -30,10 +33,10 @@
     "mocha": "^8.1.1",
     "nyc": "^15.1.0",
     "regenerator-runtime": "^0.13.7",
-    "snyk": "^1.136.1"
+    "snyk": "^1.1229.0"
   },
   "dependencies": {
-    "@babel/cli": "^7.10.5",
+    "@babel/cli": "^7.12.0",
     "@babel/core": "^7.11.0",
     "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
@@ -41,9 +44,9 @@
     "compression": "^1.7.4",
     "core-js": "^2.6.5",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "lunr": "^2.3.6",
-    "redis": "^3.0.2",
+    "redis": "^3.1.1",
     "stopword": "^1.0.3",
     "stream": "0.0.2",
     "stream-chain": "^2.2.3",
