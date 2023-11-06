@@ -1,7 +1,6 @@
 import {lunrIndexer, redisIndexer} from "./search-index";
 import {esc_query, touchp} from "./utils";
 const fs = require('fs');
-const chokidar = require('chokidar');
 const Chain = require('stream-chain');
 const parser = require('stream-json');
 const StreamArray = require('stream-json/streamers/StreamArray');
@@ -15,7 +14,7 @@ function _sha1_id(s) {
 
 let locales = ["sv-SE", "en-US"];
 const institution_words = ['university','school','institute','college','institute'];
-let all_stopwords = [...sw.en, ...sw.sv, ...sw.fi, ...sw.no, ...sw.fr, ...sw.de, ...institution_words]
+let all_stopwords = [...sw.eng, ...sw.swe, ...sw.fin, ...sw.nob, ...sw.fra, ...sw.deu, ...institution_words];
 
 const INDEXER = process.env.INDEXER || 'lunr';
 
@@ -213,9 +212,9 @@ class Metadata {
                 }
                 qResults.forEach(idp => {
                     let newIdp;
-                    if (idp.trusted === undefined && indexResultsIDs.includes(idp.entityID)) {
+                    if (idp.hint === undefined && ! indexResultsIDs.includes(idp.entityID)) {
                         newIdp = {...idp};
-                        newIdp.trusted = trustProfile.display_name;
+                        newIdp.hint = trustProfile.display_name;
                     } else {
                         newIdp = idp;
                     }
