@@ -56,7 +56,14 @@ app.get('/entities/?', cors(), function(req, res) {
 
 app.get('/entities/:path', cors(), function(req, res) {
     let id = req.params.path.split('.');
-    let entity = app.locals.md.lookup(id[0]);
+    const entityID = req.query.entityid ||  req.query.entityID;
+    const trustProfile = req.query.trustprofile ||  req.query.trustProfile;
+    let entity;
+    if (entityID && trustProfile) {
+        entity = app.locals.md.lookup_with_profile(id[0], entityID, trustProfile);
+    } else {
+        entity = app.locals.md.lookup(id[0]);
+    }
     if (entity) {
         res.append("Surrogate-Key", entity.entity_id);
         res.append("Cache-Control", CONTENT_CACHE_HEADER)

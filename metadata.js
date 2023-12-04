@@ -42,6 +42,11 @@ class Metadata {
             self._t = new Chain([fs.createReadStream(tiFile), parser(), new StreamArray(), data => {
                 const e = data.value;
                 e.entity_id = e.entityID;
+                for (const eID in e.extra_md) {
+                    const idp = e.extra_md[eID];
+                    idp.id = _sha1_id(eID);
+                    e.extra_md[idp.id] = idp;
+                }
                 self.tiDb[e.entity_id] = e;
                 ++self.tiCount;
             }]);
@@ -118,6 +123,58 @@ class Metadata {
         return this.mdDb[id];
     }
 
+    lookup_with_profile(id, entityID, trustProfileName) {
+        let entity = this.mdDb[id];
+
+        const trustProfile = this.tiDb[entityID]['profiles'][trustProfileName];
+        const extraMetadata = this.tiDb[entityID]['extra_md'];
+        const strictProfile = trustProfile.strict;
+
+        let fromExtraMd = false;
+        if (id in extraMetadata) {
+            entity = extraMetadata[id];
+            fromExtraMd = true;
+        }
+        if (!entity) {
+            return entity;
+        }
+        let seen = false;
+
+        trustProfile.entity.forEach((e) => {
+            if (e.entity_id === entity.entity_id) {
+                seen = true;
+            }
+        });
+        if (fromExtraMd) {
+            if (seen) {
+                return entity;
+            } else {
+                return undefined;
+            }
+        }
+        trustProfile.entities.forEach((e) => {
+            if (e.include && entity[e.match] === e.select) {
+                seen = true;
+            } else if ((!e.include) && entity[e.match] !== e.select) {
+                seen = true;
+            } else {
+                seen = false;
+            }
+        });
+        if (strictProfile) {
+            if (seen) {
+                return entity;
+            } else {
+                return undefined;
+            }
+        } else {
+            if (!seen) {
+                entity.hint = trustProfile.display_name;
+            }
+            return entity;
+        }
+    }
+
     search(q, entityID, trustProfileName,  res) {
         let self = this;
 
@@ -140,7 +197,9 @@ class Metadata {
 
                 trustProfile.entity.forEach((e) => {
                     if (extraMetadata && e.entity_id in extraMetadata) {
-                        extraIdPs.push(extraMetadata[e.entity_id]);
+                        const extraIdP = {...extraMetadata[e.entity_id]};
+                        extraIdP.id = _sha1_id(e.entity_id);
+                        extraIdPs.push(extraIdP);
                     } else {
                         emptyTQuery = false;
                         if (!e.include) {
