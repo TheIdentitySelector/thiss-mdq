@@ -1,6 +1,8 @@
 const path = require('path');
 require('@babel/register');
-require('@babel/polyfill');
+
+require('core-js/stable');
+require('regenerator-runtime/runtime');
 
 const app = require(path.join(__dirname, '/server.js'));
 const load_metadata = require(path.join(__dirname, '/metadata.js'));
