@@ -2,37 +2,36 @@
   {
     "entityID": "https://cpauth.icos-cp.eu/saml/cpauth",
     "extra_md": {
-      "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php":
-        {
-          "title": "Universidad Laica Eloy Alfaro de Manabí - uleam",
-          "descr": "uleam - Federated access by CEDIA",
-          "title_langs": {
-            "en": "Universidad Laica Eloy Alfaro de Manabí - uleam",
-            "es": "Universidad Laica Eloy Alfaro de Manabí - uleam"
-          },
-          "descr_langs": {
-            "en": "uleam - Federated access by CEDIA",
-            "es": "uleam - Acceso federado ofrecido por CEDIA"
-          },
-          "auth": "saml",
-          "entity_id": "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php",
-          "entityID": "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php",
-          "registrationAuthority": "https://minga.cedia.org.ec",
-          "type": "idp",
-          "hidden": "false",
-          "scope": "uleam.edu.ec",
-          "domain": "uleam.edu.ec",
-          "name_tag": "ULEAM",
-          "entity_icon_url": {
-            "url": "https://static.cedia.edu.ec/logos/uleam-250x50.png",
-            "width": "200",
-            "height": "160"
-          },
-          "trusted": {
-            "en": "Extra md en",
-            "sv": "Extra md sv"
-          }
+      "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php": {
+        "title": "Universidad Laica Eloy Alfaro de Manabí - uleam",
+        "descr": "uleam - Federated access by CEDIA",
+        "title_langs": {
+          "en": "Universidad Laica Eloy Alfaro de Manabí - uleam",
+          "es": "Universidad Laica Eloy Alfaro de Manabí - uleam"
+        },
+        "descr_langs": {
+          "en": "uleam - Federated access by CEDIA",
+          "es": "uleam - Acceso federado ofrecido por CEDIA"
+        },
+        "auth": "saml",
+        "entity_id": "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php",
+        "entityID": "https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php",
+        "registrationAuthority": "https://minga.cedia.org.ec",
+        "type": "idp",
+        "hidden": "false",
+        "scope": "uleam.edu.ec",
+        "domain": "uleam.edu.ec",
+        "name_tag": "ULEAM",
+        "entity_icon_url": {
+          "url": "https://static.cedia.edu.ec/logos/uleam-250x50.png",
+          "width": "200",
+          "height": "160"
+        },
+        "hint": {
+          "en": "Display name for extra md - en",
+          "sv": "Display name for extra md - sv"
         }
+      }
     },
     "profiles": {
       "customer": {
@@ -45,7 +44,7 @@
         ],
         "entities": [
           {
-            "select": "https://minga.cedia.org.ec",
+            "select": "http://www.swamid.se/",
             "match": "registrationAuthority",
             "include": true
           }
@@ -91,8 +90,8 @@
         ],
         "entities": [],
         "display_name": {
-          "en": "Other Access",
-          "sv": "Other Access sv"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -140,7 +139,7 @@
   },
   {
     "entityID": "http://fs.liu.se/adfs/services/trust",
-    "extra_md": [],
+    "extra_md": {},
     "profiles": {
       "other": {
         "strict": false,
@@ -152,8 +151,8 @@
         ],
         "entities": [],
         "display_name": {
-          "en": "Other Access",
-          "sv": "Other Access sv"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -188,8 +187,8 @@
         ],
         "entities": [],
         "display_name": {
-          "en": "yet Another Access",
-          "sv": "yet Another Access sv"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -236,7 +235,7 @@
   },
   {
     "entityID": "https://test-edusign.ed-integrations.com/shibboleth",
-    "extra_md": [],
+    "extra_md": {},
     "profiles": {
       "customer": {
         "strict": true,
@@ -268,8 +267,8 @@
           }
         ],
         "display_name": {
-          "en": "Customer 2 Access",
-          "sv": "Kundinloggning 2"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -306,8 +305,8 @@
           }
         ],
         "display_name": {
-          "en": "Customer 4 Access",
-          "sv": "Kundinloggning 4"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -318,7 +317,7 @@
   },
   {
     "entityID": "https://box-idp.nordu.net/simplesaml/module.php/saml/sp/metadata.php/default-sp",
-    "extra_md": [],
+    "extra_md": {},
     "profiles": {
       "customer": {
         "strict": true,
@@ -360,8 +359,8 @@
           }
         ],
         "display_name": {
-          "en": "Customer 2 Access",
-          "sv": "Kundinloggning 2"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -398,8 +397,8 @@
           }
         ],
         "display_name": {
-          "en": "Customer 4 Access",
-          "sv": "Kundinloggning 4"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -410,7 +409,7 @@
   },
   {
     "entityID": "https://csucoast.infoready4.com/shibboleth",
-    "extra_md": [],
+    "extra_md": {},
     "profiles": {
       "customer": {
         "strict": true,
@@ -452,8 +451,8 @@
           }
         ],
         "display_name": {
-          "en": "Customer 2 Access",
-          "sv": "Kundinloggning 2"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -500,8 +499,8 @@
           }
         ],
         "display_name": {
-          "en": "Customer 4 Access",
-          "sv": "Kundinloggning 4"
+          "en": "Degraded security",
+          "sv": "Degraded security sv"
         },
         "fallback_handler": {
           "profile": "href",
