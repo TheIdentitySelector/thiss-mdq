@@ -124,27 +124,37 @@ class Metadata {
     }
 
     lookup_with_profile(id, entityID, trustProfileName) {
-        let entity = this.mdDb[id];
+        // here we check that the requested entity fits with the specified trust profile,
+        // and add a hint if necessary
+        let entity = {...this.mdDb[id]};
 
         const trustProfile = this.tiDb[entityID]['profiles'][trustProfileName];
         const extraMetadata = this.tiDb[entityID]['extra_md'];
         const strictProfile = trustProfile.strict;
 
         let fromExtraMd = false;
+        // first we check whether the entity comes from external metadata
         if (id in extraMetadata) {
-            entity = extraMetadata[id];
+            entity = {...extraMetadata[id]};
             fromExtraMd = true;
         }
+        // if the entity is not in the internal or external metadata, return not found.
         if (!entity) {
             return entity;
         }
         let seen = false;
 
+        // check whether the entity is selected by some specific entity clause
         trustProfile.entity.forEach((e) => {
-            if (e.entity_id === entity.entity_id) {
+            if (e.include && e.entity_id === entity.entity_id) {
+                seen = true;
+            } else if (!e.include && e.entity_id !== entity.entity_id) {
                 seen = true;
             }
         });
+        // if the entity comes from external metadata,
+        // return it only if it was selectd by the profile,
+        // otherwise return not found.
         if (fromExtraMd) {
             if (seen) {
                 return entity;
@@ -152,6 +162,7 @@ class Metadata {
                 return undefined;
             }
         }
+        // check whether the entity is selected by some entities clause in the profile
         trustProfile.entities.forEach((e) => {
             if (e.include && entity[e.match] === e.select) {
                 seen = true;
@@ -161,12 +172,16 @@ class Metadata {
                 seen = false;
             }
         });
+        // if the profile is strict, return the entity if it was selected by the profile,
+        // and not found otherwise
         if (strictProfile) {
             if (seen) {
                 return entity;
             } else {
                 return undefined;
             }
+        // if the profile is not strict, set the hint if the entity was not selected by the profile,
+        // and return the entity.
         } else {
             if (!seen) {
                 entity.hint = trustProfile.display_name;
@@ -187,6 +202,8 @@ class Metadata {
         let strictProfile;
         let extraMetadata;
 
+        // First we build the query terms for the trust profile.
+        // If there are any, we set emptyTQuery to false.
         if (entityID && trustProfileName) {
             if (entityID in self.tiDb && trustProfileName in self.tiDb[entityID]['profiles']) {
 
@@ -196,12 +213,17 @@ class Metadata {
                 console.log(`Found profile ${trustProfileName}, strict: ${strictProfile}`);
 
                 trustProfile.entity.forEach((e) => {
+                    // if the entity is in the external metadata,
+                    // keep it in extraIdPs 
                     if (extraMetadata && e.entity_id in extraMetadata) {
                         const extraIdP = {...extraMetadata[e.entity_id]};
                         extraIdP.id = _sha1_id(e.entity_id);
                         extraIdPs.push(extraIdP);
                     } else {
                         emptyTQuery = false;
+                        // only add a query term for single entities that are excluded.
+                        // If they are included, we need to check them one by one, otherwise
+                        // they will negate each other
                         if (!e.include) {
                             self.idx.addTermToQuery(tQuery, e.entity_id, ['entityID'], e.include);
                         }
@@ -213,6 +235,8 @@ class Metadata {
                 });
             }
         }
+        // build the query terms for the full text search.
+        // if present set emptyQQuery to false.
         if (q) {
             q = q.toLocaleLowerCase(locales);
             let ati = q.indexOf('@');
@@ -231,9 +255,12 @@ class Metadata {
         }
         let results = [];
 
+        // there is trust profile filtering, we have term queries for the profile.
         if (!emptyTQuery) {
             res.append("Surrogate-Key", `query`);
 
+            // We have full text query and a strict profile,
+            // so just mix the queries.
             if (!emptyQQuery && (strictProfile === undefined || strictProfile)) {
                 qQuery.forEach(term => {
                     tQuery.push(term);
@@ -242,6 +269,7 @@ class Metadata {
             let indexResults = [];
             let queryUsed = false;
             trustProfile.entity.forEach(function(e) {
+                // we do a query for each of the single entities and accumulate the results.
                 if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
                     queryUsed = true;
                     const newQuery = [...tQuery];
@@ -252,14 +280,18 @@ class Metadata {
                     }
                 }
             });
+            // if there were no single entity filterings,
+            // we do the single index seaarch here.
             if (!queryUsed) {
                 indexResults = self.idx.search(tQuery);
             }
-            
+            // if the profile is strict, we just gather the corresponding metadata
             if (strictProfile === undefined || strictProfile) {
                 indexResults.forEach(function(m) {
                     results.push(self.lookup(m.ref));
                 });
+            // if the profile is not strict, we use the index search results
+            // to mark all those entities not present in these results with a hint
             } else {
                 const indexResultsIDs = indexResults.map(m => self.lookup(m.ref).entityID);
                 let qResults;
@@ -281,6 +313,7 @@ class Metadata {
                 });
             }
         }
+        // Here we are dealing with just a full text search with no trust profile involved.
         else {
             if (!emptyQQuery) {
                 res.append("Surrogate-Key", `query`);
