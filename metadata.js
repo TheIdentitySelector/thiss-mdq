@@ -124,69 +124,75 @@ class Metadata {
     }
 
     lookup_with_profile(id, entityID, trustProfileName) {
-        // here we check that the requested entity fits with the specified trust profile,
-        // and add a hint if necessary
-        let entity = {...this.mdDb[id]};
+        try {
+            // here we check that the requested entity fits with the specified trust profile,
+            // and add a hint if necessary
+            let entity = {...this.mdDb[id]};
 
-        const trustProfile = this.tiDb[entityID]['profiles'][trustProfileName];
-        const extraMetadata = this.tiDb[entityID]['extra_md'];
-        const strictProfile = trustProfile.strict;
+            const trustProfile = this.tiDb[entityID]['profiles'][trustProfileName];
+            const extraMetadata = this.tiDb[entityID]['extra_md'];
+            const strictProfile = trustProfile.strict;
 
-        let fromExtraMd = false;
-        // first we check whether the entity comes from external metadata
-        if (id in extraMetadata) {
-            entity = {...extraMetadata[id]};
-            fromExtraMd = true;
-        }
-        // if the entity is not in the internal or external metadata, return not found.
-        if (!entity) {
-            return entity;
-        }
-        let seen = false;
-
-        // check whether the entity is selected by some specific entity clause
-        trustProfile.entity.forEach((e) => {
-            if (e.include && e.entity_id === entity.entity_id) {
-                seen = true;
-            } else if (!e.include && e.entity_id !== entity.entity_id) {
-                seen = true;
+            let fromExtraMd = false;
+            // first we check whether the entity comes from external metadata
+            if (id in extraMetadata) {
+                entity = {...extraMetadata[id]};
+                fromExtraMd = true;
             }
-        });
-        // if the entity comes from external metadata,
-        // return it only if it was selectd by the profile,
-        // otherwise return not found.
-        if (fromExtraMd) {
-            if (seen) {
+            // if the entity is not in the internal or external metadata, return not found.
+            if (!entity) {
                 return entity;
-            } else {
-                return undefined;
             }
-        }
-        // check whether the entity is selected by some entities clause in the profile
-        trustProfile.entities.forEach((e) => {
-            if (e.include && entity[e.match] === e.select) {
-                seen = true;
-            } else if ((!e.include) && entity[e.match] !== e.select) {
-                seen = true;
-            } else {
-                seen = false;
+            let seen = false;
+
+            // check whether the entity is selected by some specific entity clause
+            trustProfile.entity.forEach((e) => {
+                if (e.include && e.entity_id === entity.entity_id) {
+                    seen = true;
+                } else if (!e.include && e.entity_id !== entity.entity_id) {
+                    seen = true;
+                }
+            });
+            // if the entity comes from external metadata,
+            // return it only if it was selectd by the profile,
+            // otherwise return not found.
+            if (fromExtraMd) {
+                if (seen) {
+                    return entity;
+                } else {
+                    return undefined;
+                }
             }
-        });
-        // if the profile is strict, return the entity if it was selected by the profile,
-        // and not found otherwise
-        if (strictProfile) {
-            if (seen) {
+            // check whether the entity is selected by some entities clause in the profile
+            trustProfile.entities.forEach((e) => {
+                if (e.include && entity[e.match] === e.select) {
+                    seen = true;
+                } else if ((!e.include) && entity[e.match] !== e.select) {
+                    seen = true;
+                } else {
+                    seen = false;
+                }
+            });
+            // if the profile is strict, return the entity if it was selected by the profile,
+            // and not found otherwise
+            if (strictProfile) {
+                if (seen) {
+                    return entity;
+                } else {
+                    return undefined;
+                }
+            // if the profile is not strict, set the hint if the entity was not selected by the profile,
+            // and return the entity.
+            } else {
+                if (!seen) {
+                    entity.hint = trustProfile.display_name;
+                }
                 return entity;
-            } else {
-                return undefined;
             }
-        // if the profile is not strict, set the hint if the entity was not selected by the profile,
-        // and return the entity.
-        } else {
-            if (!seen) {
-                entity.hint = trustProfile.display_name;
-            }
-            return entity;
+        } catch (e) {
+            // on error return not found
+            console.log(`Error looking up entity with id ${id} and trust profile ${entityID} for sp ${trustProfileName}: ${e}`);
+            return undefined;
         }
     }
 
