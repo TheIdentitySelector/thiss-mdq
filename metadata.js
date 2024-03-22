@@ -308,14 +308,16 @@ class Metadata {
                     qResults = Object.values(self.mdDb);
                 }
                 qResults.forEach(idp => {
-                    let newIdp;
-                    if (idp.hint === undefined && ! indexResultsIDs.includes(idp.entityID)) {
-                        newIdp = {...idp};
-                        newIdp.hint = trustProfile.display_name;
-                    } else {
-                        newIdp = idp;
+                    if (idp.type === 'idp') {
+                        let newIdp;
+                        if (idp.hint === undefined && ! indexResultsIDs.includes(idp.entityID)) {
+                            newIdp = {...idp};
+                            newIdp.hint = trustProfile.display_name;
+                        } else {
+                            newIdp = idp;
+                        }
+                        results.push(newIdp);
                     }
-                    results.push(newIdp);
                 });
             }
         }
