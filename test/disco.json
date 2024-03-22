@@ -447,5 +447,38 @@
       "height": "64"
     },
     "privacy_statement_url": "http://go.iu.edu/authprivacypolicy"
+  },
+  {
+    "title": "3D Labs at Stony Brook",
+    "descr": "http://www.sunysb.edu/",
+    "title_langs": {
+      "en": "3D Labs at Stony Brook"
+    },
+    "descr_langs": {
+      "en": "http://www.sunysb.edu/"
+    },
+    "auth": "saml",
+    "entity_id": "https://3d.labs.stonybrook.edu/shibboleth",
+    "entityID": "https://3d.labs.stonybrook.edu/shibboleth",
+    "registrationAuthority": "https://incommon.org",
+    "entity_category": [
+      "http://id.incommon.org/category/registered-by-incommon"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
+    ],
+    "md_source": [
+      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+    ],
+    "discovery_responses": [
+      "https://3d.labs.stonybrook.edu/Shibboleth.sso/Login"
+    ],
+    "type": "sp",
+    "entity_icon_url": {
+      "url": "https://it.stonybrook.edu/sites/it.stonybrook.edu/files/sbu-logo-sso.png",
+      "width": "572",
+      "height": "98"
+    },
+    "privacy_statement_url": "https://www.stonybrook.edu/privacy/"
   }
 ]
