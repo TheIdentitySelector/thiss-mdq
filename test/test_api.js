@@ -8,7 +8,12 @@ chai.use(chaiHttp);
 const app = require('../server.js')
 const pkg = require('../package.json')
 const load_metadata = require('../metadata.js');
+const hex_sha1 = require('../sha1.js');
 
+
+function _sha1_id(s) {
+    return "{sha1}" + hex_sha1(s);
+}
 
 chai.use(chaiHttp);
 describe('', () => {
@@ -35,13 +40,13 @@ describe('', () => {
         });
     });
     describe('GET /entities', () => {
-        it('should return all IdPs', (done) => {
+        it('should return all entities', (done) => {
             chai.request(app)
                 .get('/entities')
                 .end((err,res) => {
                     chai.expect(res.status).to.equal(200);
                     let data = res.body;
-                    chai.expect(data.length).to.equal(15);
+                    chai.expect(data.length).to.equal(16);
                     chai.expect(data[0]['title']).to.equal("eduID Sweden");
                 done();
             });
@@ -54,6 +59,19 @@ describe('', () => {
                     chai.expect(res.status).to.equal(200);
                     let data = res.body;
                     chai.expect(data.length).to.equal(12);
+                done();
+            });
+        });
+        it('should return the SP for 3D Labs SP with a discovery_responses key', (done) => {
+            const sp_id = _sha1_id("https://3d.labs.stonybrook.edu/shibboleth");
+            chai.request(app)
+                .get(`/entities/${sp_id}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.discovery_responses.length).to.equal(1);
+                    chai.expect(data.discovery_responses[0]).to.equal("https://3d.labs.stonybrook.edu/Shibboleth.sso/Login");
+
                 done();
             });
         });
