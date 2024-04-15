@@ -299,7 +299,6 @@ class Metadata {
             // if the profile is not strict, we use the index search results
             // to mark all those entities not present in these results with a hint
             } else {
-                const indexResultsIDs = indexResults.map(m => self.lookup(m.ref).entityID);
                 let qResults = {};
                 if (!emptyQQuery) {
                     const qPreResults = self.idx.search(qQuery);
