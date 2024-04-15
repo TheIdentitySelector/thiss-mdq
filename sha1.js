@@ -132,4 +132,4 @@ function hex_sha1(s) {
   return rstr2hex(rstr_sha1(str2rstr_utf8(s)));
 }
 
-module.exports = hex_sha1;
+export default hex_sha1;
