@@ -1,6 +1,6 @@
-const lunr = require('lunr');
-const redis = require('redis');
-const { promisify } = require('util');
+import lunr from 'lunr';
+import redis from 'redis';
+import { promisify } from 'util';
 
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
 const REDIS_HOST = process.env.REDIS_HOST || "0.0.0.0";

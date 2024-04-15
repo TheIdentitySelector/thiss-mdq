@@ -1,15 +1,11 @@
-const path = require('path');
-require('@babel/register');
+import path from 'path';
 
-require('core-js/stable');
-require('regenerator-runtime/runtime');
+import app from './server.js';
+import load_metadata from './metadata.js';
 
-const app = require(path.join(__dirname, '/server.js'));
-const load_metadata = require(path.join(__dirname, '/metadata.js'));
-
-const https = require('https');
-const http = require('http');
-const fs = require('fs');
+import https from 'https';
+import http from 'http';
+import fs from 'fs';
 
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = parseInt(process.env.PORT) || 3000;
@@ -18,8 +14,8 @@ const TRUSTINFO = process.env.TRUSTINFO || "/etc/trustinfo.json";
 const BASE_URL = process.env.BASE_URL || "";
 const RELOAD_ON_CHANGE = JSON.parse(process.env.RELOAD_ON_CHANGE || "true") || true;
 
-const cluster = require('cluster');
-const os = require('os');
+import cluster from 'cluster';
+import os from 'os';
 
 function runServer(app) {
     if (process.env.SSL_KEY && process.env.SSL_CERT) {

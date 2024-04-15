@@ -1,12 +1,12 @@
-import {lunrIndexer, redisIndexer} from "./search-index";
-import {esc_query, touchp} from "./utils";
-const fs = require('fs');
-const Chain = require('stream-chain');
-const parser = require('stream-json');
-const StreamArray = require('stream-json/streamers/StreamArray');
-const hex_sha1 = require('./sha1.js');
-const util = require('util');
-const sw = require('stopword');
+import {lunrIndexer, redisIndexer} from "./search-index.js";
+import {esc_query, touchp} from "./utils.js";
+import fs from 'fs';
+import Chain from 'stream-chain';
+import parser from 'stream-json';
+import StreamArray from 'stream-json/streamers/StreamArray.js';
+import hex_sha1 from './sha1.js';
+import util from 'util';
+import sw from 'stopword';
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
@@ -344,4 +344,4 @@ function load_metadata(metadata_file, trustinfo_file, cb) {
     return new Metadata(metadata_file, trustinfo_file, cb);
 }
 
-module.exports = util.promisify(load_metadata);
+export default util.promisify(load_metadata);

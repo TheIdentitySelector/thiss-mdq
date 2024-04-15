@@ -1,21 +1,28 @@
 
-require("regenerator-runtime/runtime");
-const path = require('path');
-const assert = require('assert');
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-chai.use(chaiHttp);
-const app = require('../server.js')
-const pkg = require('../package.json')
-const load_metadata = require('../metadata.js');
-const hex_sha1 = require('../sha1.js');
+import { fileURLToPath } from 'url'
+import path from 'path';
 
+import "regenerator-runtime/runtime.js";
+import assert from 'node:assert/strict';
+import * as  chaiModule from 'chai';
+import chaiHttp from 'chai-http';
+
+//import {chai as chaiModule} from 'chai';
+const chai = chaiModule.use(chaiHttp);
+
+import app from '../server.js';
+import pkg from '../package.json' with { type: "json" };
+import load_metadata from '../metadata.js';
+import hex_sha1 from '../sha1.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
 }
 
-chai.use(chaiHttp);
+//chai.use(chaiHttp);
 describe('', () => {
     beforeEach((done) => {
         load_metadata(path.join(__dirname,'/disco.json'),path.join(__dirname,'/disco_sp.json'),(err, md) => {
@@ -31,11 +38,18 @@ describe('', () => {
             chai.request(app)
                 .get('/')
                 .end((err,res) => {
-                    chai.expect(res.status).to.equal(200);
-                    let status = res.body; //JSON.parse(res.body);
-                    chai.expect(status).to.haveOwnProperty('version');
-                    chai.expect(status.version).to.equal(pkg.version);
-                done();
+                  if (err) done(err);
+                  else {
+                    try {
+                      chai.expect(res.status).to.equal(200);
+                      let status = res.body; //JSON.parse(res.body);
+                      chai.expect(status).to.haveOwnProperty('version');
+                      chai.expect(status.version).to.equal(pkg.version);
+                      done();
+                    } catch(err) {
+                      done(err);
+                    }
+                  }
             });
         });
     });

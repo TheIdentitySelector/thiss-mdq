@@ -1,9 +1,11 @@
-const express = require('express');
-import { ArrayFormatter } from "./utils";
-const Stream = require('stream');
-const cors = require('cors');
-let compression = require('compression')
-const fsp = require("fs").promises;
+import express from 'express';
+import { ArrayFormatter } from "./utils.js";
+import Stream from 'stream';
+import cors from 'cors';
+import compression from 'compression';
+import * as fsp from "fs/promises";
+import meta from './package.json' with { type: "json" };
+
 
 const CACHE_TIME = parseInt(process.env.CACHE_TIME) || 3600;
 const S_MAXAGE = parseInt(process.env.S_MAXAGE) || CACHE_TIME;
@@ -24,7 +26,6 @@ function stream(a) {
 }
 
 app.get('/', async (req, res) => {
-    const meta = require('./package.json');
     res.append("Surrogate-Key", "meta");
     res.append("Cache-Control", META_CACHE_HEADER)
 
@@ -109,4 +110,4 @@ app.get('/.well-known/webfinger', function(req, res) {
     return res.json(wf);
 });
 
-module.exports = app;
+export default app;
