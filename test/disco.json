@@ -1,0 +1,451 @@
+[
+  {
+    "title": "eduID Sweden",
+    "descr": "eduID gives you a common login for your education",
+    "title_langs": {
+      "en": "eduID Sweden",
+      "sv": "eduID Sverige"
+    },
+    "descr_langs": {
+      "en": "eduID gives you a common login for your education",
+      "sv": "eduID är en gemensam inloggning för din utbildning"
+    },
+    "auth": "saml",
+    "entity_id": "https://login.idp.eduid.se/idp.xml",
+    "entityID": "https://login.idp.eduid.se/idp.xml",
+    "registrationAuthority": "http://www.swamid.se/",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "eduid.se",
+    "domain": "eduid.se",
+    "name_tag": "EDUID",
+    "entity_icon_url": {
+      "url": "https://eduid.se/static/img/ds-eduID-logo-black350x120px.png",
+      "width": "350",
+      "height": "120"
+    },
+    "keywords": "eduID+studentIdP",
+    "privacy_statement_url": "https://eduid.se/en/faq.html"
+  },
+  {
+    "title": "Université de Picardie Jules Verne",
+    "descr": "Université de Picardie Jules Verne v3",
+    "title_langs": {
+      "en": "Université de Picardie Jules Verne",
+      "fr": "Université de Picardie Jules Verne"
+    },
+    "descr_langs": {
+      "en": "Université de Picardie Jules Verne v3",
+      "fr": "Université de Picardie Jules Verne v3"
+    },
+    "auth": "saml",
+    "entity_id": "https://idp.u-picardie.fr/idp/shibboleth",
+    "entityID": "https://idp.u-picardie.fr/idp/shibboleth",
+    "registrationAuthority": "https://federation.renater.fr/",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "u-picardie.fr",
+    "domain": "u-picardie.fr",
+    "name_tag": "U-PICARDIE",
+    "entity_icon_url": {
+      "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMTIvMTkvMTOFkvAWAAAB+0lEQVQ4jZ2RvWsTARjGf3e5XBuT1iSEJK0oSVoxaKURaR2kUgSHbp2KbgVx0VVwEay7g8U/QHERN0EH0aXi5Ac0ShsLLdqGxKT5MLlcLrlc7nIOldBI8KPP9L7Py/t7X3iE18ms7R50kqs0GPG50HQLySHglEQyJY0Rn4uKZhDyupB/ebLTgdWxKSo60mauxuljPjLlBrVGm0bLZFB2cOFUmOXnKS5NjrKRVYgfOYxTEgFQm20iQQ/5ahPhzpNVWxIFzI4NgCCAvVcCIAoCogimtc/cJ+nZuzTTxwN83qlwNODG55HZyql43TJq0wAEzsT8bOVqvEp+R9PNXkBZbfF+s0RVMyjVdNRmm8DwAErDoNOxqesmZbWF3rawLJtI0APAdqG+B8iUNTJlrYdaUPS+7yaifpLffvR44uxEuEv9kyJBT/dqD2BlLd8zWLqc6AvYLtSpaka3FwRwyQ4cxOeXvG6Z63NxYqEhxsJDzJwM8WY9301j8eI4N+biACycj5IuaTy4do6zYwEkAMPsUNUMdooaL1ezTI0Heq6vrOUpKjobWYW3qV1mJ8IoWptbjz8iMP+wf8B/0b3FKb5kqoiJqB+vW/5vwM1HH7gyE0P6PZZ/ldMhsp6uIh5oG7i9MMnyi9TBAIcGJE6MDvN1Vz0Y4P7Vae4+/QTAT/Yrzd5r4IOsAAAAAElFTkSuQmCC",
+      "width": "16",
+      "height": "16"
+    }
+  },
+  {
+    "title": "USF - Universidade Sao Francisco",
+    "descr": "USF - Universidade Sao Francisco",
+    "title_langs": {
+      "en": "USF - Universidade Sao Francisco",
+      "pt-br": "USF - Universidade Sao Francisco"
+    },
+    "descr_langs": {
+      "en": "USF - Universidade Sao Francisco",
+      "pt-br": "USF - Universidade Sao Francisco"
+    },
+    "auth": "saml",
+    "entity_id": "https://cafe.usf.edu.br/idp/shibboleth",
+    "entityID": "https://cafe.usf.edu.br/idp/shibboleth",
+    "registrationAuthority": "http://cafe.rnp.br",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "usf.edu.br",
+    "domain": "usf.edu.br",
+    "name_tag": "USF"
+  },
+  {
+    "title": "29 Mayis University",
+    "descr": "29 Mayis University Identity Provider",
+    "title_langs": {
+      "tr": "29 Mayıs Üniversitesi",
+      "en": "29 Mayis University"
+    },
+    "descr_langs": {
+      "en": "29 Mayis University Identity Provider",
+      "tr": "29 Mayıs Üniversitesi Kimlik Doğrulama Servisi"
+    },
+    "auth": "saml",
+    "entity_id": "https://kimlik.29mayis.edu.tr/simplesaml/saml2/idp/metadata.php",
+    "entityID": "https://kimlik.29mayis.edu.tr/simplesaml/saml2/idp/metadata.php",
+    "registrationAuthority": "https://yetkim.org.tr/",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "29mayis.edu.tr",
+    "domain": "29mayis.edu.tr",
+    "name_tag": "29MAYIS",
+    "entity_icon_url": {
+      "url": "https://kimlik.29mayis.edu.tr/simplesaml/assets/icons/logo.png",
+      "width": "97",
+      "height": "97"
+    },
+    "geo": {
+      "lat": "1.031254",
+      "long": "29.099033"
+    }
+  },
+  {
+    "title": "A*STAR - Agency for Science, Technology and Research",
+    "descr": "Login portal for A*STAR users",
+    "title_langs": {
+      "en": "A*STAR - Agency for Science, Technology and Research"
+    },
+    "descr_langs": {
+      "en": "Login portal for A*STAR users"
+    },
+    "auth": "saml",
+    "entity_id": "https://a-star.singaren.net.sg/simplesaml/saml2/idp/metadata.php",
+    "entityID": "https://a-star.singaren.net.sg/simplesaml/saml2/idp/metadata.php",
+    "registrationAuthority": "https://www.singaren.net.sg",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "entity_category_support": [
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "a-star.singaren.net.sg,a-star.edu.sg"
+  },
+  {
+    "title": "A. T. Still University",
+    "descr": "A.T. Still University of Health Sciences serves as a learning-centered university dedicated to preparing highly competent professionals through innovative academic programs with a commitment to continue its osteopathic heritage and focus on whole person healthcare, scholarship, community health, interprofessional education, diversity, and underserved populations",
+    "title_langs": {
+      "en": "A. T. Still University"
+    },
+    "descr_langs": {
+      "en": "A.T. Still University of Health Sciences serves as a learning-centered university dedicated to preparing highly competent professionals through innovative academic programs with a commitment to continue its osteopathic heritage and focus on whole person healthcare, scholarship, community health, interprofessional education, diversity, and underserved populations"
+    },
+    "auth": "saml",
+    "entity_id": "https://my.atsu.edu/swPublicSSO/SAML/incommon",
+    "entityID": "https://my.atsu.edu/swPublicSSO/SAML/incommon",
+    "registrationAuthority": "https://incommon.org",
+    "entity_category": [
+      "http://id.incommon.org/category/registered-by-incommon"
+    ],
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "atsu.edu",
+    "domain": "atsu.edu",
+    "name_tag": "ATSU",
+    "entity_icon_url": {
+      "url": "https://www.atsu.edu/themes/atsu/images/logo_atsu.png",
+      "width": "375",
+      "height": "42"
+    },
+    "privacy_statement_url": "https://www.atsu.edu/privacy-policy"
+  },
+  {
+    "title": "AAF Virtual Home",
+    "descr": "Australian Access Federation Virtual Home Organization",
+    "title_langs": {
+      "en": "AAF Virtual Home"
+    },
+    "descr_langs": {
+      "en": "Australian Access Federation Virtual Home Organization"
+    },
+    "auth": "saml",
+    "entity_id": "https://vho.aaf.edu.au/idp/shibboleth",
+    "entityID": "https://vho.aaf.edu.au/idp/shibboleth",
+    "registrationAuthority": "https://aaf.edu.au",
+    "entity_category": [
+      "http://refeds.org/category/research-and-scholarship",
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    ],
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "vho.aaf.edu.au",
+    "domain": "vho.aaf.edu.au",
+    "name_tag": "VHO"
+  },
+  {
+    "title": "shanghai dianji university",
+    "descr": "sdju.edu.cn",
+    "title_langs": {
+      "en": "shanghai dianji university",
+      "zh": "上海电机学院(shanghai dianji university)"
+    },
+    "descr_langs": {
+      "en": "sdju.edu.cn"
+    },
+    "auth": "saml",
+    "entity_id": "https://idp.sdju.edu.cn/idp/shibboleth",
+    "entityID": "https://idp.sdju.edu.cn/idp/shibboleth",
+    "registrationAuthority": "https://www.carsi.edu.cn",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "sdju.edu.cn",
+    "domain": "sdju.edu.cn",
+    "name_tag": "SDJU",
+    "entity_icon_url": {
+      "url": "https://mgmt.carsi.edu.cn/member_files/sdju.edu.cn/sdju.edu.cn-logo.png",
+      "width": "80",
+      "height": "80"
+    }
+  },
+  {
+    "title": "swissuniversities",
+    "descr": "Gemeinsames hochschulpolitisches Organ",
+    "title_langs": {
+      "en": "swissuniversities"
+    },
+    "descr_langs": {
+      "en": "Gemeinsames hochschulpolitisches Organ"
+    },
+    "auth": "saml",
+    "entity_id": "https://aai-login.swissuniversities.ch/idp/shibboleth",
+    "entityID": "https://aai-login.swissuniversities.ch/idp/shibboleth",
+    "registrationAuthority": "http://rr.aai.switch.ch/",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "swissuniversities.ch",
+    "domain": "swissuniversities.ch",
+    "name_tag": "SWISSUNIVERSITIES",
+    "entity_icon_url": {
+      "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJFYmVuZV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDE2IDE2OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGw6I0UxMUEyNzt9Cjwvc3R5bGU+CjxnPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTEzLjcsMTEuMmMwLDIuOS0yLjUsNC4zLTUuNyw0LjNjLTMsMC01LjgtMS44LTUuOC01LjJoMy4yYzAsMS45LDEuMSwyLjUsMi43LDIuNWMxLjMsMCwyLjQtMC41LDIuNC0xLjcgICBjMC0xLjMtMS40LTEuNC00LjQtMi42Yy0yLTAuNy0zLjQtMS40LTMuNC0zLjljMC0yLjcsMi40LTQuMSw1LjQtNC4xYzMsMCw1LjUsMi4xLDUuNSw0LjhoLTMuM0MxMC4zLDQsOS42LDMuMSw4LDMuMSAgIGMtMS4xLDAtMi4xLDAuNi0yLjEsMS41YzAsMS4yLDEuMywxLjQsNCwyLjRDMTEuOSw3LjksMTMuNyw4LjUsMTMuNywxMS4yIi8+CjwvZz4KPC9zdmc+Cg==",
+      "width": "16",
+      "height": "16"
+    }
+  },
+  {
+    "title": "vocational college of marine science (Al khaboura)",
+    "descr": "vocational college of marine science (Al khaboura)",
+    "title_langs": {
+      "en": "vocational college of marine science (Al khaboura)"
+    },
+    "descr_langs": {
+      "en": "vocational college of marine science (Al khaboura)"
+    },
+    "auth": "saml",
+    "entity_id": "http://adfs.ftik.edu.om/adfs/services/trust",
+    "entityID": "http://adfs.ftik.edu.om/adfs/services/trust",
+    "registrationAuthority": "http://www.omren.om",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "ftik.edu.om",
+    "domain": "ftik.edu.om",
+    "name_tag": "FTIK",
+    "entity_icon_url": {
+      "url": "https://pbs.twimg.com/profile_images/976022822186340353/lC9dUq9J_400x400.jpg",
+      "width": "400",
+      "height": "400"
+    },
+    "privacy_statement_url": "https://www.moheri.gov.om/"
+  },
+  {
+    "title": "www.universityadmissions.se",
+    "descr": "The Identity Provider for students with account in the NyA-system.",
+    "title_langs": {
+      "en": "www.universityadmissions.se",
+      "sv": "www.antagning.se"
+    },
+    "descr_langs": {
+      "en": "The Identity Provider for students with account in the NyA-system.",
+      "sv": "Identity Provider för sökande med konto i NyA-systemet."
+    },
+    "auth": "saml",
+    "entity_id": "https://idp.antagning.se/aws-idp",
+    "entityID": "https://idp.antagning.se/aws-idp",
+    "registrationAuthority": "http://www.swamid.se/",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "antagning.se",
+    "domain": "antagning.se",
+    "name_tag": "ANTAGNING",
+    "entity_icon_url": {
+      "url": "https://www.universityadmissions.se/images/logo/university-admisssions.png",
+      "width": "205",
+      "height": "52"
+    },
+    "keywords": "antagning.se universityadmissions.se",
+    "privacy_statement_url": "https://universityadmissions.se/en/about-this-website/swamid-service-provider-policy/"
+  },
+  {
+    "title": "z-TestRowanUniversity",
+    "descr": "Test IdP for Rowan University",
+    "title_langs": {
+      "en": "z-TestRowanUniversity"
+    },
+    "descr_langs": {
+      "en": "Test IdP for Rowan University"
+    },
+    "auth": "saml",
+    "entity_id": "https://logindev.rowan.edu",
+    "entityID": "https://logindev.rowan.edu",
+    "registrationAuthority": "https://incommon.org",
+    "entity_category": [
+      "http://id.incommon.org/category/registered-by-incommon"
+    ],
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
+    ],
+    "entity_category_support": [
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "rowan.edu",
+    "domain": "rowan.edu",
+    "name_tag": "ROWAN",
+    "entity_icon_url": {
+      "url": "https://sites.rowan.edu/rowan/_files/_files/images/RowanLogo.png",
+      "width": "393",
+      "height": "58"
+    },
+    "privacy_statement_url": "https://confluence.rowan.edu/display/POLICY/Home"
+  },
+  {
+    "title": "zTest - Northwestern University",
+    "descr": "Northwestern University Shibboleth IdP UAT environment",
+    "title_langs": {
+      "en": "zTest - Northwestern University"
+    },
+    "descr_langs": {
+      "en": "Northwestern University Shibboleth IdP UAT environment"
+    },
+    "auth": "saml",
+    "entity_id": "https://fed-uat.it.northwestern.edu/idp/shibboleth",
+    "entityID": "https://fed-uat.it.northwestern.edu/idp/shibboleth",
+    "registrationAuthority": "https://incommon.org",
+    "entity_category": [
+      "http://id.incommon.org/category/registered-by-incommon"
+    ],
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "northwestern.edu",
+    "domain": "northwestern.edu",
+    "name_tag": "NORTHWESTERN",
+    "entity_icon_url": {
+      "url": "https://idsprod.ci.northwestern.edu/public/northwestern-logo.png",
+      "width": "393",
+      "height": "63"
+    },
+    "privacy_statement_url": "https://www.it.northwestern.edu/policies/"
+  },
+  {
+    "title": "zTest - University of Pittsburgh Test IdP",
+    "descr": "Welcome to the test and development IdP Single Sign-On Experience for the University of Pittsburgh. This service is intended for testing and development. Please do not select!",
+    "title_langs": {
+      "en": "zTest - University of Pittsburgh Test IdP"
+    },
+    "descr_langs": {
+      "en": "Welcome to the test and development IdP Single Sign-On Experience for the University of Pittsburgh. This service is intended for testing and development. Please do not select!"
+    },
+    "auth": "saml",
+    "entity_id": "https://passport-dev.pitt.edu/idp/shibboleth",
+    "entityID": "https://passport-dev.pitt.edu/idp/shibboleth",
+    "registrationAuthority": "https://incommon.org",
+    "entity_category": [
+      "http://refeds.org/category/hide-from-discovery",
+      "http://id.incommon.org/category/registered-by-incommon"
+    ],
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "true",
+    "scope": "pitt.edu",
+    "domain": "pitt.edu",
+    "name_tag": "PITT",
+    "entity_icon_url": {
+      "url": "https://www.pitt.edu/seal/seal-400x400-72rgb.png",
+      "width": "400",
+      "height": "400"
+    },
+    "privacy_statement_url": "https://technology.pitt.edu/research-computing/rc-incommon-shibboleth/privacy.html"
+  },
+  {
+    "title": "zTest Indiana University",
+    "descr": "The Identity Provider for Indiana University.",
+    "title_langs": {
+      "en": "zTest Indiana University"
+    },
+    "descr_langs": {
+      "en": "The Identity Provider for Indiana University."
+    },
+    "auth": "saml",
+    "entity_id": "urn:mace:incommon:iu.edu",
+    "entityID": "urn:mace:incommon:iu.edu",
+    "registrationAuthority": "https://incommon.org",
+    "entity_category": [
+      "http://refeds.org/category/hide-from-discovery",
+      "http://id.incommon.org/category/registered-by-incommon"
+    ],
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "type": "idp",
+    "hidden": "true",
+    "scope": "iu.edu",
+    "domain": "iu.edu",
+    "name_tag": "IU",
+    "entity_icon_url": {
+      "url": "https://idp.iu.edu/shibboleth-idp/images/iu-logo.png",
+      "width": "350",
+      "height": "64"
+    },
+    "privacy_statement_url": "http://go.iu.edu/authprivacypolicy"
+  }
+]

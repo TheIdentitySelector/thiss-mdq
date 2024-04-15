@@ -25,6 +25,13 @@ Search
 
 Issue a GET request to ``/entities/?q=<search>``. The result is a (possibly empty) JSON list of entities matching the search query.
 
+Trust Profiles
+--------------
+
+Issue a GET request to ``/entities/?entityID=<entityID>&trustProfile=<profile>``.
+The result is a (possibly empty) JSON list of entities that conform to the conditions expressed in the trust profile.
+It can be combined with a full text search with a GET request to ``/entities/?entityID=<entityID>&trustProfile=<profile>&q=<search>``
+
 WebFinger
 ---------
 
