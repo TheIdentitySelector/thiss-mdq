@@ -11,7 +11,7 @@ The docker-image can be run thus:
 
 .. code-block:: bash
 
-  # docker run -d -p 3000:3000 -v /some/where/metadata.json:/etc/metadata.json thiss-mdq:latest
+  # docker run -d -p 3000:3000 -v /some/where/idp_metadata.json:/etc/metadata.json -v /some/where/sp_metadata.json:/etc/trustinfo.json thiss-mdq:latest
 
 Verify that the container has started by cURL:ing:
 

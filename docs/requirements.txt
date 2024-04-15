@@ -1,3 +1,4 @@
 sphinx-js==2.5
 certifi>=2022.12.7 # not directly required, pinned by Snyk to avoid a vulnerability
 pygments>=2.7.4 # not directly required, pinned by Snyk to avoid a vulnerability
+sphinx>=3.3.0 # not directly required, pinned by Snyk to avoid a vulnerability

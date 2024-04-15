@@ -1,6 +1,8 @@
 const path = require('path');
 require('@babel/register');
-require('@babel/polyfill');
+
+require('core-js/stable');
+require('regenerator-runtime/runtime');
 
 const app = require(path.join(__dirname, '/server.js'));
 const load_metadata = require(path.join(__dirname, '/metadata.js'));
@@ -12,6 +14,7 @@ const fs = require('fs');
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = parseInt(process.env.PORT) || 3000;
 const METADATA = process.env.METADATA || "/etc/metadata.json";
+const TRUSTINFO = process.env.TRUSTINFO || "/etc/trustinfo.json";
 const BASE_URL = process.env.BASE_URL || "";
 const RELOAD_ON_CHANGE = JSON.parse(process.env.RELOAD_ON_CHANGE || "true") || true;
 
@@ -43,10 +46,12 @@ cluster.on('exit', function (worker) {
 if (cluster.isMaster) {
     const cpuCount = os.cpus().length;
     for (let j = 0; j < cpuCount; j++) {
+        console.log(`Forking ${j}`);
         cluster.fork();
     }
 } else {
-    load_metadata(METADATA).then((md) => {
-        app.locals.md = md
+    load_metadata(METADATA, TRUSTINFO).then((md) => {
+        app.locals.md = md;
+        console.log('Loaded metadata');
     }).then(() => runServer(app));
 }
