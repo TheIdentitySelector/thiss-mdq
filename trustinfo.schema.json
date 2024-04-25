@@ -13,7 +13,7 @@
       "description": "A collection of IdP entities that are not known to the metadata server but can be used to interact with the SP",
       "type": "object",
       "patternProperties": {
-        "^[a-zA-Z:/\.]{1,255}$": {
+        "^.{1,255}$": {
           "description": "Representation of an entity according to the discojson schema, keyed by the entityID of the entity",
           "$ref": "https://seamlessaccess.org/discojson.schema.json"
         }
