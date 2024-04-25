@@ -14,7 +14,7 @@
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z:/\.]{1,255}$": {
-          "description": "Representation of an entity according to the discojson schema",
+          "description": "Representation of an entity according to the discojson schema, keyed by the entityID of the entity",
           "$ref": "https://seamlessaccess.org/discojson.schema.json"
         }
       },
@@ -29,7 +29,7 @@
           "type": "object",
           "properties": {
             "strict": {
-              "description": "If a profile is strict, only the selected IdPs will be included in the result. If not, all available entities will be included, with a special mark added only to the selected ones.",
+              "description": "If a profile is strict, only the selected IdPs will be included in the result. If not, all available entities will be included, with a special mark added only to the selected ones",
               "type": "boolean"
             },
             "entity": {
@@ -43,7 +43,7 @@
                     "type": "string"
                   },
                   "include": {
-                    "description": "Whether to include or exclude the referenced entity in the final result. Default is true.",
+                    "description": "Whether to include or exclude the referenced entity in the final result. Default is true",
                     "type": "boolean"
                   }
                 },
@@ -67,7 +67,7 @@
                     "type": "string"
                   },
                   "include": {
-                    "description": "Whether to include or exclude the selected IdP entities in the result. Default is true.",
+                    "description": "Whether to include or exclude the selected IdP entities in the result. Default is true",
                     "type": "boolean"
                   }
                 },
