@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://seamlessaccess.org/trustinfo.schema.json",
+  "title": "Trust Information",
+  "description": "Trust information in SP metadata, used by a metadata server to select the subsets of IdPs that can be used to interact with the SP",
+  "type": "object",
+  "properties": {
+    "entityID": {
+      "description": "The unique identifier for the SP entity publishing the trust information",
+      "type": "string"
+    },
+    "extra_md": {
+      "description": "A collection of IdP entities that are not known to the metadata server but can be used to interact with the SP",
+      "type": "object",
+      "patternProperties": {
+        "^.{1,255}$": {
+          "description": "Representation of an entity according to the discojson schema, keyed by the entityID of the entity",
+          "$ref": "https://seamlessaccess.org/discojson.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "profiles": {
+      "description": "A collection of trust profiles published by the SP, keyed by the profile names",
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]{1,255}$": {
+          "description": "Each trust profile determines a subset of all available IdPs. The name of the profile is given by its property name in the 'profiles' object, which must conform to the above pattern",
+          "type": "object",
+          "properties": {
+            "strict": {
+              "description": "If a profile is strict, only the selected IdPs will be included in the result. If not, all available entities will be included, with a special mark added only to the selected ones",
+              "type": "boolean"
+            },
+            "entity": {
+              "description": "Include or exclude in the result IdP entities one by one",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "entity_id": {
+                    "description": "EntityID of IdP to include or exclude",
+                    "type": "string"
+                  },
+                  "include": {
+                    "description": "Whether to include or exclude the referenced entity in the final result. Default is true",
+                    "type": "boolean"
+                  }
+                },
+                "required": ["entity_id"]
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "entities": {
+              "description": "Include or exclude sets of IdP entities in final result",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "match": {
+                    "description": "The name of the attribute of the IdP entities to use for the selection",
+                    "type": "string"
+                  },
+                  "select": {
+                    "description": "The value of the attribute of the IdP entities to use for the selection",
+                    "type": "string"
+                  },
+                  "include": {
+                    "description": "Whether to include or exclude the selected IdP entities in the result. Default is true",
+                    "type": "boolean"
+                  }
+                },
+                "required": ["match", "select"]
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "display_name": {
+              "description": "A localized string to mark the selected IdPs in a non strict profile",
+              "type": "object",
+              "patternProperties": {
+                "^[a-z]{2}$": {
+                  "description": "The string in different languages",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "fallback_handler": {
+              "description": "URI which can be used to present alternative access options to the user in case none of the provided IdPs are applicable or available to the user",
+              "type": "object",
+              "properties": {
+                "profile": {
+                  "description": "Used to inform a client implementation about how to use the URL. The default “href” profile implies that a client MUST treat the URI as a regular HTML link",
+                  "type": "string"
+                },
+                "handler": {
+                  "description": "The actual URL",
+                  "type": "string"
+                }
+              },
+              "required": ["handler"]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["entityID", "profiles"]
+}
