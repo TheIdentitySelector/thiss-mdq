@@ -1,0 +1,23 @@
+[version]
+current = "1.3.3rc1"
+regex = '''
+  (?P<major>\d+)
+  \.
+  (?P<minor>\d+)
+  \.
+  (?P<patch>\d+)
+  ((rc|b|r)
+  (?P<release_candidate>\d+))?
+'''
+
+[git]
+message_template = "Bump to {new_version}"
+tag_template = "{new_version}"
+
+[[file]]
+src = "backend/setup.py"
+search = "release = '{current_version}'"
+
+[[file]]
+src = "package.json"
+search = '"version": "{current_version}"'

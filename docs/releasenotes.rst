@@ -59,3 +59,9 @@ Version 1.3.2
 -------------
 
 * Avoid including user-supplied data in header values
+
+Version 1.3.3
+-------------
+
+* Allow filtering with trust info.
+* Remove dashes and pluses from free text queries

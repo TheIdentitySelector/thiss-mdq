@@ -19,14 +19,14 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u'A JSON MDQ Server'
-copyright = u'2019, Swedish University Network (SUNET)'
-author = u'Leif Johansson'
+project = 'A JSON MDQ Server'
+copyright = '2019, Swedish University Network (SUNET)'
+author = 'Leif Johansson'
 
 # The short X.Y version
-version = u'1.1'
+version = '1.3'
 # The full version, including alpha/beta/rc tags
-release = u'1.1.1'
+release = '1.3.3rc1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -65,7 +65,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -130,8 +130,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'JSONMDQServer.tex', u'JSON MDQ Server Documentation',
-     u'Leif Johansson', 'manual'),
+    (master_doc, 'JSONMDQServer.tex', 'JSON MDQ Server Documentation',
+     'Leif Johansson', 'manual'),
 ]
 
 
@@ -140,7 +140,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'jsonmdqserver', u'JSON MDQ Server Documentation',
+    (master_doc, 'jsonmdqserver', 'JSON MDQ Server Documentation',
      [author], 1)
 ]
 
@@ -151,7 +151,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'JSONMDQServer', u'JSON MDQ Server Documentation',
+    (master_doc, 'JSONMDQServer', 'JSON MDQ Server Documentation',
      author, 'JSONMDQServer', 'One line description of project.',
      'Miscellaneous'),
 ]

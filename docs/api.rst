@@ -32,6 +32,9 @@ Issue a GET request to ``/entities/?entityID=<entityID>&trustProfile=<profile>``
 The result is a (possibly empty) JSON list of entities that conform to the conditions expressed in the trust profile.
 It can be combined with a full text search with a GET request to ``/entities/?entityID=<entityID>&trustProfile=<profile>&q=<search>``
 Also a query for a single entity by sha1 can be decorated with ``entityID`` and ``trustProfile`` query params, and the entity will only be returned if it conforms to the conditions expressed in the trustProfile.
+The JSON schema for the trust info that thiss-mdq uses to filter results can be seen in the root of this repo, ``trustinfo.schema.json``.
+The XML schema for the trust info that service providers can publish in their metadata can be found here:
+https://docs.google.com/document/d/1mJ9n-JnuAkQWdn1Efs_FHJyEMeiFWalRsazEWvn8DLU/edit#heading=h.5xe7ovxq5nbf
 
 WebFinger
 ---------
