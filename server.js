@@ -47,6 +47,7 @@ app.get('/', async (req, res) => {
 
 app.get('/entities/?', cors(), function(req, res) {
     let q = req.query.query || req.query.q;
+    q = q.replace(/-/g, ' ').replace(/\+/g, ' ');
     const entityID = req.query.entityid ||  req.query.entityID;
     const trustProfile = req.query.trustprofile ||  req.query.trustProfile;
     res.contentType('json');
