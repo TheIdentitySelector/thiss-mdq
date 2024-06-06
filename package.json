@@ -1,6 +1,6 @@
 {
   "name": "thiss-mdq",
-  "version": "1.3.3rc1",
+  "version": "1.3.3rc2",
   "description": "A minimal JSON-only MDQ",
   "main": "index.js",
   "homepage": "https://github.com/TheIdentitySelector/thiss-mdq",
