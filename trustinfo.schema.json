@@ -108,5 +108,5 @@
       "additionalProperties": false
     }
   },
-  "required": ["entityID", "profiles"]
+  "required": ["profiles"]
 }
