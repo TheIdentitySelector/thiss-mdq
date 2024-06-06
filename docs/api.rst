@@ -31,6 +31,7 @@ Trust Profiles
 Issue a GET request to ``/entities/?entityID=<entityID>&trustProfile=<profile>``.
 The result is a (possibly empty) JSON list of entities that conform to the conditions expressed in the trust profile.
 It can be combined with a full text search with a GET request to ``/entities/?entityID=<entityID>&trustProfile=<profile>&q=<search>``
+Also a query for a single entity by sha1 can be decorated with ``entityID`` and ``trustProfile`` query params, and the entity will only be returned if it conforms to the conditions expressed in the trustProfile.
 
 WebFinger
 ---------
