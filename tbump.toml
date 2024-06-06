@@ -15,7 +15,7 @@ message_template = "Bump to {new_version}"
 tag_template = "{new_version}"
 
 [[file]]
-src = "backend/setup.py"
+src = "docs/conf.py"
 search = "release = '{current_version}'"
 
 [[file]]
