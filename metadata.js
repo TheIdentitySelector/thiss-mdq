@@ -299,22 +299,26 @@ class Metadata {
             // if the profile is not strict, we use the index search results
             // to mark all those entities not present in these results with a hint
             } else {
-                let qResults = {};
+                const indexResultsIDs = indexResults.map(m => self.lookup(m.ref).entityID);
+                let qResults;
                 if (!emptyQQuery) {
-                    const qPreResults = self.idx.search(qQuery);
-                    for (const m of qPreResults) {
-                        qResults[m.ref] = {...self.lookup(m.ref)};
-                    }
+                    qResults = self.idx.search(qQuery);
+                    qResults = qResults.map(m => self.lookup(m.ref));
                 } else {
-                    qResults = {...self.mdDb};
+                    qResults = Object.values(self.mdDb);
                 }
-                indexResults.forEach(m => {
-                    const entity = qResults[m.ref];
-                    if (entity && entity.hint === undefined) {
-                        entity.hint = trustProfile.display_name;
+                qResults.forEach(idp => {
+                    if (idp.type === 'idp') {
+                        let newIdp;
+                        if (idp.hint === undefined && ! indexResultsIDs.includes(idp.entityID)) {
+                            newIdp = {...idp};
+                            newIdp.hint = trustProfile.display_name;
+                        } else {
+                            newIdp = idp;
+                        }
+                        results.push(newIdp);
                     }
                 });
-                results = Object.values(qResults);
             }
         }
         // Here we are dealing with just a full text search with no trust profile involved.
