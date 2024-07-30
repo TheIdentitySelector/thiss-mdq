@@ -60,7 +60,7 @@ describe('', () => {
                 .end((err,res) => {
                     chai.expect(res.status).to.equal(200);
                     let data = res.body;
-                    chai.expect(data.length).to.equal(16);
+                    chai.expect(data.length).to.equal(15);
                     chai.expect(data[0]['title']).to.equal("eduID Sweden");
                 done();
             });
@@ -145,9 +145,9 @@ describe('', () => {
                 .end((err,res) => {
                     chai.expect(res.status).to.equal(200);
                     let data = res.body;
-                    chai.expect(data.length).to.equal(16);
+                    chai.expect(data.length).to.equal(15);
                     data.forEach(idp => {
-                        if (idp.title === "eduID Sweden") {
+                        if (idp.title !== "eduID Sweden") {
                             chai.expect(idp).to.haveOwnProperty('hint');
                         } else {
                             chai.expect(idp).to.not.haveOwnProperty('hint');
@@ -167,7 +167,7 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(12);
                     data.forEach(idp => {
-                        if (idp.title === "eduID Sweden") {
+                        if (idp.title !== "eduID Sweden") {
                             chai.expect(idp).to.haveOwnProperty('hint');
                         } else {
                             chai.expect(idp).to.not.haveOwnProperty('hint');
@@ -216,9 +216,9 @@ describe('', () => {
                 .end((err,res) => {
                     chai.expect(res.status).to.equal(200);
                     let data = res.body;
-                    chai.expect(data.length).to.equal(16);
+                    chai.expect(data.length).to.equal(15);
                     data.forEach(idp => {
-                        if (idp.registrationAuthority === "http://www.swamid.se/") {
+                        if (idp.registrationAuthority !== "http://www.swamid.se/") {
                             chai.expect(idp).to.haveOwnProperty('hint');
                         } else {
                             chai.expect(idp).to.not.haveOwnProperty('hint');
@@ -238,7 +238,7 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(12);
                     data.forEach(idp => {
-                        if (idp.registrationAuthority === "http://www.swamid.se/") {
+                        if (idp.registrationAuthority !== "http://www.swamid.se/") {
                             chai.expect(idp).to.haveOwnProperty('hint');
                         } else {
                             chai.expect(idp).to.not.haveOwnProperty('hint');

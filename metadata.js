@@ -27,6 +27,7 @@ class Metadata {
             this.tiFile = tiFile;
             this.cb = cb;
             this.mdDb = {};
+            this.idpDb = {};
             this.tiDb = {};
             this.mdCount = 0;
             this.tiCount = 0;
@@ -60,7 +61,7 @@ class Metadata {
                 let e = data.value;
                 e.entity_id = e.entityID;
                 e.id = _sha1_id(e.entityID);
-                if (e.type == 'idp' && !(e.id in self.mdDb)) {
+                if (e.type === 'idp' && !(e.id in self.mdDb)) {
                     let doc = {
                         "id": e.id,
                         "entityID": e.entityID,
@@ -100,6 +101,9 @@ class Metadata {
                     }
                     //console.log(doc)
                     this.idx.add(doc);
+                }
+                if (e.type === 'idp') {
+                    self.idpDb[e.id] = e;
                 }
                 self.mdDb[e.id] = e;
                 ++self.mdCount;
@@ -305,19 +309,17 @@ class Metadata {
                     qResults = self.idx.search(qQuery);
                     qResults = qResults.map(m => self.lookup(m.ref));
                 } else {
-                    qResults = Object.values(self.mdDb);
+                    qResults = Object.values(self.idpDb);
                 }
                 qResults.forEach(idp => {
-                    if (idp.type === 'idp') {
-                        let newIdp;
-                        if (idp.hint === undefined && ! indexResultsIDs.includes(idp.entityID)) {
-                            newIdp = {...idp};
-                            newIdp.hint = trustProfile.display_name;
-                        } else {
-                            newIdp = idp;
-                        }
-                        results.push(newIdp);
+                    let newIdp;
+                    if (idp.hint === undefined && ! indexResultsIDs.includes(idp.entityID)) {
+                        newIdp = {...idp};
+                        newIdp.hint = trustProfile.display_name;
+                    } else {
+                        newIdp = idp;
                     }
+                    results.push(newIdp);
                 });
             }
         }
@@ -331,7 +333,7 @@ class Metadata {
                 });
             } else {
                 res.append("Surrogate-Key", "entities");
-                results = Object.values(self.mdDb);
+                results = Object.values(self.idpDb);
             }
         }
         results.push(...extraIdPs);
