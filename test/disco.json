@@ -17,6 +17,10 @@
     "md_source": [
       "https://example.org/edugain-trustinfo-2.0.xml"
     ],
+    "entity_category": [
+      "http://refeds.org/category/research-and-scholarship",
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    ],
     "assurance_certification": [
       "https://refeds.org/sirtfi"
     ],

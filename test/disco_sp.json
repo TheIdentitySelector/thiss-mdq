@@ -544,6 +544,24 @@
           "profile": "href",
           "handler": "https://www.example.org/about"
         }
+      },
+      "customer7": {
+        "strict": true,
+        "entity": [
+          {
+            "entity_id": "https://login.idp.eduid.se/idp.xml",
+            "include": true
+          }
+        ],
+        "entities": [],
+        "display_name": {
+          "en": "Customer 6 Access",
+          "sv": "Kundinloggning 6"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
       }
     }
   }
