@@ -44,7 +44,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "lunr": "^2.3.9",
-    "redis": "^4.6.14",
+    "redis": "^4.6.15",
     "stopword": "^3.0.1",
     "stream": "0.0.3",
     "stream-chain": "^2.2.5",
