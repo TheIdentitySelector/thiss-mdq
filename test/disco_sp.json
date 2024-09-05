@@ -90,8 +90,8 @@
         ],
         "entities": [],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Other access",
+          "sv": "Other access sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -151,8 +151,8 @@
         ],
         "entities": [],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Other access",
+          "sv": "Other access sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -187,8 +187,8 @@
         ],
         "entities": [],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "yet Another Access",
+          "sv": "yet Another Access sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -267,8 +267,8 @@
           }
         ],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Admin access",
+          "sv": "Admin access sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -305,8 +305,8 @@
           }
         ],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Access for customers class 4",
+          "sv": "Access for customers class 4 sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -359,8 +359,8 @@
           }
         ],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Access here",
+          "sv": "Access here sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -397,8 +397,8 @@
           }
         ],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Prferential access",
+          "sv": "Prferential access sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -451,8 +451,8 @@
           }
         ],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Admin access",
+          "sv": "Admin access sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -499,8 +499,8 @@
           }
         ],
         "display_name": {
-          "en": "Degraded security",
-          "sv": "Degraded security sv"
+          "en": "Access preferential",
+          "sv": "Access preferential sv"
         },
         "fallback_handler": {
           "profile": "href",

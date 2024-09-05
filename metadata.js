@@ -1,7 +1,7 @@
 import {lunrIndexer, redisIndexer} from "./search-index.js";
 import {esc_query, touchp} from "./utils.js";
 import fs from 'fs';
-import Chain from 'stream-chain';
+import chain from 'stream-chain';
 import parser from 'stream-json';
 import StreamArray from 'stream-json/streamers/StreamArray.js';
 import hex_sha1 from './sha1.js';
@@ -40,7 +40,7 @@ class Metadata {
                 throw `Unknown indexer "${INDEXER}"`;
             }
 
-            self._t = new Chain([fs.createReadStream(tiFile), parser(), new StreamArray(), data => {
+            self._t = chain([fs.createReadStream(tiFile), parser(), new StreamArray(), data => {
                 const e = data.value;
                 e.entity_id = e.entityID;
                 for (const eID in e.extra_md) {
@@ -57,7 +57,7 @@ class Metadata {
                 console.log(`loaded ${self.tiCount} trust information objects`);
             });
 
-            self._p = new Chain([fs.createReadStream(mdFile), parser(), new StreamArray(), data => {
+            self._p = chain([fs.createReadStream(mdFile), parser(), new StreamArray(), data => {
                 let e = data.value;
                 e.entity_id = e.entityID;
                 e.id = _sha1_id(e.entityID);
@@ -188,7 +188,7 @@ class Metadata {
             // if the profile is not strict, set the hint if the entity was not selected by the profile,
             // and return the entity.
             } else {
-                if (!seen) {
+                if (seen) {
                     entity.hint = trustProfile.display_name;
                 }
                 return entity;
@@ -303,24 +303,36 @@ class Metadata {
             // if the profile is not strict, we use the index search results
             // to mark all those entities not present in these results with a hint
             } else {
-                const indexResultsIDs = indexResults.map(m => self.lookup(m.ref).entityID);
-                let qResults;
-                if (!emptyQQuery) {
-                    qResults = self.idx.search(qQuery);
-                    qResults = qResults.map(m => self.lookup(m.ref));
-                } else {
-                    qResults = Object.values(self.idpDb);
-                }
-                qResults.forEach(idp => {
-                    let newIdp;
-                    if (idp.hint === undefined && ! indexResultsIDs.includes(idp.entityID)) {
-                        newIdp = {...idp};
-                        newIdp.hint = trustProfile.display_name;
+                const gatherResult = (idp, ref, ids, good, bad) => {
+                    if (ref in ids) {
+                        if (idp.hint === undefined) {
+                            const newIdp = {...idp};
+                            newIdp.hint = trustProfile.display_name;
+                            good.push(newIdp);
+                        } else {
+                            good.push(idp);
+                        }
                     } else {
-                        newIdp = idp;
+                        bad.push(idp);
                     }
-                    results.push(newIdp);
-                });
+                };
+                const indexResultsIDs = {};
+                indexResults.forEach(m => indexResultsIDs[m.ref] = undefined);
+                let goodResults = [], badResults = [];
+                if (!emptyQQuery) {
+                    const preQResults = self.idx.search(qQuery);
+                    preQResults.forEach(m => {
+                        const idp = self.lookup(m.ref);
+                        gatherResult(idp, m.ref, indexResultsIDs, goodResults, badResults);
+                    });
+                } else {
+                    Object.entries(self.idpDb).forEach(entry => {
+                        const ref = entry[0];
+                        const idp = entry[1];
+                        gatherResult(idp, ref, indexResultsIDs, goodResults, badResults);
+                    });
+                }
+                results = goodResults.concat(badResults);
             }
         }
         // Here we are dealing with just a full text search with no trust profile involved.
