@@ -125,7 +125,7 @@ class Metadata {
 
     lookup(id) {
         let entity = this.mdDb[id];
-        if (entity.type === "sp") {
+        if (entity && entity.type === "sp") {
             if (entity.entityID in this.tiDb) {
                 entity = {...entity};
                 entity.tinfo = this.tiDb[entity.entityID];
