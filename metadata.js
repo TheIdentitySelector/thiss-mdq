@@ -176,12 +176,22 @@ class Metadata {
             }
             // check whether the entity is selected by some entities clause in the profile
             trustProfile.entities.forEach((e) => {
-                if (e.include && entity[e.match] === e.select) {
-                    seen = true;
-                } else if ((!e.include) && entity[e.match] !== e.select) {
-                    seen = true;
+                if (Array.isArray(entity[e.match])) {
+                    if (e.include && entity[e.match].includes(e.select)) {
+                        seen = true;
+                    } else if ((!e.include) && !entity[e.match].includes(e.select)) {
+                        seen = true;
+                    } else {
+                        seen = false;
+                    }
                 } else {
-                    seen = false;
+                    if (e.include && entity[e.match] === e.select) {
+                        seen = true;
+                    } else if ((!e.include) && entity[e.match] !== e.select) {
+                        seen = true;
+                    } else {
+                        seen = false;
+                    }
                 }
             });
             // if the profile is strict, return the entity if it was selected by the profile,
