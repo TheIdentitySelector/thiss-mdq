@@ -82,7 +82,7 @@ app.get('/tinfo', cors(), function(req, res) {
     res.contentType('json');
     res.append("Cache-Control", CONTENT_CACHE_HEADER)
     let format = new ArrayFormatter();
-    stream(Object.Values(app.locals.md.tiDb)).pipe(format).pipe(res);
+    stream(Object.values(app.locals.md.tiDb)).pipe(format).pipe(res);
 });
 
 app.head('/status', (req, res) => {
