@@ -230,31 +230,6 @@
           "profile": "href",
           "handler": "https://www.example.org/about2"
         }
-      }
-    }
-  },
-  {
-    "entityID": "https://test-edusign.ed-integrations.com/shibboleth",
-    "extra_md": {},
-    "profiles": {
-      "customer": {
-        "strict": true,
-        "entity": [],
-        "entities": [
-          {
-            "select": "http://www.swamid.se/",
-            "match": "registrationAuthority",
-            "include": true
-          }
-        ],
-        "display_name": {
-          "en": "Customer Access",
-          "sv": "Kundinloggning"
-        },
-        "fallback_handler": {
-          "profile": "href",
-          "handler": "https://www.example.org/about"
-        }
       },
       "customer2": {
         "strict": false,

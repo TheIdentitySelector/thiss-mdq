@@ -78,6 +78,13 @@ app.get('/entities/:path', cors(), function(req, res) {
     }
 });
 
+app.get('/tinfo', cors(), function(req, res) {
+    res.contentType('json');
+    res.append("Cache-Control", CONTENT_CACHE_HEADER)
+    let format = new ArrayFormatter();
+    stream(Object.Values(app.locals.md.tiDb)).pipe(format).pipe(res);
+});
+
 app.head('/status', (req, res) => {
     if (app.locals.md.mdCount > 0) {
         res.append("Surrogate-Key", "meta");
