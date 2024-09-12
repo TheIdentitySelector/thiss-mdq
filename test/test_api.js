@@ -177,7 +177,7 @@ describe('', () => {
             });
         });
         it('should return 2 IdPs', (done) => {
-            const entityID = encodeURIComponent("https://test-edusign.ed-integrations.com/shibboleth");
+            const entityID = encodeURIComponent("http://fs.liu.se/adfs/services/trust");
             const profile = "customer";
             chai.request.execute(app)
                 .get(`/entities?entityID=${entityID}&trustProfile=${profile}`)
@@ -193,7 +193,7 @@ describe('', () => {
             });
         });
         it('should return eduID IdP', (done) => {
-            const entityID = encodeURIComponent("https://test-edusign.ed-integrations.com/shibboleth");
+            const entityID = encodeURIComponent("http://fs.liu.se/adfs/services/trust");
             const profile = "customer";
             const q = "edu";
             chai.request.execute(app)
@@ -209,7 +209,7 @@ describe('', () => {
             });
         });
         it('should return all IdPs, trusting only those registered by swamid', (done) => {
-            const entityID = encodeURIComponent("https://test-edusign.ed-integrations.com/shibboleth");
+            const entityID = encodeURIComponent("http://fs.liu.se/adfs/services/trust");
             const profile = "customer2";
             chai.request.execute(app)
                 .get(`/entities?entityID=${entityID}&trustProfile=${profile}`)
@@ -228,7 +228,7 @@ describe('', () => {
             });
         });
         it('should return 12 IdPs, trusting only eduID', (done) => {
-            const entityID = encodeURIComponent("https://test-edusign.ed-integrations.com/shibboleth");
+            const entityID = encodeURIComponent("http://fs.liu.se/adfs/services/trust");
             const profile = "customer2";
             const q = "edu";
             chai.request.execute(app)
