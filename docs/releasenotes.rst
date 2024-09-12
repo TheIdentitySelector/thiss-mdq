@@ -65,3 +65,11 @@ Version 1.3.3
 
 * Allow filtering with trust info.
 * Remove dashes and pluses from free text queries
+
+Version 1.4.6
+-------------
+
+* Positive hints in entities selected by trust profile
+* Add trust info metadata to discojson representation of SPs
+* Add /tinfo endpoint to serve trust info metadata
+* Updated dependencies and a couple of bug fixes
