@@ -80,6 +80,17 @@
           "handler": "https://www.example.org/provider"
         }
       },
+      "incommon-wayfinder": {
+        "strict": true,
+        "entity": [],
+        "entities": [
+          {
+            "select": "https://mdq.incommon.org/entities",
+            "match": "md_source",
+            "include": true
+          }
+       ]
+      },
       "other": {
         "strict": false,
         "entity": [
