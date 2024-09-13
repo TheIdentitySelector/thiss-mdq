@@ -30,6 +30,7 @@ class Metadata {
             this.idpDb = {};
             this.tiDb = {};
             this.mdCount = 0;
+            this.mdRepeat = 0;
             this.tiCount = 0;
 
             if (INDEXER === "redis") {
@@ -61,58 +62,30 @@ class Metadata {
                 let e = data.value;
                 e.entity_id = e.entityID;
                 e.id = _sha1_id(e.entityID);
-                if (e.type === 'idp' && !(e.id in self.mdDb)) {
-                    let doc = {
-                        "id": e.id,
-                        "entityID": e.entityID,
-                        "title": [e.title.toLocaleLowerCase(locales)],
-                    };
-                    if (e.keywords) {
-                        doc.keywords = e.keywords.toLocaleLowerCase(locales).split(",").map(e=>e.trim())
+                if (!(e.id in self.mdDb)) {
+                    if (e.type === 'idp') {
+                        self.idpDb[e.id] = e;
                     }
-                    if (e.title_langs) {
-                        doc.title.push(...Object.entries(e.title_langs).map((kv,i) => {
-                            return kv[1].toLocaleLowerCase(locales).trim();
-                        }))
-                    }
-                    if (e.scope) {
-                        doc.tags = e.scope.split(",").map(function (scope) {
-                            let parts = scope.split('.');
-                            return parts.slice(0, -1);
-                        }).join(',');
-                        doc.scopes = e.scope.split(",");
-                    }
-                    doc.title = [...new Set(doc.title)].sort()
-                    doc.scopes = [...new Set(doc.scopes)].sort()
-                    if (e.registrationAuthority) {
-                        doc.registrationAuthority = e.registrationAuthority;
-                    }
-                    if (e.entity_category) {
-                        doc.entity_category = e.entity_category;
-                    }
-                    if (e.entity_category_support) {
-                        doc.entity_category_support = e.entity_category_support;
-                    }
-                    if (e.assurance_certification) {
-                        doc.assurance_certification = e.assurance_certification;
-                    }
-                    if (e.md_source) {
-                        doc.md_source = e.md_source;
-                    }
-                    //console.log(doc)
-                    this.idx.add(doc);
+                    self.mdDb[e.id] = e;
+                    ++self.mdCount;
+                } else if (e.type === 'idp') {
+                    const old = self.mdDb[e.id];
+                    self._update_idp(old, e);
+                    ++self.mdRepeat;
                 }
-                if (e.type === 'idp') {
-                    self.idpDb[e.id] = e;
-                }
-                self.mdDb[e.id] = e;
-                ++self.mdCount;
             }]);
             self._p.on('data', () => {
             });
             self._p.on('end', () => {
+                for (let id in self.mdDb) {
+                    const e = self.mdDb[id];
+                    if (e.type === 'idp') {
+                        const doc = self._get_indexable_doc(e);
+                        this.idx.add(doc);
+                    }
+                }
                 this.idx.build();
-                console.log(`loaded ${self.mdCount} objects`);
+                console.log(`loaded ${self.mdCount} objects with ${self.mdRepeat} repetitions`);
                 if (self.cb) {
                     self.cb(undefined, self)
                 }
@@ -120,6 +93,58 @@ class Metadata {
         } catch (e) {
             console.log(`Error loading metadata: ${e}`);
             self.cb(e, self)
+        }
+    }
+
+    _get_indexable_doc(e) {
+        let doc = {
+            "id": e.id,
+            "entityID": e.entityID,
+            "title": [e.title.toLocaleLowerCase(locales)],
+        };
+        if (e.keywords) {
+            doc.keywords = e.keywords.toLocaleLowerCase(locales).split(",").map(e=>e.trim())
+        }
+        if (e.title_langs) {
+            doc.title.push(...Object.entries(e.title_langs).map((kv,i) => {
+                return kv[1].toLocaleLowerCase(locales).trim();
+            }))
+        }
+        if (e.scope) {
+            doc.tags = e.scope.split(",").map(function (scope) {
+                let parts = scope.split('.');
+                return parts.slice(0, -1);
+            }).join(',');
+            doc.scopes = e.scope.split(",");
+        }
+        doc.title = [...new Set(doc.title)].sort()
+        doc.scopes = [...new Set(doc.scopes)].sort()
+        if (e.registrationAuthority) {
+            doc.registrationAuthority = [e.registrationAuthority];
+        }
+        if (e.entity_category) {
+            doc.entity_category = e.entity_category;
+        }
+        if (e.entity_category_support) {
+            doc.entity_category_support = e.entity_category_support;
+        }
+        if (e.assurance_certification) {
+            doc.assurance_certification = e.assurance_certification;
+        }
+        if (e.md_source) {
+            doc.md_source = e.md_source;
+        }
+        return doc;
+    }
+
+    _update_idp(old, e) {
+        const regauth = e.registrationAuthority;
+        if ('registrationAuthority' in old) {
+            if (!(regauth in old.registrationAuthority)) {
+                old.registrationAuthority.push(regauth);
+            }
+        } else {
+            old.registrationAuthority = [regauth];
         }
     }
 

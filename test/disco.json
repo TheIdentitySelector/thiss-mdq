@@ -218,7 +218,7 @@
     "entityID": "https://idp.sdju.edu.cn/idp/shibboleth",
     "registrationAuthority": "https://www.carsi.edu.cn",
     "md_source": [
-      "https://example.org/edugain-trustinfo-2.0.xml"
+      "https://mdq.incommon.org/entities"
     ],
     "assurance_certification": [
       "https://refeds.org/sirtfi"

@@ -176,6 +176,20 @@ describe('', () => {
                 done();
             });
         });
+        it('should return shanghai dianji university', (done) => {
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "incommon-wayfinder";
+            const q = "shanghai";
+            chai.request.execute(app)
+                .get(`/entities?entityID=${entityID}&trustProfile=${profile}&q=${q}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(1);
+                    chai.expect(data[0].title).to.equal("shanghai dianji university");
+                done();
+            });
+        });
         it('should return 2 IdPs', (done) => {
             const entityID = encodeURIComponent("http://fs.liu.se/adfs/services/trust");
             const profile = "customer";
