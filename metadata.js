@@ -293,13 +293,11 @@ class Metadata {
                 trustProfile = self.tiDb[entityID]['profiles'][trustProfileName];
                 extraMetadata = self.tiDb[entityID]['extra_md'];
                 strictProfile = trustProfile.strict;
-                console.log(`Found profile ${trustProfileName}, strict: ${strictProfile}`);
 
                 trustProfile.entity.forEach((e) => {
                     // if the entity is in the external metadata,
                     // keep it in extraIdPs 
                     if (extraMetadata && e.entity_id in extraMetadata) {
-                      console.log(`ENTITY ID FOUND IN EXTRA MED`);
                         const extraIdP = {...extraMetadata[e.entity_id]};
                         extraIdP.id = _sha1_id(e.entity_id);
                         extraIdPs.push(extraIdP);
@@ -319,7 +317,6 @@ class Metadata {
                     self.idx.addTermToQuery(tQuery, e.select, [e.match], e.include);
                     self.idx.addTermToQuery(tQuery_op, e.select, [e.match], !e.include);
                     emptyTQuery = false;
-                      console.log(`TQUERY WITH ENTITIES ${JSON.stringify(tQuery)}`);
                 });
             }
         }
@@ -352,7 +349,6 @@ class Metadata {
             trustProfile.entity.forEach(function(e) {
                 // we do a query for each of the single entities and accumulate the results.
                 if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
-                  console.log(`THERE ARE ENTITIES OUT OF EXTRA MD`);
                     queryUsed = true;
                     const newQuery = [...tQuery];
                     self.idx.addTermToQuery(newQuery, e.entity_id, ['entityID'], e.include);
@@ -377,12 +373,10 @@ class Metadata {
                     });
                 }
                 indexResults = self.idx.search(tQuery);
-              console.log(`FOUND ${indexResults.length} RESULTS FOR QUERY ${JSON.stringify(tQuery)}`);
             }
             // if the profile is strict, we just gather the corresponding metadata
             if (strictProfile === undefined || strictProfile) {
                 indexResults.forEach((e) => {
-                  console.log(`ENTITY INTO RESULTS ID ${e.id} from ${JSON.stringify(e)}`);
                     results.push(self.idpDb_unhinted[e.ref]);
                 });
             // if the profile is not strict, we use the index search results
@@ -403,12 +397,9 @@ class Metadata {
         }
         // Here we are dealing with just a full text search with no trust profile involved.
         else {
-            console.log(`FTSSSSSSSSSSSSSSSSSSssssssssssssssssssssss`);
             if (!emptyQQuery) {
                 res.append("Surrogate-Key", `query`);
-            console.log(`FTSSSSSSSSSSSSSSSSSS ${JSON.stringify(qQuery)}`);
                 results = self.idx.search(qQuery);
-            console.log(`FTSSSSSSSSSS results ${JSON.stringify(results)}`);
             } else {
                 res.append("Surrogate-Key", "entities");
                 results = Object.values(self.idpDb_unhinted);
@@ -416,7 +407,6 @@ class Metadata {
         }
         results.push(...extraIdPs);
 
-                  console.log(`RETURNING RESULTS ${results.length}`);
         return results;
     }
 }
