@@ -278,12 +278,12 @@ class Metadata {
         const qQuery = self.idx.newQuery();
         let emptyTQuery = true;
         let emptyQQuery = true;
-        const extraIdPs = [];
+        const extraIdPs = {};
         let trustProfile;
         let strictProfile;
         let extraMetadata;
 
-        const unhinted = [];
+        const unhinted = {};
 
         // First we build the query terms for the trust profile.
         // If there are any, we set emptyTQuery to false.
@@ -300,7 +300,7 @@ class Metadata {
                     if (extraMetadata && e.entity_id in extraMetadata) {
                         const extraIdP = {...extraMetadata[e.entity_id]};
                         extraIdP.id = _sha1_id(e.entity_id);
-                        extraIdPs.push(extraIdP);
+                        extraIdPs[extraIdP.id] = extraIdP;
                     } else {
                         emptyTQuery = false;
                         // only add a query term for single entities that are excluded.
@@ -308,8 +308,10 @@ class Metadata {
                         // they will negate each other
                         if (!e.include) {
                             self.idx.addTermToQuery(tQuery, e.entity_id, ['entityID'], e.include);
-                            const id = _sha1_id(e.entity_id);
-                            unhinted.push(self.idpDb_unhinted[id]);
+                            if (strictProfile === false) {
+                                const id = _sha1_id(e.entity_id);
+                                unhinted[id] = self.idpDb_unhinted[id];
+                            }
                         }
                     }
                 });
@@ -338,7 +340,7 @@ class Metadata {
             });
             emptyQQuery = false;
         }
-        let results = [];
+        let results = {};
 
         // there is trust profile filtering, we have term queries for the profile.
         if (!emptyTQuery) {
@@ -377,21 +379,21 @@ class Metadata {
             // if the profile is strict, we just gather the corresponding metadata
             if (strictProfile === undefined || strictProfile) {
                 indexResults.forEach((e) => {
-                    results.push(self.idpDb_unhinted[e.ref]);
+                    results[e.ref] = self.idpDb_unhinted[e.ref];
                 });
             // if the profile is not strict, we use the index search results
             // to mark all those entities not present in these results with a hint
             } else {
                 indexResults.forEach((e) => {
-                    results.push(self.idpDb_hinted[e.ref]);
+                    results[e.ref] = self.idpDb_hinted[e.ref];
                 });
-                results.push(...unhinted);
+                Object.assign(results, unhinted);
                 qQuery.forEach(term => {
                     tQuery_op.push(term);
                 });
                 const badResults = self.idx.search(tQuery_op);
                 badResults.forEach((e) => {
-                    results.push(self.idpDb_unhinted[e.ref]);
+                    results[e.ref] = self.idpDb_unhinted[e.ref];
                 });
             }
         }
@@ -405,9 +407,9 @@ class Metadata {
                 results = Object.values(self.idpDb_unhinted);
             }
         }
-        results.push(...extraIdPs);
+        Object.assign(results, extraIdPs);
 
-        return results;
+        return Object.values(results);
     }
 }
 
