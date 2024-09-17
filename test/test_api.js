@@ -379,6 +379,44 @@ describe('', () => {
             });
             done();
         });
+        it('should return 2 IdPs', (done) => {
+            const entityID = encodeURIComponent("https://box-idp.nordu.net/simplesaml/module.php/saml/sp/metadata.php/default-sp");
+            const profile = "customer";
+            chai.request.execute(app)
+                .get(`/entities?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(2);
+                    data.forEach(idp => {
+                        chai.expect(idp.entity_category).to.include("http://www.geant.net/uri/dataprotection-code-of-conduct/v1");
+                        chai.expect(idp.entity_category).to.include("http://refeds.org/category/research-and-scholarship");
+                    });
+                done();
+            });
+        });
+        it('should return all IdPs, trusting only 2 of them', (done) => {
+            const entityID = encodeURIComponent("https://box-idp.nordu.net/simplesaml/module.php/saml/sp/metadata.php/default-sp");
+            const profile = "customer2";
+            chai.request.execute(app)
+                .get(`/entities?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(15);
+                    let i = 0;
+                    data.forEach(idp => {
+                        if (idp.entity_category && idp.entity_category.includes("http://www.geant.net/uri/dataprotection-code-of-conduct/v1") && idp.entity_category.includes("http://refeds.org/category/research-and-scholarship") ) {
+                            chai.expect(idp).to.haveOwnProperty('hint');
+                            i++;
+                        } else {
+                            chai.expect(idp).to.not.haveOwnProperty('hint');
+                        }
+                    });
+                chai.expect(i).to.equal(2);
+                done();
+            });
+        });
         it('should return nothing', (done) => {
             const entityID = encodeURIComponent("https://csucoast.infoready4.com/shibboleth");
             const profile = "customer7";
