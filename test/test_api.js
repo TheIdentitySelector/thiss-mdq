@@ -132,6 +132,7 @@ describe('', () => {
                 .end((err,res) => {
                     chai.expect(res.status).to.equal(200);
                     let data = res.body;
+                  console.log(`RETURNED DDDDDDDDDDDDDDDDDDDD ${JSON.stringify(data)}`);
                     chai.expect(data.length).to.equal(1);
                     chai.expect(data[0]['title']).to.equal("Université de Picardie Jules Verne");
                 done();
@@ -200,7 +201,8 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(2);
                     data.forEach(idp => {
-                        chai.expect(idp.registrationAuthority).to.equal("http://www.swamid.se/");
+                        chai.expect(idp.registrationAuthority).to.include("http://www.swamid.se/");
+                        chai.expect(idp.registrationAuthority.length).to.equal(1);
                         chai.expect(idp).to.not.haveOwnProperty('hint');
                     });
                 done();
@@ -217,7 +219,8 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(1);
                     chai.expect(data[0].title).to.equal("eduID Sweden");
-                    chai.expect(data[0].registrationAuthority).to.equal("http://www.swamid.se/");
+                    chai.expect(data[0].registrationAuthority).to.include("http://www.swamid.se/");
+                    chai.expect(data[0].registrationAuthority.length).to.equal(1);
                     chai.expect(data[0]).to.not.haveOwnProperty('hint');
                 done();
             });
@@ -232,16 +235,16 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(15);
                     data.forEach(idp => {
-                        if (idp.registrationAuthority !== "http://www.swamid.se/") {
-                            chai.expect(idp).to.not.haveOwnProperty('hint');
-                        } else {
+                        if (idp.registrationAuthority.includes("http://www.swamid.se/")) {
                             chai.expect(idp).to.haveOwnProperty('hint');
+                        } else {
+                            chai.expect(idp).to.not.haveOwnProperty('hint');
                         }
                     });
                 done();
             });
         });
-        it('should return 12 IdPs, trusting only eduID', (done) => {
+        it('should return 12 IdPs, trusting only those registered by swamid', (done) => {
             const entityID = encodeURIComponent("http://fs.liu.se/adfs/services/trust");
             const profile = "customer2";
             const q = "edu";
@@ -252,10 +255,10 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(12);
                     data.forEach(idp => {
-                        if (idp.registrationAuthority !== "http://www.swamid.se/") {
-                            chai.expect(idp).to.not.haveOwnProperty('hint');
-                        } else {
+                        if (idp.registrationAuthority.includes("http://www.swamid.se/")) {
                             chai.expect(idp).to.haveOwnProperty('hint');
+                        } else {
+                            chai.expect(idp).to.not.haveOwnProperty('hint');
                         }
                     });
                 done();
@@ -271,7 +274,8 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(1);
                     data.forEach(idp => {
-                        chai.expect(idp.registrationAuthority).to.equal("http://www.swamid.se/");
+                        chai.expect(idp.registrationAuthority).to.include("http://www.swamid.se/");
+                        chai.expect(idp.registrationAuthority.length).to.equal(1);
                         chai.expect(idp.title).to.not.equal("eduID Sweden");
                         chai.expect(idp).to.not.haveOwnProperty('hint');
                     });
@@ -288,10 +292,10 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.length).to.equal(15);
                     data.forEach(idp => {
-                        if (idp.registrationAuthority !== "http://www.swamid.se/" || idp.title === "eduID Sweden") {
-                            chai.expect(idp).to.not.haveOwnProperty('hint');
-                        } else {
+                        if (idp.registrationAuthority.includes("http://www.swamid.se/") && idp.title !== "eduID Sweden") {
                             chai.expect(idp).to.haveOwnProperty('hint');
+                        } else {
+                            chai.expect(idp).to.not.haveOwnProperty('hint');
                         }
                     });
                 done();

@@ -27,7 +27,8 @@ class Metadata {
             this.tiFile = tiFile;
             this.cb = cb;
             this.mdDb = {};
-            this.idpDb = {};
+            this.idpDb_hinted = {};
+            this.idpDb_unhinted = {};
             this.tiDb = {};
             this.mdCount = 0;
             this.mdRepeat = 0;
@@ -63,8 +64,12 @@ class Metadata {
                 e.entity_id = e.entityID;
                 e.id = _sha1_id(e.entityID);
                 if (!(e.id in self.mdDb)) {
+                    self._fix_entity(e);
                     if (e.type === 'idp') {
-                        self.idpDb[e.id] = e;
+                        self.idpDb_unhinted[e.id] = e;
+                        const hinted = {...e};
+                        hinted.hint = true;
+                        self.idpDb_hinted[e.id] = hinted;
                     }
                     self.mdDb[e.id] = e;
                     ++self.mdCount;
@@ -102,6 +107,7 @@ class Metadata {
             "entityID": e.entityID,
             "title": [e.title.toLocaleLowerCase(locales)],
         };
+        e.keywords = '';
         if (e.keywords) {
             doc.keywords = e.keywords.toLocaleLowerCase(locales).split(",").map(e=>e.trim())
         }
@@ -110,6 +116,8 @@ class Metadata {
                 return kv[1].toLocaleLowerCase(locales).trim();
             }))
         }
+        e.tags = '';
+        e.scopes = [];
         if (e.scope) {
             doc.tags = e.scope.split(",").map(function (scope) {
                 let parts = scope.split('.');
@@ -119,22 +127,34 @@ class Metadata {
         }
         doc.title = [...new Set(doc.title)].sort()
         doc.scopes = [...new Set(doc.scopes)].sort()
+        doc.registrationAuthority = [];
         if (e.registrationAuthority) {
             doc.registrationAuthority = [e.registrationAuthority];
         }
+        doc.entity_category = [];
         if (e.entity_category) {
             doc.entity_category = e.entity_category;
         }
+        doc.entity_category_support = [];
         if (e.entity_category_support) {
             doc.entity_category_support = e.entity_category_support;
         }
+        doc.assurance_certification = [];
         if (e.assurance_certification) {
             doc.assurance_certification = e.assurance_certification;
         }
+        doc.md_source = [];
         if (e.md_source) {
             doc.md_source = e.md_source;
         }
         return doc;
+    }
+
+    _fix_entity(e) {
+        const regauth = e.registrationAuthority;
+        if (!Array.isArray(regauth)) {
+            e.registrationAuthority = [regauth];
+        }
     }
 
     _update_idp(old, e) {
@@ -164,6 +184,14 @@ class Metadata {
             // here we check that the requested entity fits with the specified trust profile,
             // and add a hint if necessary
             let entity = {...this.mdDb[id]};
+
+            if (entity && entity.type === "sp") {
+                if (entity.entityID in this.tiDb) {
+                    entity = {...entity};
+                    entity.tinfo = this.tiDb[entity.entityID];
+                }
+                return entity;
+            }
 
             const trustProfile = this.tiDb[entityID]['profiles'][trustProfileName];
             const extraMetadata = this.tiDb[entityID]['extra_md'];
@@ -231,7 +259,7 @@ class Metadata {
             // and return the entity.
             } else {
                 if (seen) {
-                    entity.hint = trustProfile.display_name;
+                    entity.hint = true;
                 }
                 return entity;
             }
@@ -246,6 +274,7 @@ class Metadata {
         let self = this;
 
         const tQuery = self.idx.newQuery();
+        const tQuery_op = self.idx.newQuery();
         const qQuery = self.idx.newQuery();
         let emptyTQuery = true;
         let emptyQQuery = true;
@@ -253,6 +282,8 @@ class Metadata {
         let trustProfile;
         let strictProfile;
         let extraMetadata;
+
+        const unhinted = [];
 
         // First we build the query terms for the trust profile.
         // If there are any, we set emptyTQuery to false.
@@ -268,6 +299,7 @@ class Metadata {
                     // if the entity is in the external metadata,
                     // keep it in extraIdPs 
                     if (extraMetadata && e.entity_id in extraMetadata) {
+                      console.log(`ENTITY ID FOUND IN EXTRA MED`);
                         const extraIdP = {...extraMetadata[e.entity_id]};
                         extraIdP.id = _sha1_id(e.entity_id);
                         extraIdPs.push(extraIdP);
@@ -278,12 +310,16 @@ class Metadata {
                         // they will negate each other
                         if (!e.include) {
                             self.idx.addTermToQuery(tQuery, e.entity_id, ['entityID'], e.include);
+                            const id = _sha1_id(e.entity_id);
+                            unhinted.push(self.idpDb_unhinted[id]);
                         }
                     }
                 });
                 trustProfile.entities.forEach((e) => {
                     self.idx.addTermToQuery(tQuery, e.select, [e.match], e.include);
+                    self.idx.addTermToQuery(tQuery_op, e.select, [e.match], !e.include);
                     emptyTQuery = false;
+                      console.log(`TQUERY WITH ENTITIES ${JSON.stringify(tQuery)}`);
                 });
             }
         }
@@ -311,87 +347,76 @@ class Metadata {
         if (!emptyTQuery) {
             res.append("Surrogate-Key", `query`);
 
-            // We have full text query and a strict profile,
-            // so just mix the queries.
-            if (!emptyQQuery && (strictProfile === undefined || strictProfile)) {
-                qQuery.forEach(term => {
-                    tQuery.push(term);
-                });
-            }
             let indexResults = [];
             let queryUsed = false;
             trustProfile.entity.forEach(function(e) {
                 // we do a query for each of the single entities and accumulate the results.
                 if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
+                  console.log(`THERE ARE ENTITIES OUT OF EXTRA MD`);
                     queryUsed = true;
                     const newQuery = [...tQuery];
                     self.idx.addTermToQuery(newQuery, e.entity_id, ['entityID'], e.include);
+                    if (!emptyQQuery) {
+                        qQuery.forEach(term => {
+                            newQuery.push(term);
+                        });
+                    }
                     const moreResults = self.idx.search(newQuery);
                     if (moreResults) {
                         indexResults.push(...moreResults);
                     }
+                    self.idx.addTermToQuery(tQuery_op, e.entity_id, ['entityID'], !e.include);
                 }
             });
             // if there were no single entity filterings,
             // we do the single index seaarch here.
             if (!queryUsed) {
+                if (!emptyQQuery) {
+                    qQuery.forEach(term => {
+                        tQuery.push(term);
+                    });
+                }
                 indexResults = self.idx.search(tQuery);
+              console.log(`FOUND ${indexResults.length} RESULTS FOR QUERY ${JSON.stringify(tQuery)}`);
             }
             // if the profile is strict, we just gather the corresponding metadata
             if (strictProfile === undefined || strictProfile) {
-                indexResults.forEach(function(m) {
-                    results.push(self.lookup(m.ref));
+                indexResults.forEach((e) => {
+                  console.log(`ENTITY INTO RESULTS ID ${e.id} from ${JSON.stringify(e)}`);
+                    results.push(self.idpDb_unhinted[e.ref]);
                 });
             // if the profile is not strict, we use the index search results
             // to mark all those entities not present in these results with a hint
             } else {
-                const gatherResult = (idp, ref, ids, good, bad) => {
-                    if (ref in ids) {
-                        if (idp.hint === undefined) {
-                            const newIdp = {...idp};
-                            newIdp.hint = trustProfile.display_name;
-                            good.push(newIdp);
-                        } else {
-                            good.push(idp);
-                        }
-                    } else {
-                        bad.push(idp);
-                    }
-                };
-                const indexResultsIDs = {};
-                indexResults.forEach(m => indexResultsIDs[m.ref] = undefined);
-                let goodResults = [], badResults = [];
-                if (!emptyQQuery) {
-                    const preQResults = self.idx.search(qQuery);
-                    preQResults.forEach(m => {
-                        const idp = self.lookup(m.ref);
-                        gatherResult(idp, m.ref, indexResultsIDs, goodResults, badResults);
-                    });
-                } else {
-                    Object.entries(self.idpDb).forEach(entry => {
-                        const ref = entry[0];
-                        const idp = entry[1];
-                        gatherResult(idp, ref, indexResultsIDs, goodResults, badResults);
-                    });
-                }
-                results = goodResults.concat(badResults);
+                indexResults.forEach((e) => {
+                    results.push(self.idpDb_hinted[e.ref]);
+                });
+                results.push(...unhinted);
+                qQuery.forEach(term => {
+                    tQuery_op.push(term);
+                });
+                const badResults = self.idx.search(tQuery_op);
+                badResults.forEach((e) => {
+                    results.push(self.idpDb_unhinted[e.ref]);
+                });
             }
         }
         // Here we are dealing with just a full text search with no trust profile involved.
         else {
+            console.log(`FTSSSSSSSSSSSSSSSSSSssssssssssssssssssssss`);
             if (!emptyQQuery) {
                 res.append("Surrogate-Key", `query`);
-                const qResults = self.idx.search(qQuery);
-                qResults.forEach(function(m) {
-                    results.push(self.lookup(m.ref));
-                });
+            console.log(`FTSSSSSSSSSSSSSSSSSS ${JSON.stringify(qQuery)}`);
+                results = self.idx.search(qQuery);
+            console.log(`FTSSSSSSSSSS results ${JSON.stringify(results)}`);
             } else {
                 res.append("Surrogate-Key", "entities");
-                results = Object.values(self.idpDb);
+                results = Object.values(self.idpDb_unhinted);
             }
         }
         results.push(...extraIdPs);
 
+                  console.log(`RETURNING RESULTS ${results.length}`);
         return results;
     }
 }
