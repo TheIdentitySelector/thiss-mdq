@@ -129,23 +129,23 @@ class Metadata {
         doc.scopes = [...new Set(doc.scopes)].sort()
         doc.registrationAuthority = [];
         if (e.registrationAuthority) {
-            doc.registrationAuthority = e.registrationAuthority.join(' ');
+            doc.registrationAuthority = e.registrationAuthority;
         }
         doc.entity_category = [];
         if (e.entity_category) {
-            doc.entity_category = e.entity_category.join(' ');
+            doc.entity_category = e.entity_category;
         }
         doc.entity_category_support = [];
         if (e.entity_category_support) {
-            doc.entity_category_support = e.entity_category_support.join(' ');
+            doc.entity_category_support = e.entity_category_support;
         }
         doc.assurance_certification = [];
         if (e.assurance_certification) {
-            doc.assurance_certification = e.assurance_certification.join(' ');
+            doc.assurance_certification = e.assurance_certification;
         }
         doc.md_source = [];
         if (e.md_source) {
-            doc.md_source = e.md_source.join(' ');
+            doc.md_source = e.md_source;
         }
         return doc;
     }
@@ -161,7 +161,6 @@ class Metadata {
         const attrs = [
             "registrationAuthority",
             "entity_category",
-            "md_source",
             "entity_category_support",
             "assurance_certification",
         ];
@@ -178,7 +177,7 @@ class Metadata {
         const new_attr_array = e[attr_name];
         if (Array.isArray(new_attr_array)) {
             new_attr_array.forEach((val) => {
-                if (val && !(val in attr_array)) {
+                if (val && !attr_array.includes(val)) {
                     attr_array.push(val);
                 }
             });
