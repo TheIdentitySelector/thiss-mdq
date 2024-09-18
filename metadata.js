@@ -166,7 +166,7 @@ class Metadata {
             "assurance_certification",
         ];
         attrs.forEach(attr => {
-            _update_multivalued_attr(old, e, attr);
+            self._update_multivalued_attr(old, e, attr);
         });
     }
 
