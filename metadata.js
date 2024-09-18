@@ -63,8 +63,8 @@ class Metadata {
                 let e = data.value;
                 e.entity_id = e.entityID;
                 e.id = _sha1_id(e.entityID);
+                self._fix_entity_regauth(e);
                 if (!(e.id in self.mdDb)) {
-                    self._fix_entity(e);
                     if (e.type === 'idp') {
                         self.idpDb_unhinted[e.id] = e;
                         const hinted = {...e};
@@ -129,42 +129,59 @@ class Metadata {
         doc.scopes = [...new Set(doc.scopes)].sort()
         doc.registrationAuthority = [];
         if (e.registrationAuthority) {
-            doc.registrationAuthority = [e.registrationAuthority];
+            doc.registrationAuthority = e.registrationAuthority.join(' ');
         }
         doc.entity_category = [];
         if (e.entity_category) {
-            doc.entity_category = e.entity_category;
+            doc.entity_category = e.entity_category.join(' ');
         }
         doc.entity_category_support = [];
         if (e.entity_category_support) {
-            doc.entity_category_support = e.entity_category_support;
+            doc.entity_category_support = e.entity_category_support.join(' ');
         }
         doc.assurance_certification = [];
         if (e.assurance_certification) {
-            doc.assurance_certification = e.assurance_certification;
+            doc.assurance_certification = e.assurance_certification.join(' ');
         }
         doc.md_source = [];
         if (e.md_source) {
-            doc.md_source = e.md_source;
+            doc.md_source = e.md_source.join(' ');
         }
         return doc;
     }
 
-    _fix_entity(e) {
+    _fix_entity_regauth(e) {
         const regauth = e.registrationAuthority;
-        if (!Array.isArray(regauth)) {
+        if (regauth && !Array.isArray(regauth)) {
             e.registrationAuthority = [regauth];
         }
     }
 
     _update_idp(old, e) {
-        const regauth = e.registrationAuthority;
-        if ('registrationAuthority' in old) {
-            if (!(regauth in old.registrationAuthority)) {
-                old.registrationAuthority.push(regauth);
-            }
-        } else {
-            old.registrationAuthority = [regauth];
+        const attrs = [
+            "registrationAuthority",
+            "entity_category",
+            "md_source",
+            "entity_category_support",
+            "assurance_certification",
+        ];
+        attrs.forEach(attr => {
+            _update_multivalued_attr(old, e, attr);
+        });
+    }
+
+    _update_multivalued_attr(old, e, attr_name) {
+        if (old[attr_name] === undefined) {
+            old[attr_name] = [];
+        }
+        const attr_array = old[attr_name];
+        const new_attr_array = e[attr_name];
+        if (Array.isArray(new_attr_array)) {
+            new_attr_array.forEach((val) => {
+                if (val && !(val in attr_array)) {
+                    attr_array.push(val);
+                }
+            });
         }
     }
 
