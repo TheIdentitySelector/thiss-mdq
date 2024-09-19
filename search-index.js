@@ -12,6 +12,7 @@ export class lunrIndexer {
     constructor() {
         this.builder = new lunr.Builder();
         this.builder.pipeline.remove(lunr.trimmer);
+        this.builder.pipeline.register(lunr.tokenizer);
         this.builder.pipeline.add(lunr.tokenizer);
         this.builder.field('title');
         this.builder.field('tags');
@@ -70,6 +71,83 @@ export class lunrIndexer {
             fields: fields,
             presence: presence,
             wildcard: lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING,
+        });
+    }
+
+    getResults(db, indexResults, results) {
+        indexResults.forEach((e) => {
+            results[e.ref] = self.idpDb_unhinted[e.ref];
+        });
+    }
+};
+// Fuse indexer
+export class FuseIndexer {
+    constructor() {
+
+        const options = {
+            useExtendedSearch: true,
+            threshold: 0.6,
+            ignoreLocation: true,
+            ignoreFieldNorm: true,
+            keys: ['title', 'tags', 'scopes', 'keywords', 'entityID', 'registrationAuthority',
+                   'entity_category', 'md_source', 'entity_category_support', 'assurance_certification'],
+        };
+        this.fuse = new Fuse([], options);
+        this.query_operator = '$and';
+    };
+
+    add(doc) {
+        this.fuse.add(doc);
+    };
+
+    build() {
+        this.count = fuse.getIndex().size();
+    };
+
+    search(q) {
+        query = {};
+        query[this.query_operator] = q;
+        options = {'limit': this.count};
+        return this.fuse.search(query, options);
+    }
+
+    newQuery() {
+        return [];
+    }
+
+    addTermToQuery(query, term, fields, include) {
+        if (include) {
+            term = `'${term}`
+        } else {
+            term = `!${term}`
+        }
+        const subquery = [];
+        fields.forEach(field => {
+            const clause = {};
+            clause[field] = term;
+            subquery.push(clause);
+        });
+        if (subquery.length > 1) {
+            query.push({$or: subquery});
+        } else if (subquery.length === 1) {
+            query.push(subquery[0]);
+        }
+    }
+
+    addFTTermToQuery(query, term, fields, include) {
+        const subquery = [];
+        fields.forEach(field => {
+            const clause = {};
+            clause[field] = term;
+            subquery.push(clause);
+        });
+        query.push({$or: subquery});
+    }
+
+    getResults(db, indexResults, results) {
+        indexResults.forEach((e) => {
+            const ref = e.items.id;
+            results[ref] = self.idpDb_unhinted[ref];
         });
     }
 };

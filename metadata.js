@@ -1,4 +1,4 @@
-import {lunrIndexer, redisIndexer} from "./search-index.js";
+import {lunrIndexer, fuseIndexer, redisIndexer} from "./search-index.js";
 import {esc_query, touchp} from "./utils.js";
 import fs from 'fs';
 import chain from 'stream-chain';
@@ -16,7 +16,7 @@ let locales = ["sv-SE", "en-US"];
 const institution_words = ['university','school','institute','college','institute'];
 let all_stopwords = [...sw.eng, ...sw.swe, ...sw.fin, ...sw.nob, ...sw.fra, ...sw.deu, ...institution_words];
 
-const INDEXER = process.env.INDEXER || 'lunr';
+const INDEXER = process.env.INDEXER || 'fuse';
 
 class Metadata {
 
@@ -38,6 +38,8 @@ class Metadata {
                 this.idx = new redisIndexer();
             } else if (INDEXER == "lunr") {
                 this.idx = new lunrIndexer();
+            } else if (INDEXER == "fuse") {
+                this.idx = new fuseIndexer();
             } else {
                 throw `Unknown indexer "${INDEXER}"`;
             }
@@ -289,6 +291,8 @@ class Metadata {
     search(q, entityID, trustProfileName,  res) {
         let self = this;
 
+        const start = Date.now();
+
         const tQuery = self.idx.newQuery();
         const tQuery_op = self.idx.newQuery();
         const qQuery = self.idx.newQuery();
@@ -303,6 +307,7 @@ class Metadata {
 
         // First we build the query terms for the trust profile.
         // If there are any, we set emptyTQuery to false.
+        console.log(`Building the query: ${Date.now() - start}`);
         if (entityID && trustProfileName) {
             if (entityID in self.tiDb && trustProfileName in self.tiDb[entityID]['profiles']) {
 
@@ -358,12 +363,14 @@ class Metadata {
         }
         let results = {};
 
+        console.log(`Searching results: ${Date.now() - start}`);
         // there is trust profile filtering, we have term queries for the profile.
         if (!emptyTQuery) {
             res.append("Surrogate-Key", `query`);
 
             let indexResults = [];
             let queryUsed = false;
+            console.log(`Searching included entity: ${Date.now() - start}`);
             trustProfile.entity.forEach(function(e) {
                 // we do a query for each of the single entities and accumulate the results.
                 if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
@@ -382,8 +389,10 @@ class Metadata {
                     self.idx.addTermToQuery(tQuery_op, e.entity_id, ['entityID'], !e.include);
                 }
             });
+            console.log(`Searched included entity: ${Date.now() - start}`);
             // if there were no single entity filterings,
             // we do the single index seaarch here.
+            console.log(`Searching entities: ${Date.now() - start}`);
             if (!queryUsed) {
                 if (!emptyQQuery) {
                     qQuery.forEach(term => {
@@ -392,32 +401,39 @@ class Metadata {
                 }
                 indexResults = self.idx.search(tQuery);
             }
+            console.log(`Searched entities: ${Date.now() - start}`);
             // if the profile is strict, we just gather the corresponding metadata
             if (strictProfile === undefined || strictProfile) {
-                indexResults.forEach((e) => {
-                    results[e.ref] = self.idpDb_unhinted[e.ref];
-                });
+                console.log(`Gathering strict results: ${Date.now() - start}`);
+                self.idx.getResults(idpDb_unhinted, indexResults, results);
+                console.log(`Gathered strict results: ${Date.now() - start}`);
             // if the profile is not strict, we use the index search results
             // to mark all those entities not present in these results with a hint
             } else {
-                indexResults.forEach((e) => {
-                    results[e.ref] = self.idpDb_hinted[e.ref];
-                });
+                console.log(`Gathering non strict positive results: ${Date.now() - start}`);
+                self.idx.getResults(idpDb_hinted, indexResults, results);
                 Object.assign(results, unhinted);
+                console.log(`Gathered non strict positive results: ${Date.now() - start}`);
+                console.log(`Searching non strict negative entities: ${Date.now() - start}`);
                 qQuery.forEach(term => {
                     tQuery_op.push(term);
                 });
                 const badResults = self.idx.search(tQuery_op);
-                badResults.forEach((e) => {
-                    results[e.ref] = self.idpDb_unhinted[e.ref];
-                });
+                console.log(`Searched non strict negative entities: ${Date.now() - start}`);
+                console.log(`Gathering non strict negative results: ${Date.now() - start}`);
+                self.idx.getResults(idpDb_unhinted, badResults, results);
+                console.log(`Gathered non strict negative results: ${Date.now() - start}`);
             }
         }
         // Here we are dealing with just a full text search with no trust profile involved.
         else {
             if (!emptyQQuery) {
                 res.append("Surrogate-Key", `query`);
-                results = self.idx.search(qQuery);
+                console.log(`Searching only full text: ${Date.now() - start}`);
+                const indexResults = self.idx.search(qQuery);
+                console.log(`Searched only full text: ${Date.now() - start}`);
+                self.idx.getResults(idpDb_unhinted, indexResults, results);
+                console.log(`Gathered only full text: ${Date.now() - start}`);
             } else {
                 res.append("Surrogate-Key", "entities");
                 results = Object.values(self.idpDb_unhinted);
@@ -425,6 +441,7 @@ class Metadata {
         }
         Object.assign(results, extraIdPs);
 
+        console.log(`Finish: ${Date.now() - start}`);
         return Object.values(results);
     }
 }
