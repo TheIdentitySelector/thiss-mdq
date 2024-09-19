@@ -1,4 +1,5 @@
 import lunr from 'lunr';
+import Fuse from 'fuse.js';
 import redis from 'redis';
 import { promisify } from 'util';
 
