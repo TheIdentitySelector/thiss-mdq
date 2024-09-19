@@ -81,7 +81,7 @@ export class lunrIndexer {
     }
 };
 // Fuse indexer
-export class FuseIndexer {
+export class fuseIndexer {
     constructor() {
 
         const options = {
