@@ -109,7 +109,7 @@ class Metadata {
             "entityID": e.entityID,
             "title": [e.title.toLocaleLowerCase(locales)],
         };
-        e.keywords = '';
+        doc.keywords = [];
         if (e.keywords) {
             doc.keywords = e.keywords.toLocaleLowerCase(locales).split(",").map(e=>e.trim())
         }
@@ -118,8 +118,8 @@ class Metadata {
                 return kv[1].toLocaleLowerCase(locales).trim();
             }))
         }
-        e.tags = '';
-        e.scopes = [];
+        doc.tags = '';
+        doc.scopes = [];
         if (e.scope) {
             doc.tags = e.scope.split(",").map(function (scope) {
                 let parts = scope.split('.');
@@ -129,25 +129,25 @@ class Metadata {
         }
         doc.title = [...new Set(doc.title)].sort()
         doc.scopes = [...new Set(doc.scopes)].sort()
-        doc.registrationAuthority = [];
+        doc.registrationAuthority = '';
         if (e.registrationAuthority) {
-            doc.registrationAuthority = e.registrationAuthority;
+            doc.registrationAuthority = e.registrationAuthority.join(' ');
         }
-        doc.entity_category = [];
+        doc.entity_category = '.';
         if (e.entity_category) {
-            doc.entity_category = e.entity_category;
+            doc.entity_category = e.entity_category.join(' ');
         }
-        doc.entity_category_support = [];
+        doc.entity_category_support = '.';
         if (e.entity_category_support) {
-            doc.entity_category_support = e.entity_category_support;
+            doc.entity_category_support = e.entity_category_support.join(' ');
         }
-        doc.assurance_certification = [];
+        doc.assurance_certification = '.';
         if (e.assurance_certification) {
-            doc.assurance_certification = e.assurance_certification;
+            doc.assurance_certification = e.assurance_certification.join(' ');
         }
-        doc.md_source = [];
+        doc.md_source = '.';
         if (e.md_source) {
-            doc.md_source = e.md_source;
+            doc.md_source = e.md_source.join(' ');
         }
         return doc;
     }
@@ -291,8 +291,6 @@ class Metadata {
     search(q, entityID, trustProfileName,  res) {
         let self = this;
 
-        const start = Date.now();
-
         const tQuery = self.idx.newQuery();
         const tQuery_op = self.idx.newQuery();
         const qQuery = self.idx.newQuery();
@@ -307,7 +305,6 @@ class Metadata {
 
         // First we build the query terms for the trust profile.
         // If there are any, we set emptyTQuery to false.
-        console.log(`Building the query: ${Date.now() - start}`);
         if (entityID && trustProfileName) {
             if (entityID in self.tiDb && trustProfileName in self.tiDb[entityID]['profiles']) {
 
@@ -363,14 +360,12 @@ class Metadata {
         }
         let results = {};
 
-        console.log(`Searching results: ${Date.now() - start}`);
         // there is trust profile filtering, we have term queries for the profile.
         if (!emptyTQuery) {
             res.append("Surrogate-Key", `query`);
 
             let indexResults = [];
             let queryUsed = false;
-            console.log(`Searching included entity: ${Date.now() - start}`);
             trustProfile.entity.forEach(function(e) {
                 // we do a query for each of the single entities and accumulate the results.
                 if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
@@ -389,10 +384,8 @@ class Metadata {
                     self.idx.addTermToQuery(tQuery_op, e.entity_id, ['entityID'], !e.include);
                 }
             });
-            console.log(`Searched included entity: ${Date.now() - start}`);
             // if there were no single entity filterings,
             // we do the single index seaarch here.
-            console.log(`Searching entities: ${Date.now() - start}`);
             if (!queryUsed) {
                 if (!emptyQQuery) {
                     qQuery.forEach(term => {
@@ -401,39 +394,27 @@ class Metadata {
                 }
                 indexResults = self.idx.search(tQuery);
             }
-            console.log(`Searched entities: ${Date.now() - start}`);
             // if the profile is strict, we just gather the corresponding metadata
             if (strictProfile === undefined || strictProfile) {
-                console.log(`Gathering strict results: ${Date.now() - start}`);
-                self.idx.getResults(idpDb_unhinted, indexResults, results);
-                console.log(`Gathered strict results: ${Date.now() - start}`);
+                self.idx.getResults(self.idpDb_unhinted, indexResults, results);
             // if the profile is not strict, we use the index search results
             // to mark all those entities not present in these results with a hint
             } else {
-                console.log(`Gathering non strict positive results: ${Date.now() - start}`);
-                self.idx.getResults(idpDb_hinted, indexResults, results);
+                self.idx.getResults(self.idpDb_hinted, indexResults, results);
                 Object.assign(results, unhinted);
-                console.log(`Gathered non strict positive results: ${Date.now() - start}`);
-                console.log(`Searching non strict negative entities: ${Date.now() - start}`);
                 qQuery.forEach(term => {
                     tQuery_op.push(term);
                 });
                 const badResults = self.idx.search(tQuery_op);
-                console.log(`Searched non strict negative entities: ${Date.now() - start}`);
-                console.log(`Gathering non strict negative results: ${Date.now() - start}`);
-                self.idx.getResults(idpDb_unhinted, badResults, results);
-                console.log(`Gathered non strict negative results: ${Date.now() - start}`);
+                self.idx.getResults(self.idpDb_unhinted, badResults, results);
             }
         }
         // Here we are dealing with just a full text search with no trust profile involved.
         else {
             if (!emptyQQuery) {
                 res.append("Surrogate-Key", `query`);
-                console.log(`Searching only full text: ${Date.now() - start}`);
                 const indexResults = self.idx.search(qQuery);
-                console.log(`Searched only full text: ${Date.now() - start}`);
-                self.idx.getResults(idpDb_unhinted, indexResults, results);
-                console.log(`Gathered only full text: ${Date.now() - start}`);
+                self.idx.getResults(self.idpDb_unhinted, indexResults, results);
             } else {
                 res.append("Surrogate-Key", "entities");
                 results = Object.values(self.idpDb_unhinted);
@@ -441,7 +422,6 @@ class Metadata {
         }
         Object.assign(results, extraIdPs);
 
-        console.log(`Finish: ${Date.now() - start}`);
         return Object.values(results);
     }
 }

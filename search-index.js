@@ -77,7 +77,7 @@ export class lunrIndexer {
 
     getResults(db, indexResults, results) {
         indexResults.forEach((e) => {
-            results[e.ref] = self.idpDb_unhinted[e.ref];
+            results[e.ref] = db[e.ref];
         });
     }
 };
@@ -86,6 +86,7 @@ export class fuseIndexer {
     constructor() {
 
         const options = {
+            includeScore: true,
             useExtendedSearch: true,
             threshold: 0.6,
             ignoreLocation: true,
@@ -102,14 +103,19 @@ export class fuseIndexer {
     };
 
     build() {
-        this.count = fuse.getIndex().size();
+        this.count = this.fuse.getIndex().size();
     };
 
     search(q) {
-        query = {};
-        query[this.query_operator] = q;
-        options = {'limit': this.count};
-        return this.fuse.search(query, options);
+        let query = {};
+        if (q.length > 1) {
+            query[this.query_operator] = q;
+        } else if (q.length === 1) {
+            query = q[0];
+        }
+        const options = {'limit': this.count};
+        const results = this.fuse.search(query, options);
+        return results;
     }
 
     newQuery() {
@@ -139,7 +145,7 @@ export class fuseIndexer {
         const subquery = [];
         fields.forEach(field => {
             const clause = {};
-            clause[field] = term;
+            clause[field] = `'${term}`;
             subquery.push(clause);
         });
         query.push({$or: subquery});
@@ -147,8 +153,8 @@ export class fuseIndexer {
 
     getResults(db, indexResults, results) {
         indexResults.forEach((e) => {
-            const ref = e.items.id;
-            results[ref] = self.idpDb_unhinted[ref];
+            const ref = e.item.id;
+            results[ref] = db[ref];
         });
     }
 };

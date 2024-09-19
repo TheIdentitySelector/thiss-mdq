@@ -132,7 +132,6 @@ describe('', () => {
                 .end((err,res) => {
                     chai.expect(res.status).to.equal(200);
                     let data = res.body;
-                  console.log(`RETURNED DDDDDDDDDDDDDDDDDDDD ${JSON.stringify(data)}`);
                     chai.expect(data.length).to.equal(1);
                     chai.expect(data[0]['title']).to.equal("Université de Picardie Jules Verne");
                 done();
