@@ -348,8 +348,8 @@ class Metadata {
             if (ati > -1) {
                 q = q.substring(ati + 1);
             }
-            q = esc_query(q)
             let tokens = q.split(/\s+/);
+            tokens = tokens.map(token => esc_query(token));
             let str = [tokens[0]]
             str.push(...sw.removeStopwords(tokens.slice(1), all_stopwords))
 

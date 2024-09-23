@@ -33,7 +33,9 @@ export class ArrayFormatter extends Stream {
 }
 
 export function esc_query(q) {
-    return q.replace(new RegExp('-|\\+','g'), m => "\\" + m)
+    let word = q.replace(/^[\^'!=]+/, '');
+    word = word.replace(/[\$]+$/, '');
+    return word
 }
 
 export function touchp(path) {
