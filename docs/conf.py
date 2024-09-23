@@ -26,7 +26,7 @@ author = 'Leif Johansson'
 # The short X.Y version
 version = '1.3'
 # The full version, including alpha/beta/rc tags
-release = '1.5.0b2'
+release = '1.5.0b3'
 
 
 # -- General configuration ---------------------------------------------------
