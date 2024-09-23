@@ -79,6 +79,10 @@ class Metadata {
                     const old = self.mdDb[e.id];
                     self._update_idp(old, e);
                     ++self.mdRepeat;
+                } else if (e.type === 'sp') {
+                    const old = self.mdDb[e.id];
+                    self._update_sp(old, e);
+                    ++self.mdRepeat;
                 }
             }]);
             self._p.on('data', () => {
@@ -129,7 +133,7 @@ class Metadata {
         }
         doc.title = [...new Set(doc.title)].sort()
         doc.scopes = [...new Set(doc.scopes)].sort()
-        doc.registrationAuthority = '';
+        doc.registrationAuthority = '.';
         if (e.registrationAuthority) {
             doc.registrationAuthority = e.registrationAuthority.join(' ');
         }
@@ -165,6 +169,14 @@ class Metadata {
             "entity_category",
             "entity_category_support",
             "assurance_certification",
+        ];
+        attrs.forEach(attr => {
+            this._update_multivalued_attr(old, e, attr);
+        });
+    }
+
+    _update_sp(old, e) {
+        const attrs = [
             "discovery_responses",
         ];
         attrs.forEach(attr => {
