@@ -165,6 +165,7 @@ class Metadata {
             "entity_category",
             "entity_category_support",
             "assurance_certification",
+            "discovery_responses",
         ];
         attrs.forEach(attr => {
             this._update_multivalued_attr(old, e, attr);
