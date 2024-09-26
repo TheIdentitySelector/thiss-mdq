@@ -238,14 +238,18 @@ class Metadata {
             if (!entity) {
                 return entity;
             }
-            let seen = false;
+            let seen;
 
             // check whether the entity is selected by some specific entity clause
             trustProfile.entity.forEach((e) => {
                 if (e.include && e.entity_id === entity.entity_id) {
                     seen = true;
-                } else if (!e.include && e.entity_id !== entity.entity_id) {
-                    seen = true;
+                } else if (!e.include) {
+                    if (e.entity_id === entity.entity_id) {
+                        seen = false;
+                    } else {
+                        seen = true;
+                    }
                 }
             });
             // if the entity comes from external metadata,
@@ -259,25 +263,27 @@ class Metadata {
                 }
             }
             // check whether the entity is selected by some entities clause in the profile
-            trustProfile.entities.forEach((e) => {
-                if (Array.isArray(entity[e.match])) {
-                    if (e.include && entity[e.match].includes(e.select)) {
-                        seen = true;
-                    } else if ((!e.include) && !entity[e.match].includes(e.select)) {
-                        seen = true;
+            if (seen !== false) {
+                trustProfile.entities.forEach((e) => {
+                    if (Array.isArray(entity[e.match])) {
+                        if (e.include && entity[e.match].includes(e.select)) {
+                            seen = true;
+                        } else if ((!e.include) && !entity[e.match].includes(e.select)) {
+                            seen = true;
+                        } else {
+                            seen = false;
+                        }
                     } else {
-                        seen = false;
+                        if (e.include && entity[e.match] === e.select) {
+                            seen = true;
+                        } else if ((!e.include) && entity[e.match] !== e.select) {
+                            seen = true;
+                        } else {
+                            seen = false;
+                        }
                     }
-                } else {
-                    if (e.include && entity[e.match] === e.select) {
-                        seen = true;
-                    } else if ((!e.include) && entity[e.match] !== e.select) {
-                        seen = true;
-                    } else {
-                        seen = false;
-                    }
-                }
-            });
+                });
+            }
             // if the profile is strict, return the entity if it was selected by the profile,
             // and not found otherwise
             if (strictProfile) {
