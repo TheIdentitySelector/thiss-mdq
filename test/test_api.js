@@ -89,6 +89,31 @@ describe('', () => {
                 done();
             });
         });
+        it('should return eduID IdP - identified by id and allowed by profile', (done) => {
+            const idp_id = _sha1_id("https://login.idp.eduid.se/idp.xml");
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "customer";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    const idp = res.body;
+                    chai.expect(idp.title).to.equal("eduID Sweden");
+
+                done();
+            });
+        });
+        it('should return a 404 - IdP identified by id but not allowed by profile', (done) => {
+            const idp_id = _sha1_id("https://idp.u-picardie.fr/idp/shibboleth");
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "customer";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(404);
+                done();
+            });
+        });
         it('should return uleam IdP and 2 IdPs more with registration authority swamid', (done) => {
             const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
             const profile = "customer";
