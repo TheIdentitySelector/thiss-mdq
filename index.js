@@ -41,11 +41,11 @@ cluster.on('exit', function (worker) {
 });
 
 if (cluster.isMaster) {
-    cpuCount = os.cpus().length;
+    let cpuCount = os.cpus().length;
+    if (FORKS > 0) {
+        cpuCount = FORKS;
+    }
     for (let j = 0; j < cpuCount; j++) {
-        if (FORKS > 0) {
-            cpuCount = FORKS;
-        }
         console.log(`Forking ${j}`);
         cluster.fork();
     }
