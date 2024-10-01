@@ -6,7 +6,7 @@
 Welcome to JSON MDQ Server's documentation!
 ===========================================
 
-thiss-mdq is a minimal implementation of the metadata query protocol (MDQ) that only supports JSON data. Metadata in discojson format is loaded from a JSON-file referenced by $METADATA. The file is watched for updates and is reloaded automatically. A server is started on $HOST (0.0.0.0) and $PORT (3000). Run it using "npm start" or the supplied Docker container.
+thiss-mdq is a minimal implementation of the metadata query protocol (MDQ) that only supports JSON data. Metadata in discojson format is loaded from a JSON-file referenced by $METADATA. The file is watched for updates and is reloaded automatically. A server is started on $HOST (0.0.0.0) and $PORT (3000) with $FORK number of processes (if $FORK is not provided, it will spawn as many processes as CPUs are detected). Run it using "npm start" or the supplied Docker container.
 
 .. toctree::
    :maxdepth: 2
