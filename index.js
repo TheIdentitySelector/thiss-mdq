@@ -34,9 +34,9 @@ function runServer(app) {
 }
 
 cluster.on('exit', function (worker) {
-  console.log(`Worker ${worker.id} died'`);
-  console.log(`Staring a new one...`);
-  cluster.fork();
+    console.log(`Worker ${worker.id} died`);
+    console.log(`Starting a new one...`);
+    cluster.fork();
 });
 
 if (cluster.isMaster) {
