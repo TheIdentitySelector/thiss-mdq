@@ -73,3 +73,11 @@ Version 1.4.6
 * Add trust info metadata to discojson representation of SPs
 * Add /tinfo endpoint to serve trust info metadata
 * Updated dependencies and a couple of bug fixes
+
+Version 1.5.1
+-------------
+
+* Tests and bugfixes
+* Performance improvements
+* Use fuse.js as indexer
+* Some dependenies upgaded
