@@ -241,17 +241,19 @@ class Metadata {
             let seen;
 
             // check whether the entity is selected by some specific entity clause
-            trustProfile.entity.forEach((e) => {
-                if (e.include && e.entity_id === entity.entity_id) {
-                    seen = true;
-                } else if (!e.include) {
-                    if (e.entity_id === entity.entity_id) {
-                        seen = false;
-                    } else {
+            if (trustProfile.entity) {
+                trustProfile.entity.forEach((e) => {
+                    if (e.include && e.entity_id === entity.entity_id) {
                         seen = true;
+                    } else if (!e.include) {
+                        if (e.entity_id === entity.entity_id) {
+                            seen = false;
+                        } else {
+                            seen = true;
+                        }
                     }
-                }
-            });
+                });
+            }
             // if the entity comes from external metadata,
             // return it only if it was selectd by the profile,
             // otherwise return not found.
@@ -263,7 +265,7 @@ class Metadata {
                 }
             }
             // check whether the entity is selected by some entities clause in the profile
-            if (seen !== false) {
+            if (seen !== false && trustProfile.entities) {
                 trustProfile.entities.forEach((e) => {
                     if (Array.isArray(entity[e.match])) {
                         if (e.include && entity[e.match].includes(e.select)) {
@@ -331,32 +333,36 @@ class Metadata {
                 extraMetadata = self.tiDb[entityID]['extra_md'];
                 strictProfile = trustProfile.strict;
 
-                trustProfile.entity.forEach((e) => {
-                    // if the entity is in the external metadata,
-                    // keep it in extraIdPs 
-                    if (extraMetadata && e.entity_id in extraMetadata) {
-                        const extraIdP = {...extraMetadata[e.entity_id]};
-                        extraIdP.id = _sha1_id(e.entity_id);
-                        extraIdPs[extraIdP.id] = extraIdP;
-                    } else {
-                        emptyTQuery = false;
-                        // only add a query term for single entities that are excluded.
-                        // If they are included, we need to check them one by one, otherwise
-                        // they will negate each other
-                        if (!e.include) {
-                            self.idx.addTermToQuery(tQuery, e.entity_id, ['entityID'], e.include);
-                            if (strictProfile === false) {
-                                const id = _sha1_id(e.entity_id);
-                                unhinted[id] = self.idpDb_unhinted[id];
+                if (trustProfile.entity) {
+                    trustProfile.entity.forEach((e) => {
+                        // if the entity is in the external metadata,
+                        // keep it in extraIdPs 
+                        if (extraMetadata && e.entity_id in extraMetadata) {
+                            const extraIdP = {...extraMetadata[e.entity_id]};
+                            extraIdP.id = _sha1_id(e.entity_id);
+                            extraIdPs[extraIdP.id] = extraIdP;
+                        } else {
+                            emptyTQuery = false;
+                            // only add a query term for single entities that are excluded.
+                            // If they are included, we need to check them one by one, otherwise
+                            // they will negate each other
+                            if (!e.include) {
+                                self.idx.addTermToQuery(tQuery, e.entity_id, ['entityID'], e.include);
+                                if (strictProfile === false) {
+                                    const id = _sha1_id(e.entity_id);
+                                    unhinted[id] = self.idpDb_unhinted[id];
+                                }
                             }
                         }
-                    }
-                });
-                trustProfile.entities.forEach((e) => {
-                    self.idx.addTermToQuery(tQuery, e.select, [e.match], e.include);
-                    self.idx.addTermToQuery(tQuery_op, e.select, [e.match], !e.include);
-                    emptyTQuery = false;
-                });
+                    });
+                }
+                if (trustProfile.entities) {
+                    trustProfile.entities.forEach((e) => {
+                        self.idx.addTermToQuery(tQuery, e.select, [e.match], e.include);
+                        self.idx.addTermToQuery(tQuery_op, e.select, [e.match], !e.include);
+                        emptyTQuery = false;
+                    });
+                }
             }
         }
         // build the query terms for the full text search.
@@ -385,24 +391,26 @@ class Metadata {
 
             let indexResults = [];
             let queryUsed = false;
-            trustProfile.entity.forEach(function(e) {
-                // we do a query for each of the single entities and accumulate the results.
-                if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
-                    queryUsed = true;
-                    const newQuery = [...tQuery];
-                    self.idx.addTermToQuery(newQuery, e.entity_id, ['entityID'], e.include);
-                    if (!emptyQQuery) {
-                        qQuery.forEach(term => {
-                            newQuery.push(term);
-                        });
+            if (trustProfile.entity) {
+                trustProfile.entity.forEach(function(e) {
+                    // we do a query for each of the single entities and accumulate the results.
+                    if (e.include && (!extraMetadata || !(e.entity_id in extraMetadata))) {
+                        queryUsed = true;
+                        const newQuery = [...tQuery];
+                        self.idx.addTermToQuery(newQuery, e.entity_id, ['entityID'], e.include);
+                        if (!emptyQQuery) {
+                            qQuery.forEach(term => {
+                                newQuery.push(term);
+                            });
+                        }
+                        const moreResults = self.idx.search(newQuery);
+                        if (moreResults) {
+                            indexResults.push(...moreResults);
+                        }
+                        self.idx.addTermToQuery(tQuery_op, e.entity_id, ['entityID'], !e.include);
                     }
-                    const moreResults = self.idx.search(newQuery);
-                    if (moreResults) {
-                        indexResults.push(...moreResults);
-                    }
-                    self.idx.addTermToQuery(tQuery_op, e.entity_id, ['entityID'], !e.include);
-                }
-            });
+                });
+            }
             // if there were no single entity filterings,
             // we do the single index seaarch here.
             if (!queryUsed) {
