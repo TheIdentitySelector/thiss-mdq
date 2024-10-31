@@ -76,6 +76,41 @@ describe('', () => {
                 done();
             });
         });
+        it('should return IdP with diacritics when searching without diacritics', (done) => {
+            const q = "universite";
+            chai.request.execute(app)
+                .get(`/entities?q=${q}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(1);
+                    chai.expect(data[0].entityID).to.equal("https://idp.u-picardie.fr/idp/shibboleth");
+                done();
+            });
+        });
+        it('should return IdP with diacritics when searching with matching diacritics', (done) => {
+            const q = "université";
+            chai.request.execute(app)
+                .get(`/entities?q=${q}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(1);
+                    chai.expect(data[0].entityID).to.equal("https://idp.u-picardie.fr/idp/shibboleth");
+                done();
+            });
+        });
+        it('should not return IdP with diacritics when searching with non-matching diacritics', (done) => {
+            const q = "üniversité";
+            chai.request.execute(app)
+                .get(`/entities?q=${q}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(0);
+                done();
+            });
+        });
         it('should return the SP for 3D Labs SP with a discovery_responses key', (done) => {
             const sp_id = _sha1_id("https://3d.labs.stonybrook.edu/shibboleth");
             chai.request.execute(app)

@@ -7,6 +7,7 @@ import StreamArray from 'stream-json/streamers/StreamArray.js';
 import hex_sha1 from './sha1.js';
 import util from 'util';
 import sw from 'stopword';
+import removeAccents from 'remove-accents';
 
 function _sha1_id(s) {
     return "{sha1}" + hex_sha1(s);
@@ -111,7 +112,10 @@ class Metadata {
         let doc = {
             "id": e.id,
             "entityID": e.entityID,
-            "title": [e.title.toLocaleLowerCase(locales)],
+            "title": [
+                e.title.toLocaleLowerCase(locales), 
+                removeAccents(e.title.toLocaleLowerCase(locales))
+            ],
         };
         doc.keywords = [];
         if (e.keywords) {
