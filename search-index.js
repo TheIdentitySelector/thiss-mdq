@@ -13,7 +13,7 @@ export class lunrIndexer {
     constructor() {
         this.builder = new lunr.Builder();
         this.builder.pipeline.remove(lunr.trimmer);
-        this.builder.pipeline.register(lunr.tokenizer);
+        lunr.Pipeline.registerFunction(lunr.tokenizer);
         this.builder.pipeline.add(lunr.tokenizer);
         this.builder.field('title');
         this.builder.field('tags');
