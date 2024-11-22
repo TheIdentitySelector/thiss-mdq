@@ -216,6 +216,10 @@ class Metadata {
 
     lookup_with_profile(id, entityID, trustProfileName) {
         try {
+            // If the profile is unknown, ignore it
+            if (!this.tiDb[entityID] || !this.tiDb[entityID]['profiles'][trustProfileName]) {
+                return this.lookup(id);
+            }
             // here we check that the requested entity fits with the specified trust profile,
             // and add a hint if necessary
             let entity = {...this.mdDb[id]};
@@ -228,13 +232,13 @@ class Metadata {
                 return entity;
             }
 
-            const trustProfile = this.tiDb[entityID]['profiles'][trustProfileName];
             const extraMetadata = this.tiDb[entityID]['extra_md'];
+            const trustProfile = this.tiDb[entityID]['profiles'][trustProfileName];
             const strictProfile = trustProfile.strict;
 
             let fromExtraMd = false;
             // first we check whether the entity comes from external metadata
-            if (id in extraMetadata) {
+            if (extraMetadata && id in extraMetadata) {
                 entity = {...extraMetadata[id]};
                 fromExtraMd = true;
             }
