@@ -50,6 +50,6 @@
     "stopword": "^3.1.1",
     "stream": "0.0.3",
     "stream-chain": "^3.2.0",
-    "stream-json": "^1.8.0"
+    "stream-json": "^1.9.1"
   }
 }
