@@ -437,10 +437,7 @@ class Metadata {
             } else {
                 self.idx.getResults(self.idpDb_hinted, indexResults, results);
                 Object.assign(results, unhinted);
-                qQuery.forEach(term => {
-                    tQuery_op.push(term);
-                });
-                const badResults = self.idx.search(tQuery_op);
+                const badResults = self.idx.search_op(tQuery_op, qQuery);
                 self.idx.getResults(self.idpDb_unhinted, badResults, results);
             }
         }

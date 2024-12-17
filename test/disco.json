@@ -160,6 +160,7 @@
     "entityID": "https://my.atsu.edu/swPublicSSO/SAML/incommon",
     "registrationAuthority": "https://incommon.org",
     "entity_category": [
+      "http://refeds.org/category/research-and-scholarship",
       "http://id.incommon.org/category/registered-by-incommon"
     ],
     "md_source": [

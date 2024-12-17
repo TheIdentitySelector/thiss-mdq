@@ -96,6 +96,7 @@ export class fuseIndexer {
         };
         this.fuse = new Fuse([], options);
         this.query_operator = '$and';
+        this.op_query_operator = '$or';
     };
 
     add(doc) {
@@ -112,6 +113,43 @@ export class fuseIndexer {
             query[this.query_operator] = q;
         } else if (q.length === 1) {
             query = q[0];
+        }
+        const options = {'limit': this.count};
+        const results = this.fuse.search(query, options);
+        return results;
+    }
+
+    search_op(q, q_ft) {
+        let query = {};
+        let query_op = {};
+        let has_query_op = false;
+        let query_ft = {};
+        let has_query_ft = false;
+        if (q.length > 1) {
+            const clean_q = [];
+            q.forEach(c => { if (Object.keys(c).length > 0) clean_q.push(c); });
+            if (clean_q.length > 0) {
+                query_op[this.op_query_operator] = clean_q;
+                has_query_op = true;
+            }
+        } else if (q.length === 1) {
+            if (Object.keys(q[0]).length > 0) {
+                query_op = q[0];
+                has_query_op = true;
+            }
+        }
+        if (q_ft.length === 1) {
+            if (Object.keys(q_ft[0]).length > 0) {
+                query_ft = q_ft[0];
+                has_query_ft = true;
+            }
+        }
+        if (has_query_op && has_query_ft) {
+            query['$and'] = [query_op, query_ft];
+        } else if (has_query_op) {
+            query = query_op;
+        } else if (has_query_ft) {
+            query = query_ft;
         }
         const options = {'limit': this.count};
         const results = this.fuse.search(query, options);
