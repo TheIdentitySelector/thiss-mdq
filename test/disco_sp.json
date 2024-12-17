@@ -372,6 +372,30 @@
           "handler": "https://www.example.org/about"
         }
       },
+      "customer25": {
+        "strict": false,
+        "entity": [],
+        "entities": [
+          {
+            "select": "http://refeds.org/category/research-and-scholarship",
+            "match": "entity_category",
+            "include": true
+          },
+          {
+            "select": "https://mdq.incommon.org/entities",
+            "match": "md_source",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Access here",
+          "sv": "Access here sv"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      },
       "customer3": {
         "strict": true,
         "entity": [],

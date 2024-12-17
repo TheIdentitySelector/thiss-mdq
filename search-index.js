@@ -100,6 +100,11 @@ export class fuseIndexer {
     };
 
     add(doc) {
+        for (const key of Object.keys(doc)) {
+            if (!doc[key]) {
+                delete doc[key];
+            }
+        }
         this.fuse.add(doc);
     };
 

@@ -138,23 +138,23 @@ class Metadata {
         doc.title = [...new Set(doc.title)].sort()
         doc.scopes = [...new Set(doc.scopes)].sort()
         doc.registrationAuthority = '.';
-        if (e.registrationAuthority) {
+        if (doc.registrationAuthority && (Array.isArray(e.registrationAuthority) && e.registrationAuthority.length > 0)) {
             doc.registrationAuthority = e.registrationAuthority.join(' ');
         }
         doc.entity_category = '.';
-        if (e.entity_category) {
+        if (doc.entity_category && (Array.isArray(e.entity_category) && e.entity_category.length > 0)) {
             doc.entity_category = e.entity_category.join(' ');
         }
         doc.entity_category_support = '.';
-        if (e.entity_category_support) {
+        if (doc.entity_category_support && (Array.isArray(e.entity_category_support) && e.entity_category_support.length > 0)) {
             doc.entity_category_support = e.entity_category_support.join(' ');
         }
         doc.assurance_certification = '.';
-        if (e.assurance_certification) {
+        if (doc.assurance_certification && (Array.isArray(e.assurance_certification) && e.assurance_certification.length > 0)) {
             doc.assurance_certification = e.assurance_certification.join(' ');
         }
         doc.md_source = '.';
-        if (e.md_source) {
+        if (doc.md_source && (Array.isArray(e.md_source) && e.md_source.length > 0)) {
             doc.md_source = e.md_source.join(' ');
         }
         return doc;

@@ -15,6 +15,7 @@
     "entityID": "https://login.idp.eduid.se/idp.xml",
     "registrationAuthority": "http://www.swamid.se/",
     "md_source": [
+      "https://mdq.incommon.org/entities",
       "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "entity_category": [
@@ -53,6 +54,7 @@
     "entityID": "https://idp.u-picardie.fr/idp/shibboleth",
     "registrationAuthority": "https://federation.renater.fr/",
     "md_source": [
+      "https://mdq.incommon.org/entities",
       "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",
@@ -142,6 +144,7 @@
     "entity_category_support": [
       "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
     ],
+    "entity_category": [],
     "type": "idp",
     "hidden": "false",
     "scope": "a-star.singaren.net.sg,a-star.edu.sg"
@@ -196,6 +199,7 @@
       "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
     ],
     "md_source": [
+      "https://mdq.incommon.org/entities",
       "https://example.org/edugain-trustinfo-2.0.xml"
     ],
     "type": "idp",

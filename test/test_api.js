@@ -499,6 +499,29 @@ describe('', () => {
                 done();
             });
         });
+        it('should also return 12 IdPs, trusting only 2 of them', (done) => {
+            const q = "edu";
+            const entityID = encodeURIComponent("https://box-idp.nordu.net/simplesaml/module.php/saml/sp/metadata.php/default-sp");
+            const profile = "customer25";
+            chai.request.execute(app)
+                .get(`/entities?q=${q}&entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(12);
+                    let i = 0;
+                    data.forEach(idp => {
+                        if (idp.entity_category && idp.entity_category.includes("http://refeds.org/category/research-and-scholarship") && idp.md_source && idp.md_source.includes("https://mdq.incommon.org/entities") ) {
+                            chai.expect(idp).to.haveOwnProperty('hint');
+                            i++;
+                        } else {
+                            chai.expect(idp).to.not.haveOwnProperty('hint');
+                        }
+                    });
+                chai.expect(i).to.equal(2);
+                done();
+            });
+        });
         it('should return nothing', (done) => {
             const entityID = encodeURIComponent("https://csucoast.infoready4.com/shibboleth");
             const profile = "customer7";
