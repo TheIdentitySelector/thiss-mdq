@@ -243,16 +243,18 @@ class Metadata {
                 fromExtraMd = true;
             }
             // if the entity is not in the internal or external metadata, return not found.
-            if (!entity) {
-                return entity;
+            if (!entity || Object.keys(entity).length === 0) {
+                return undefined;
             }
-            let seen;
+            let seen = null;
 
             // check whether the entity is selected by some specific entity clause
             if (trustProfile.entity) {
                 trustProfile.entity.forEach((e) => {
                     if (e.include && e.entity_id === entity.entity_id) {
                         seen = true;
+                    } else if (e.include && e.entity_id !== entity.entity_id) {
+                        seen = false;
                     } else if (!e.include) {
                         if (e.entity_id === entity.entity_id) {
                             seen = false;
@@ -263,41 +265,42 @@ class Metadata {
                 });
             }
             // if the entity comes from external metadata,
-            // return it only if it was selectd by the profile,
+            // return it only if it was selectd by the entity clauses in the profile,
             // otherwise return not found.
             if (fromExtraMd) {
-                if (seen) {
+                if (seen !== false) {
+                    entity.hint = true;
                     return entity;
                 } else {
                     return undefined;
                 }
             }
             // check whether the entity is selected by some entities clause in the profile
-            if (seen !== false && trustProfile.entities) {
+            let passed = 0;
+            let to_pass = 0;
+            if (seen !== false && trustProfile.entities && Array.isArray(trustProfile.entities)) {
+                to_pass = trustProfile.entities.length;
                 trustProfile.entities.forEach((e) => {
                     if (Array.isArray(entity[e.match])) {
                         if (e.include && entity[e.match].includes(e.select)) {
-                            seen = true;
+                            passed += 1;
                         } else if ((!e.include) && !entity[e.match].includes(e.select)) {
-                            seen = true;
-                        } else {
-                            seen = false;
+                            passed += 1;
                         }
                     } else {
                         if (e.include && entity[e.match] === e.select) {
-                            seen = true;
+                            passed += 1;
                         } else if ((!e.include) && entity[e.match] !== e.select) {
-                            seen = true;
-                        } else {
-                            seen = false;
+                            passed += 1;
                         }
                     }
                 });
             }
+            const selected = (seen !== false && passed === to_pass);
             // if the profile is strict, return the entity if it was selected by the profile,
             // and not found otherwise
             if (strictProfile) {
-                if (seen) {
+                if (selected) {
                     return entity;
                 } else {
                     return undefined;
@@ -305,7 +308,7 @@ class Metadata {
             // if the profile is not strict, set the hint if the entity was not selected by the profile,
             // and return the entity.
             } else {
-                if (seen) {
+                if (selected) {
                     entity.hint = true;
                 }
                 return entity;

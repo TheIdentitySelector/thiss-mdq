@@ -15,12 +15,10 @@
     "entityID": "https://login.idp.eduid.se/idp.xml",
     "registrationAuthority": "http://www.swamid.se/",
     "md_source": [
-      "https://mdq.incommon.org/entities",
-      "https://example.org/edugain-trustinfo-2.0.xml"
+      "https://mdq.incommon.org/entities"
     ],
     "entity_category": [
-      "http://refeds.org/category/research-and-scholarship",
-      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+      "http://refeds.org/category/research-and-scholarship"
     ],
     "assurance_certification": [
       "https://refeds.org/sirtfi"
@@ -468,8 +466,8 @@
       "en": "http://www.sunysb.edu/"
     },
     "auth": "saml",
-    "entity_id": "https://3d.labs.stonybrook.edu/shibboleth",
-    "entityID": "https://3d.labs.stonybrook.edu/shibboleth",
+    "entity_id": "https://cpauth.icos-cp.eu/saml/cpauth",
+    "entityID": "https://cpauth.icos-cp.eu/saml/cpauth",
     "registrationAuthority": "https://incommon.org",
     "entity_category": [
       "http://id.incommon.org/category/registered-by-incommon"
@@ -490,5 +488,75 @@
       "height": "98"
     },
     "privacy_statement_url": "https://www.stonybrook.edu/privacy/"
+  },
+  {
+    "title": "3D Labs at Stony Brook",
+    "descr": "http://www.sunysb.edu/",
+    "title_langs": {
+      "en": "3D Labs at Stony Brook"
+    },
+    "descr_langs": {
+      "en": "http://www.sunysb.edu/"
+    },
+    "auth": "saml",
+    "entity_id": "https://cpauth.icos-cp.eu/saml/cpauth",
+    "entityID": "https://cpauth.icos-cp.eu/saml/cpauth",
+    "registrationAuthority": "https://incommon.org",
+    "entity_category": [
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
+    ],
+    "md_source": [
+      "file:///home/eperez/src/git/seamlessaccess/test/edugain-trustinfo-2.0.xml"
+    ],
+    "discovery_responses": [
+      "https://3d.labs.stonybrook.edu/Shibboleth.sso/Login"
+    ],
+    "type": "sp",
+    "entity_icon_url": {
+      "url": "https://it.stonybrook.edu/sites/it.stonybrook.edu/files/sbu-logo-sso.png",
+      "width": "572",
+      "height": "98"
+    },
+    "privacy_statement_url": "https://www.stonybrook.edu/privacy/"
+  },
+  {
+    "title": "eduID Sweden",
+    "descr": "eduID gives you a common login for your education",
+    "title_langs": {
+      "en": "eduID Sweden",
+      "sv": "eduID Sverige"
+    },
+    "descr_langs": {
+      "en": "eduID gives you a common login for your education",
+      "sv": "eduID är en gemensam inloggning för din utbildning"
+    },
+    "auth": "saml",
+    "entity_id": "https://login.idp.eduid.se/idp.xml",
+    "entityID": "https://login.idp.eduid.se/idp.xml",
+    "registrationAuthority": "http://www.swamid.se/",
+    "md_source": [
+      "https://example.org/edugain-trustinfo-2.0.xml"
+    ],
+    "entity_category": [
+      "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    ],
+    "assurance_certification": [
+      "https://refeds.org/sirtfi"
+    ],
+    "type": "idp",
+    "hidden": "false",
+    "scope": "eduid.se",
+    "domain": "eduid.se",
+    "name_tag": "EDUID",
+    "entity_icon_url": {
+      "url": "https://eduid.se/static/img/ds-eduID-logo-black350x120px.png",
+      "width": "350",
+      "height": "120"
+    },
+    "keywords": "eduID+studentIdP",
+    "privacy_statement_url": "https://eduid.se/en/faq.html"
   }
 ]

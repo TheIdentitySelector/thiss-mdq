@@ -464,6 +464,30 @@
           "handler": "https://www.example.org/about"
         }
       },
+      "customer1": {
+        "strict": true,
+        "entity": [
+          {
+            "entity_id": "https://login.idp.eduid.se/idp.xml",
+            "include": true
+          }
+        ],
+        "entities": [
+          {
+            "select": "http://www.swamid.se/",
+            "match": "registrationAuthority",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Customer Access",
+          "sv": "Kundinloggning"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      },
       "customer2": {
         "strict": false,
         "entity": [

@@ -112,7 +112,7 @@ describe('', () => {
             });
         });
         it('should return the SP for 3D Labs SP with a discovery_responses key', (done) => {
-            const sp_id = _sha1_id("https://3d.labs.stonybrook.edu/shibboleth");
+            const sp_id = _sha1_id("https://cpauth.icos-cp.eu/saml/cpauth");
             chai.request.execute(app)
                 .get(`/entities/${sp_id}`)
                 .end((err,res) => {
@@ -120,21 +120,66 @@ describe('', () => {
                     let data = res.body;
                     chai.expect(data.discovery_responses.length).to.equal(1);
                     chai.expect(data.discovery_responses[0]).to.equal("https://3d.labs.stonybrook.edu/Shibboleth.sso/Login");
+                    chai.expect(data.tinfo.profiles.customer.strict).to.equal(true);
 
                 done();
             });
         });
-        it('should return eduID IdP - identified by id and allowed by profile', (done) => {
+        it('should still return the SP for 3D Labs SP with a discovery_responses key', (done) => {
+            const sp_id = _sha1_id("https://cpauth.icos-cp.eu/saml/cpauth");
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "global1";
+            chai.request.execute(app)
+                .get(`/entities/${sp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.discovery_responses.length).to.equal(1);
+                    chai.expect(data.discovery_responses[0]).to.equal("https://3d.labs.stonybrook.edu/Shibboleth.sso/Login");
+                    chai.expect(data.tinfo.profiles.customer.strict).to.equal(true);
+
+                done();
+            });
+        });
+        it('should return eduID IdP with no hint - identified by id and allowed by strict profile', (done) => {
             const idp_id = _sha1_id("https://login.idp.eduid.se/idp.xml");
             const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
-            const profile = "customer";
+            const profile = "global1";
             chai.request.execute(app)
                 .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
                 .end((err,res) => {
                     chai.expect(res.status).to.equal(200);
                     const idp = res.body;
                     chai.expect(idp.title).to.equal("eduID Sweden");
+                    chai.expect(idp.hint).to.equal(undefined);
 
+                done();
+            });
+        });
+        it('should return the entity for an unknown profile', (done) => {
+            const idp_id = _sha1_id("https://idp.u-picardie.fr/idp/shibboleth");
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "unknown-profile";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let idp = res.body;
+                    chai.expect(idp.title).to.equal("Université de Picardie Jules Verne");
+                done();
+            });
+        });
+        it('Should return a 404 for an unknown entity', (done) => {
+            const idp_id = _sha1_id("https://login.idp.eduid.se/idp.xml");
+            const entityID = encodeURIComponent("https://box-idp.nordu.net/simplesaml/module.php/saml/sp/metadata.php/default-sp");
+            const profile = "customer25";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    const idp = res.body;
+                    chai.expect(idp.title).to.equal("eduID Sweden");
+                    chai.expect(idp.hint).to.equal(true);
                 done();
             });
         });
@@ -142,6 +187,99 @@ describe('', () => {
             const idp_id = _sha1_id("https://idp.u-picardie.fr/idp/shibboleth");
             const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
             const profile = "customer";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(404);
+                done();
+            });
+        });
+        it('Should return a 404 for an unknown entity', (done) => {
+            const idp_id = _sha1_id("https://unknown.entity.net/idp.xml");
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(404);
+                done();
+            });
+        });
+        it('Should return a 404 for an unknown entity, with profile', (done) => {
+            const idp_id = _sha1_id("https://unknown.entity.net/idp.xml");
+            const entityID = encodeURIComponent("https://box-idp.nordu.net/simplesaml/module.php/saml/sp/metadata.php/default-sp");
+            const profile = "customer25";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(404);
+                done();
+            });
+        });
+        it('Should return entity without a hint - selected by strict profile with both entity and entities clauses', (done) => {
+            const idp_id = _sha1_id("https://login.idp.eduid.se/idp.xml");
+            const entityID = encodeURIComponent("https://csucoast.infoready4.com/shibboleth");
+            const profile = "customer1";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    const idp = res.body;
+                    chai.expect(idp.title).to.equal("eduID Sweden");
+                    chai.expect(idp.hint).to.equal(undefined);
+                done();
+            });
+        });
+        it('Should return 404 - not selected by strict profile with both entity and entities clauses', (done) => {
+            const idp_ids = [
+                _sha1_id("https://login.idp.eduid.se/idp.xml"),  // selected by entities but not entity clause
+                _sha1_id("https://aai-login.swissuniversities.ch/idp/shibboleth"),  // selected by entity but not entities clause
+            ];
+            const entityID = encodeURIComponent("https://csucoast.infoready4.com/shibboleth");
+            const profile = "customer";
+            for (const idp_id of idp_ids) {
+                chai.request.execute(app)
+                    .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                    .end((err,res) => {
+                        chai.expect(res.status).to.equal(404);
+                });
+            }
+            done();
+        });
+        it('Should return entities without a hint - not selected by non-strict profile', (done) => {
+            const idp_ids = [
+                _sha1_id("https://idp.u-picardie.fr/idp/shibboleth"),  // in inCommon but without research-and-scolarship category
+                _sha1_id("https://cafe.usf.edu.br/idp/shibboleth"),  // neither in inCommon nor with research-and-scolarship category
+                _sha1_id("https://my.atsu.edu/swPublicSSO/SAML/incommon"),  // not in inCommon but with research-and-scolarship category
+            ];
+            const entityID = encodeURIComponent("https://box-idp.nordu.net/simplesaml/module.php/saml/sp/metadata.php/default-sp");
+            const profile = "customer25";
+            for (const idp_id of idp_ids) {
+                chai.request.execute(app)
+                    .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                    .end((err,res) => {
+                        chai.expect(res.status).to.equal(200);
+                        const idp = res.body;
+                        chai.expect(idp.hint).to.equal(undefined);
+                });
+            }
+            done();
+        });
+        it('Should return entity from extra metadata', (done) => {
+            const idp_id = _sha1_id("https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php");
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "customer";
+            chai.request.execute(app)
+                .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    const idp = res.body;
+                    chai.expect(idp.title).to.equal("Universidad Laica Eloy Alfaro de Manabí - uleam");
+                done();
+            });
+        });
+        it('Should return 404 for entity in extra md not selected by entity clauses in the profile', (done) => {
+            const idp_id = _sha1_id("https://login.uleam.cedia.edu.ec/saml2/idp/metadata.php");
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "provider";
             chai.request.execute(app)
                 .get(`/entities/${idp_id}?entityID=${entityID}&trustProfile=${profile}`)
                 .end((err,res) => {
