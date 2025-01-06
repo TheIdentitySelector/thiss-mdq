@@ -423,7 +423,7 @@ class Metadata {
                 });
             }
             // if there were no single entity filterings,
-            // we do the single index seaarch here.
+            // we do the full text index search here.
             if (!queryUsed) {
                 if (!emptyQQuery) {
                     qQuery.forEach(term => {
