@@ -53,8 +53,25 @@ class Metadata {
                     idp.id = _sha1_id(eID);
                     e.extra_md[idp.id] = idp;
                 }
-                self.tiDb[e.entity_id] = e;
-                ++self.tiCount;
+                if (e.entity_id in self.tiDb) {
+                    if ('extra_md' in self.tiDb[e.entity_id]) {
+                        if ('extra_md' in e) {
+                            Object.assign(self.tiDb[e.entity_id].extra_md, e.extra_md);
+                        }
+                    } else if ('extra_md' in e) {
+                        self.tiDb[e.entity_id].extra_md = e.extra_md;
+                    }
+                    if ('profiles' in self.tiDb[e.entity_id]) {
+                        if ('profiles' in e) {
+                            Object.assign(self.tiDb[e.entity_id].profiles, e.profiles);
+                        }
+                    } else if ('profiles' in e) {
+                        self.tiDb[e.entity_id].profiles = e.profiles;
+                    }
+                } else {
+                    self.tiDb[e.entity_id] = e;
+                    ++self.tiCount;
+                }
             }]);
             self._t.on('data', () => {
             });

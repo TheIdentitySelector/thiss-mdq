@@ -261,25 +261,6 @@
           "handler": "https://www.example.org/about"
         }
       },
-      "customer2": {
-        "strict": false,
-        "entity": [],
-        "entities": [
-          {
-            "select": "http://www.swamid.se/",
-            "match": "registrationAuthority",
-            "include": true
-          }
-        ],
-        "display_name": {
-          "en": "Admin access",
-          "sv": "Admin access sv"
-        },
-        "fallback_handler": {
-          "profile": "href",
-          "handler": "https://www.example.org/about"
-        }
-      },
       "customer3": {
         "strict": true,
         "entity": [],
@@ -312,6 +293,31 @@
         "display_name": {
           "en": "Access for customers class 4",
           "sv": "Access for customers class 4 sv"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      }
+    }
+  },
+  {
+    "entityID": "http://fs.liu.se/adfs/services/trust",
+    "extra_md": {},
+    "profiles": {
+      "customer2": {
+        "strict": false,
+        "entity": [],
+        "entities": [
+          {
+            "select": "http://www.swamid.se/",
+            "match": "registrationAuthority",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Admin access",
+          "sv": "Admin access sv"
         },
         "fallback_handler": {
           "profile": "href",
