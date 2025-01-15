@@ -10,6 +10,9 @@ There are 2 sources of IdPs:
 
 These 2 sources result in the global set of IdPs available for an SP. We call this set **IdP**. 
 
+When the extra metadata added by an SP has an entity with the same entityID as an entity in the federated metadata,
+the one added to **IdP** will be the one provided by the SP.
+
 **IdP** is filtered to obtain the subsets that are provided to the users, with 2 criteria:
 * fulltext queried by the end user
 * a trust profile set by the SP site
