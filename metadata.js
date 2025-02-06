@@ -268,6 +268,7 @@ class Metadata {
             // check whether the entity is selected by some specific entity clause
             if (trustProfile.entity) {
                 trustProfile.entity.forEach((e) => {
+                    if (seen === true) return;
                     if (e.include && e.entity_id === entity.entity_id) {
                         seen = true;
                     } else if (e.include && e.entity_id !== entity.entity_id) {
