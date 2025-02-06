@@ -29,18 +29,35 @@ app.get('/', async (req, res) => {
     res.append("Surrogate-Key", "meta");
     res.append("Cache-Control", META_CACHE_HEADER)
 
+    const data = {
+        'version': meta.version,
+        'start_time': start_time,
+    };
     fsp.stat(app.locals.md.mdFile).then((stats) => {
-        return {
+        data.metadata = {
             'last_modified': stats.mtime,
             'last_created': stats.ctime,
             'size': app.locals.md.mdCount,
-            'ti_size': app.locals.md.tiCount,
-        }
-    }).then(r => {
+        };
+        return data;
+    }).then(data => {
+        fsp.stat(app.locals.md.tiFile).then((stats) => {
+            data.trust_metadata = {
+                'last_modified': stats.mtime,
+                'last_created': stats.ctime,
+                'size': app.locals.md.tiCount,
+            };
+            res.json(data);
+        })
+        .catch(err => {
+            res.json({
+                error: err
+            });
+        });
+    })
+    .catch(err => {
         res.json({
-            'version': meta.version,
-            'start_time': start_time,
-            'metadata': r,
+            error: err
         });
     });
 });
