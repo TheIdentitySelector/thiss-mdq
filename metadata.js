@@ -53,8 +53,25 @@ class Metadata {
                     idp.id = _sha1_id(eID);
                     e.extra_md[idp.id] = idp;
                 }
-                self.tiDb[e.entity_id] = e;
-                ++self.tiCount;
+                if (e.entity_id in self.tiDb) {
+                    if ('extra_md' in self.tiDb[e.entity_id]) {
+                        if ('extra_md' in e) {
+                            Object.assign(self.tiDb[e.entity_id].extra_md, e.extra_md);
+                        }
+                    } else if ('extra_md' in e) {
+                        self.tiDb[e.entity_id].extra_md = e.extra_md;
+                    }
+                    if ('profiles' in self.tiDb[e.entity_id]) {
+                        if ('profiles' in e) {
+                            Object.assign(self.tiDb[e.entity_id].profiles, e.profiles);
+                        }
+                    } else if ('profiles' in e) {
+                        self.tiDb[e.entity_id].profiles = e.profiles;
+                    }
+                } else {
+                    self.tiDb[e.entity_id] = e;
+                    ++self.tiCount;
+                }
             }]);
             self._t.on('data', () => {
             });
@@ -251,6 +268,7 @@ class Metadata {
             // check whether the entity is selected by some specific entity clause
             if (trustProfile.entity) {
                 trustProfile.entity.forEach((e) => {
+                    if (seen === true) return;
                     if (e.include && e.entity_id === entity.entity_id) {
                         seen = true;
                     } else if (e.include && e.entity_id !== entity.entity_id) {
@@ -423,7 +441,7 @@ class Metadata {
                 });
             }
             // if there were no single entity filterings,
-            // we do the single index seaarch here.
+            // we do the full text index search here.
             if (!queryUsed) {
                 if (!emptyQQuery) {
                     qQuery.forEach(term => {
