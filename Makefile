@@ -17,5 +17,5 @@ push:
 test: tests
 
 tests:
-	@npm run test
+	@npm run coverage
 

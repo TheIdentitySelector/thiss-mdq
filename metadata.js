@@ -53,8 +53,25 @@ class Metadata {
                     idp.id = _sha1_id(eID);
                     e.extra_md[idp.id] = idp;
                 }
-                self.tiDb[e.entity_id] = e;
-                ++self.tiCount;
+                if (e.entity_id in self.tiDb) {
+                    if ('extra_md' in self.tiDb[e.entity_id]) {
+                        if ('extra_md' in e) {
+                            Object.assign(self.tiDb[e.entity_id].extra_md, e.extra_md);
+                        }
+                    } else if ('extra_md' in e) {
+                        self.tiDb[e.entity_id].extra_md = e.extra_md;
+                    }
+                    if ('profiles' in self.tiDb[e.entity_id]) {
+                        if ('profiles' in e) {
+                            Object.assign(self.tiDb[e.entity_id].profiles, e.profiles);
+                        }
+                    } else if ('profiles' in e) {
+                        self.tiDb[e.entity_id].profiles = e.profiles;
+                    }
+                } else {
+                    self.tiDb[e.entity_id] = e;
+                    ++self.tiCount;
+                }
             }]);
             self._t.on('data', () => {
             });
@@ -138,23 +155,23 @@ class Metadata {
         doc.title = [...new Set(doc.title)].sort()
         doc.scopes = [...new Set(doc.scopes)].sort()
         doc.registrationAuthority = '.';
-        if (e.registrationAuthority) {
+        if (doc.registrationAuthority && (Array.isArray(e.registrationAuthority) && e.registrationAuthority.length > 0)) {
             doc.registrationAuthority = e.registrationAuthority.join(' ');
         }
         doc.entity_category = '.';
-        if (e.entity_category) {
+        if (doc.entity_category && (Array.isArray(e.entity_category) && e.entity_category.length > 0)) {
             doc.entity_category = e.entity_category.join(' ');
         }
         doc.entity_category_support = '.';
-        if (e.entity_category_support) {
+        if (doc.entity_category_support && (Array.isArray(e.entity_category_support) && e.entity_category_support.length > 0)) {
             doc.entity_category_support = e.entity_category_support.join(' ');
         }
         doc.assurance_certification = '.';
-        if (e.assurance_certification) {
+        if (doc.assurance_certification && (Array.isArray(e.assurance_certification) && e.assurance_certification.length > 0)) {
             doc.assurance_certification = e.assurance_certification.join(' ');
         }
         doc.md_source = '.';
-        if (e.md_source) {
+        if (doc.md_source && (Array.isArray(e.md_source) && e.md_source.length > 0)) {
             doc.md_source = e.md_source.join(' ');
         }
         return doc;
@@ -243,16 +260,19 @@ class Metadata {
                 fromExtraMd = true;
             }
             // if the entity is not in the internal or external metadata, return not found.
-            if (!entity) {
-                return entity;
+            if (!entity || Object.keys(entity).length === 0) {
+                return undefined;
             }
-            let seen;
+            let seen = null;
 
             // check whether the entity is selected by some specific entity clause
             if (trustProfile.entity) {
                 trustProfile.entity.forEach((e) => {
+                    if (seen === true) return;
                     if (e.include && e.entity_id === entity.entity_id) {
                         seen = true;
+                    } else if (e.include && e.entity_id !== entity.entity_id) {
+                        seen = false;
                     } else if (!e.include) {
                         if (e.entity_id === entity.entity_id) {
                             seen = false;
@@ -263,41 +283,42 @@ class Metadata {
                 });
             }
             // if the entity comes from external metadata,
-            // return it only if it was selectd by the profile,
+            // return it only if it was selectd by the entity clauses in the profile,
             // otherwise return not found.
             if (fromExtraMd) {
-                if (seen) {
+                if (seen !== false) {
+                    entity.hint = true;
                     return entity;
                 } else {
                     return undefined;
                 }
             }
             // check whether the entity is selected by some entities clause in the profile
-            if (seen !== false && trustProfile.entities) {
+            let passed = 0;
+            let to_pass = 0;
+            if (seen !== false && trustProfile.entities && Array.isArray(trustProfile.entities)) {
+                to_pass = trustProfile.entities.length;
                 trustProfile.entities.forEach((e) => {
                     if (Array.isArray(entity[e.match])) {
                         if (e.include && entity[e.match].includes(e.select)) {
-                            seen = true;
+                            passed += 1;
                         } else if ((!e.include) && !entity[e.match].includes(e.select)) {
-                            seen = true;
-                        } else {
-                            seen = false;
+                            passed += 1;
                         }
                     } else {
                         if (e.include && entity[e.match] === e.select) {
-                            seen = true;
+                            passed += 1;
                         } else if ((!e.include) && entity[e.match] !== e.select) {
-                            seen = true;
-                        } else {
-                            seen = false;
+                            passed += 1;
                         }
                     }
                 });
             }
+            const selected = (seen !== false && passed === to_pass);
             // if the profile is strict, return the entity if it was selected by the profile,
             // and not found otherwise
             if (strictProfile) {
-                if (seen) {
+                if (selected) {
                     return entity;
                 } else {
                     return undefined;
@@ -305,7 +326,7 @@ class Metadata {
             // if the profile is not strict, set the hint if the entity was not selected by the profile,
             // and return the entity.
             } else {
-                if (seen) {
+                if (selected) {
                     entity.hint = true;
                 }
                 return entity;
@@ -420,7 +441,7 @@ class Metadata {
                 });
             }
             // if there were no single entity filterings,
-            // we do the single index seaarch here.
+            // we do the full text index search here.
             if (!queryUsed) {
                 if (!emptyQQuery) {
                     qQuery.forEach(term => {
@@ -437,10 +458,7 @@ class Metadata {
             } else {
                 self.idx.getResults(self.idpDb_hinted, indexResults, results);
                 Object.assign(results, unhinted);
-                qQuery.forEach(term => {
-                    tQuery_op.push(term);
-                });
-                const badResults = self.idx.search(tQuery_op);
+                const badResults = self.idx.search_op(tQuery_op, qQuery);
                 self.idx.getResults(self.idpDb_unhinted, badResults, results);
             }
         }

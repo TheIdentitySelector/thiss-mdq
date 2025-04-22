@@ -261,25 +261,6 @@
           "handler": "https://www.example.org/about"
         }
       },
-      "customer2": {
-        "strict": false,
-        "entity": [],
-        "entities": [
-          {
-            "select": "http://www.swamid.se/",
-            "match": "registrationAuthority",
-            "include": true
-          }
-        ],
-        "display_name": {
-          "en": "Admin access",
-          "sv": "Admin access sv"
-        },
-        "fallback_handler": {
-          "profile": "href",
-          "handler": "https://www.example.org/about"
-        }
-      },
       "customer3": {
         "strict": true,
         "entity": [],
@@ -312,6 +293,31 @@
         "display_name": {
           "en": "Access for customers class 4",
           "sv": "Access for customers class 4 sv"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      }
+    }
+  },
+  {
+    "entityID": "http://fs.liu.se/adfs/services/trust",
+    "extra_md": {},
+    "profiles": {
+      "customer2": {
+        "strict": false,
+        "entity": [],
+        "entities": [
+          {
+            "select": "http://www.swamid.se/",
+            "match": "registrationAuthority",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Admin access",
+          "sv": "Admin access sv"
         },
         "fallback_handler": {
           "profile": "href",
@@ -360,6 +366,30 @@
           {
             "select": "http://www.geant.net/uri/dataprotection-code-of-conduct/v1",
             "match": "entity_category",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Access here",
+          "sv": "Access here sv"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      },
+      "customer25": {
+        "strict": false,
+        "entity": [],
+        "entities": [
+          {
+            "select": "http://refeds.org/category/research-and-scholarship",
+            "match": "entity_category",
+            "include": true
+          },
+          {
+            "select": "https://mdq.incommon.org/entities",
+            "match": "md_source",
             "include": true
           }
         ],
@@ -422,6 +452,30 @@
           {
             "entity_id": "https://login.idp.eduid.se/idp.xml",
             "include": false
+          }
+        ],
+        "entities": [
+          {
+            "select": "http://www.swamid.se/",
+            "match": "registrationAuthority",
+            "include": true
+          }
+        ],
+        "display_name": {
+          "en": "Customer Access",
+          "sv": "Kundinloggning"
+        },
+        "fallback_handler": {
+          "profile": "href",
+          "handler": "https://www.example.org/about"
+        }
+      },
+      "customer1": {
+        "strict": true,
+        "entity": [
+          {
+            "entity_id": "https://login.idp.eduid.se/idp.xml",
+            "include": true
           }
         ],
         "entities": [
