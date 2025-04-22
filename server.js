@@ -12,6 +12,7 @@ const S_MAXAGE = parseInt(process.env.S_MAXAGE) || CACHE_TIME;
 const MAXAGE = parseInt(process.env.MAXAGE) || CACHE_TIME;
 const CONTENT_CACHE_HEADER = process.env.CONTENT_CACHE_HEADER || `s-maxage=${S_MAXAGE}, max-age=${MAXAGE}`;
 const META_CACHE_HEADER = process.env.META_CACHE_HEADER || "private, no-store";
+const BASE_URL = process.env.BASE_URL || "";
 
 const app = express();
 app.use(compression());
