@@ -81,3 +81,9 @@ Version 1.5.1
 * Performance improvements
 * Use fuse.js as indexer
 * Some dependenies upgaded
+
+Version 2.0.0
+-------------
+
+* Remove unfinished redis index
+* Remove unfinished lunr index

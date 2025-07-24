@@ -1,4 +1,4 @@
-import {lunrIndexer, fuseIndexer, redisIndexer} from "./search-index.js";
+import {fuseIndexer} from "./search-index.js";
 import {esc_query, touchp} from "./utils.js";
 import fs from 'fs';
 import chain from 'stream-chain';
@@ -35,11 +35,7 @@ class Metadata {
             this.mdRepeat = 0;
             this.tiCount = 0;
 
-            if (INDEXER === "redis") {
-                this.idx = new redisIndexer();
-            } else if (INDEXER == "lunr") {
-                this.idx = new lunrIndexer();
-            } else if (INDEXER == "fuse") {
+            if (INDEXER == "fuse") {
                 this.idx = new fuseIndexer();
             } else {
                 throw `Unknown indexer "${INDEXER}"`;
