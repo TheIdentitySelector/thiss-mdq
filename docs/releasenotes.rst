@@ -82,8 +82,10 @@ Version 1.5.1
 * Use fuse.js as indexer
 * Some dependenies upgaded
 
-Version 2.0.0
+Version 1.5.9
 -------------
 
 * Remove unfinished redis index
 * Remove unfinished lunr index
+* Upgrade dependencies
+* Fix bug where spaces broke the search
