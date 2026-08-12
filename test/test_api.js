@@ -76,6 +76,17 @@ describe('', () => {
                 done();
             });
         });
+        it('should return 12 IdPs with a trailing space in the query', (done) => {
+            const q = "edu%20";
+            chai.request.execute(app)
+                .get(`/entities?q=${q}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(12);
+                done();
+            });
+        });
         it('should return IdP with diacritics when searching without diacritics', (done) => {
             const q = "universite";
             chai.request.execute(app)
@@ -371,6 +382,32 @@ describe('', () => {
                             chai.expect(idp).to.haveOwnProperty('hint');
                         }
                     });
+                done();
+            });
+        });
+        it('should return 12 IdPs with a trailing space in the query, trusting only eduid', (done) => {
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "other";
+            const q = "edu%20";
+            chai.request.execute(app)
+                .get(`/entities?entityID=${entityID}&trustProfile=${profile}&q=${q}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(12);
+                done();
+            });
+        });
+        it('should return 12 IdPs with a leading space in the query, trusting only eduid', (done) => {
+            const entityID = encodeURIComponent("https://cpauth.icos-cp.eu/saml/cpauth");
+            const profile = "other";
+            const q = "%20edu";
+            chai.request.execute(app)
+                .get(`/entities?entityID=${entityID}&trustProfile=${profile}&q=${q}`)
+                .end((err,res) => {
+                    chai.expect(res.status).to.equal(200);
+                    let data = res.body;
+                    chai.expect(data.length).to.equal(12);
                 done();
             });
         });

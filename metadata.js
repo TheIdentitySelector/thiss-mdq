@@ -399,14 +399,20 @@ class Metadata {
                 q = q.substring(ati + 1);
             }
             let tokens = q.split(/\s+/);
-            tokens = tokens.map(token => esc_query(token));
-            let str = [tokens[0]]
-            str.push(...sw.removeStopwords(tokens.slice(1), all_stopwords))
+            // drop tokens that are empty (leading/trailing whitespace in q) or
+            // that esc_query reduces to nothing: an empty term becomes an
+            // exact-match-on-nothing clause that makes the whole $and query
+            // return no results (issue thiss-js#313).
+            tokens = tokens.map(token => esc_query(token)).filter(token => token.length > 0);
+            if (tokens.length > 0) {
+                let str = [tokens[0]]
+                str.push(...sw.removeStopwords(tokens.slice(1), all_stopwords))
 
-            str.forEach((term) => {
-                self.idx.addFTTermToQuery(qQuery, term, ['title', 'tags', 'scopes', 'keywords'], true);
-            });
-            emptyQQuery = false;
+                str.forEach((term) => {
+                    self.idx.addFTTermToQuery(qQuery, term, ['title', 'tags', 'scopes', 'keywords'], true);
+                });
+                emptyQQuery = false;
+            }
         }
         let results = {};
 
