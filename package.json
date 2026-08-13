@@ -44,7 +44,7 @@
     "compression": "^1.8.0",
     "core-js": "^3.41.0",
     "cors": "^2.8.5",
-    "express": "^4.21.2",
+    "express": "^4.22.0",
     "fuse.js": "^7.1.0",
     "remove-accents": "^0.5.0",
     "stopword": "^3.1.4",
