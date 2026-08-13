@@ -41,7 +41,7 @@
     "snyk": "^1.1293.0"
   },
   "dependencies": {
-    "compression": "^1.8.0",
+    "compression": "^1.8.1",
     "core-js": "^3.41.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
